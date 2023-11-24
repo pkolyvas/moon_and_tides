@@ -85,6 +85,9 @@ for moon in moon_data["moon_phases"]:
 # list when they're in the past
 moons_sorted = sorted(moons)
 
+## To Do Calculate time to next phase
+## To Do Calculate daily number of steps for the motor
+
 # This simple function takes the phase percentage and
 # will calculate the number of motor steps to move the
 # mask. The moto is a 200 step motor or 1.8 degrees per
