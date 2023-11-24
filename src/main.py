@@ -57,7 +57,7 @@ moon_data = json.loads(moons_json_raw)
 cursor = connection.cursor()
 cursor.execute("CREATE TABLE IF NOT EXISTS current_moon (phase REAL, timestamp TEXT)")
 
-# Our moon class really on needs the name of the next phase and 
+# Our moon class really only needs the name of the next phase and 
 # the timestamp of that phase.
 class Moon:
     def __init__(self, moon, timestamp):
