@@ -3,10 +3,12 @@ import requests
 import json
 import os
 import time
+import threading, queue
+#from adafruit_motorkit import MotorKit
 
 connection = sqlite3.connect("moons_and_tides.db")
 
-#from adafruit_motorkit import MotorKit
+
 
 latitude = 45.38988
 longitude = -65.97948
@@ -96,8 +98,20 @@ moons_sorted = sorted(moons)
 # moon phases: new (0), first quarter (50 steps), etc. etc.
 def set_moon_mask_position(phase_percentage):
     steps = 200
-    position = phase * steps
+    position = phase_percentage * steps
     return int(position)
+
+moon_queue = queue.Queue()
+
+def moon_worker():
+    while True
+        item = moon_queue.get()
+        # Here we can evaluate the function
+        # maybe even use a class method to handle moving things?
+        moon_queue.done()
+        
+threading.Thread(target=moon_queue, daemon=True).start()
+
 
 # Sanity check data structures and access
 #########################################
@@ -121,11 +135,24 @@ class Tide:
         self.height = height
         self.next_tide = next_tide
 
-# tide_list = []
+tide_list = []
 
-# for tide in tide_data["extremes"]:
-#     new_tide = Tide(tide["state"], tide["timestamp"], tide["height"])
-#     tide_list.append(new_tide)
-#     if len(tide_list) != 1:
-#         current_index = len(tide_list)-1
-#         tide_list[current_index-1].next_tide = tide_list[current_index]
+for tide in tide_data["extremes"]:
+    new_tide = Tide(tide["state"], tide["timestamp"], tide["height"])
+    tide_list.append(new_tide)
+    if len(tide_list) != 1:
+        current_index = len(tide_list)-1
+        tide_list[current_index-1].next_tide = tide_list[current_index]
+
+tide_queue = queue.Queue()
+
+def tide_worker():
+    while True
+        item = tide_queue.get()
+        # stuff
+        tide_queue.done()
+        
+threading.Thread(target=tide_queue, daemon=True).start()
+
+moon_queue.join()
+tide_queue.join()
