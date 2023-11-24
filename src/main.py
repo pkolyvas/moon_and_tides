@@ -49,6 +49,7 @@ longitude = -65.97948
 
 # This replaces the request from the API for testing
 # using a local file which matches the Moons API response.
+
 with open('moon_sample.json') as user_file:
     moons_json_raw = user_file.read()
 
