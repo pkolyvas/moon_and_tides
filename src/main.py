@@ -2,6 +2,7 @@ import sqlite3
 import requests
 import json
 import os
+import time
 
 connection = sqlite3.connect("moons_and_tides.db")
 
@@ -57,6 +58,27 @@ moon_data = json.loads(moons)
 cursor = connection.cursor()
 cursor.execute("CREATE TABLE IF NOT EXISTS current_moon (phase REAL, timestamp TEXT)")
 
+class Moon:
+    def __init__(self, moon, timestamp):
+        self.moon = moon
+        self.timestamp = timestamp
+
+    def __eq__(self, other):
+        return self.timestamp == other.timestamp
+
+    def __lt__(self, other):
+        return self.timestamp < other.timestamp
+
+moons = []
+
+for moon in moon_data["moon_phases"]:
+    addmoon = Moon(moon, moon[1][0])
+    moons.append(addmoon)
+
+moons_sorted = sorted(moons)
+
+print(moons[0].timestamp)
+print(moons_sorted[0].moon)
 
 def set_mask_position(phase):
     steps = 200
@@ -66,6 +88,12 @@ def set_mask_position(phase):
 print("Current phase: "+str(moon_data["moon"]["phase"])) 
 print("Days until next new moon: "+str(moon_data["moon_phases"]["new_moon"]["next"]["days_ahead"]))
 print("Steps to set moon mask: "+str(set_mask_position(float(moon_data["moon"]["phase"]))))
+
+
+
+
+
+
 
 with open('current_tides.json') as user_file:
     tides = user_file.read()
@@ -80,19 +108,15 @@ class Tide:
         self.timestamp = timestamp
         self.height = height
         self.next_tide = next_tide
-        
-    def status(self):
-        if self.tide == "HIGH TIDE":
-            return "Decreasing"
-        else:
-            return "Increasing"
+
+# tide_list = []
+
+# for tide in tide_data["extremes"]:
+#     new_tide = Tide(tide["state"], tide["timestamp"], tide["height"])
+#     tide_list.append(new_tide)
+#     if len(tide_list) != 1:
+#         current_index = len(tide_list)-1
+#         tide_list[current_index-1].next_tide = tide_list[current_index]
 
 
-
-print("Currently the tide is "+tidestatus())
-
-print(tide_data["extremes"][0]["state"])
-# current_tide_level = 
-# high_tide_time =
-# low_tide_time = 
 
