@@ -64,6 +64,7 @@ class Moon:
         self.moon = moon
         self.timestamp = timestamp
 
+    # Sorting logic
     def __eq__(self, other):
         return self.timestamp == other.timestamp
 
