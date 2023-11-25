@@ -12,6 +12,7 @@ connection = sqlite3.connect("moons_and_tides.db")
 
 latitude = 45.38988
 longitude = -65.97948
+motor_resolution = 2000
 
 # def get_moon_data(latitude, longitude):
 
@@ -62,9 +63,10 @@ cursor.execute("CREATE TABLE IF NOT EXISTS current_moon (phase REAL, timestamp T
 # Our moon class really only needs the name of the next phase and 
 # the timestamp of that phase.
 class Moon:
-    def __init__(self, moon, timestamp):
+    def __init__(self, moon, timestamp, cycle=None):
         self.moon = moon
         self.timestamp = timestamp
+        self.cycle = cycle
 
     # Sorting logic
     def __eq__(self, other):
@@ -72,8 +74,23 @@ class Moon:
 
     def __lt__(self, other):
         return self.timestamp < other.timestamp
+    
+    def percentage(self):
+        if self.moon == "first_quarter":
+            self.cycle = 0.25
+        elif self.moon == "full_moon":
+            self.cycle = 0.5
+        elif self.moon == "last_quarter":
+            self.cycle = 0.75
+        else:
+            return 0
 
 moons = []
+
+# We need to get the current moon if we're loading up and put it at the front of the 
+# list
+
+moons.append(Moon(moon_data["moon"][]))
 
 # Here we iterate over the next moon phases to create an 
 # object for each moon phase with a timestamp
@@ -97,21 +114,41 @@ moons_sorted = sorted(moons)
 # step. That gives us clear correlation with the four
 # moon phases: new (0), first quarter (50 steps), etc. etc.
 def set_moon_mask_position(phase_percentage):
-    steps = 200
-    position = phase_percentage * steps
+    position = phase_percentage * motor_resolution
     return int(position)
 
-moon_queue = queue.Queue()
+# We set the moon position to "Full Moon" when the application loads
+# We will also use this for calibration
+# TODO: calibration routine (led, hole in mask at back or something).
+# Will also need to set a global calibration = true mode to prevent another function 
+# from moving the motor
+moon_position = set_moon_mask_position(0.5)
+
+# moon_queue = queue.Queue()
 
 def moon_worker():
-    while True
-        item = moon_queue.get()
-        # Here we can evaluate the function
-        # maybe even use a class method to handle moving things?
-        moon_queue.done()
-        
-threading.Thread(target=moon_queue, daemon=True).start()
+    while True:
+        # if we don't have anything in our list, break 
+        if len(moons_sorted) == 1:
+            break
 
+        # Get timerange in order calculate steps per interval of time. The result will be in seconds.
+        seconds_per_tick = round(((moons_sorted[1].timestamp - moons_sorted[0].timestamp)/motor_resolution), 0)
+
+        if moons_sorted[1].timestamp > int(time.time()):
+            
+            pass
+
+        moons_sorted.pop(0)
+        
+
+# for moon in moons_sorted:
+#     moon_queue.put(moon)
+
+# print(moons_sorted[1].moon)
+        
+moon_thread = threading.Thread(target=moon_worker, daemon=True)
+moon_thread.start()
 
 # Sanity check data structures and access
 #########################################
@@ -137,22 +174,21 @@ class Tide:
 
 tide_list = []
 
-for tide in tide_data["extremes"]:
-    new_tide = Tide(tide["state"], tide["timestamp"], tide["height"])
-    tide_list.append(new_tide)
-    if len(tide_list) != 1:
-        current_index = len(tide_list)-1
-        tide_list[current_index-1].next_tide = tide_list[current_index]
+# for tide in tide_data["extremes"]:
+#     new_tide = Tide(tide["state"], tide["timestamp"], tide["height"])
+#     tide_list.append(new_tide)
+#     if len(tide_list) != 1:
+#         current_index = len(tide_list)-1
+#         tide_list[current_index-1].next_tide = tide_list[current_index]
 
-tide_queue = queue.Queue()
+# tide_queue = queue.Queue()
 
-def tide_worker():
-    while True
-        item = tide_queue.get()
-        # stuff
-        tide_queue.done()
+# def tide_worker():
+#     while True
+#         item = tide_queue.get()
+#         # stuff
+#         tide_queue.done()
         
-threading.Thread(target=tide_queue, daemon=True).start()
+# threading.Thread(target=tide_queue, daemon=True).start()
 
-moon_queue.join()
-tide_queue.join()
+# tide_queue.join()
