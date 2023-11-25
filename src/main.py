@@ -76,6 +76,8 @@ class Moon:
         return self.timestamp < other.timestamp
     
     def percentage(self):
+        # We might need a check here in case it's the first (current)
+        # moon on boot
         if self.moon == "first_quarter":
             self.cycle = 0.25
         elif self.moon == "full_moon":
@@ -88,9 +90,8 @@ class Moon:
 moons = []
 
 # We need to get the current moon if we're loading up and put it at the front of the 
-# list
-
-moons.append(Moon(moon_data["moon"][]))
+# list. 
+moons.append(Moon(moon_data["moon"]["phase_name"], moon_data["timestamp"], moon_data["moon"]["phase"]))
 
 # Here we iterate over the next moon phases to create an 
 # object for each moon phase with a timestamp
@@ -133,8 +134,8 @@ def moon_worker():
             break
 
         # Get timerange in order calculate steps per interval of time. The result will be in seconds.
-        seconds_per_tick = round(((moons_sorted[1].timestamp - moons_sorted[0].timestamp)/motor_resolution), 0)
-
+        # We need to re-write this because not everything will be 1/2 of the motor
+       
         if moons_sorted[1].timestamp > int(time.time()):
             
             pass
