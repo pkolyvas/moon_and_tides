@@ -63,10 +63,10 @@ cursor.execute("CREATE TABLE IF NOT EXISTS current_moon (phase REAL, timestamp T
 # Our moon class really only needs the name of the next phase and 
 # the timestamp of that phase.
 class Moon:
-    def __init__(self, moon, timestamp, cycle=None):
+    def __init__(self, moon, timestamp, percent=None):
         self.moon = moon
         self.timestamp = timestamp
-        self.cycle = cycle
+        self.percent = percent
 
     # Sorting logic
     def __eq__(self, other):
@@ -75,28 +75,29 @@ class Moon:
     def __lt__(self, other):
         return self.timestamp < other.timestamp
     
-    def percentage(self):
+    def set_percentage(self):
         # We might need a check here in case it's the first (current)
         # moon on boot
         if self.moon == "first_quarter":
-            self.cycle = 0.25
+            self.percent = 0.25
         elif self.moon == "full_moon":
-            self.cycle = 0.5
+            self.percent = 0.5
         elif self.moon == "last_quarter":
-            self.cycle = 0.75
+            self.percent = 0.75
         else:
-            return 0
+            self.percent = 0
 
 moons = []
 
 # We need to get the current moon if we're loading up and put it at the front of the 
 # list. 
-moons.append(Moon(moon_data["moon"]["phase_name"], moon_data["timestamp"], moon_data["moon"]["phase"]))
+moons.append(Moon(moon_data["moon"]["phase_name"], moon_data["timestamp"], float(moon_data["moon"]["phase"])))
 
 # Here we iterate over the next moon phases to create an 
 # object for each moon phase with a timestamp
 for moon in moon_data["moon_phases"]:
     moon_phase = Moon(moon, moon_data["moon_phases"][moon]["next"]["timestamp"])
+    moon_phase.set_percentage()
     moons.append(moon_phase)
 
 # Here we sort them such that we create a list which will
@@ -114,6 +115,7 @@ moons_sorted = sorted(moons)
 # mask. The moto is a 200 step motor or 1.8 degrees per
 # step. That gives us clear correlation with the four
 # moon phases: new (0), first quarter (50 steps), etc. etc.
+# We also want to set and store the absolute position.
 def set_moon_mask_position(phase_percentage):
     position = phase_percentage * motor_resolution
     return int(position)
@@ -125,31 +127,40 @@ def set_moon_mask_position(phase_percentage):
 # from moving the motor
 moon_position = set_moon_mask_position(0.5)
 
-# moon_queue = queue.Queue()
-
 def moon_worker():
     while True:
         # if we don't have anything in our list, break 
         if len(moons_sorted) == 1:
             break
 
+        if len(moons_sorted) == 2:
+            # we want to trigger the API call at this point to replenish our queue
+            pass
+ 
         # Get timerange in order calculate steps per interval of time. The result will be in seconds.
         # We need to re-write this because not everything will be 1/2 of the motor
-       
+
+        # Getting some numbers to work with.
+        # Could probably make this more elegant, but I think clarity works
+        # for now. 
+        timerange = moons_sorted[1].timestamp - moons_sorted[0].timestamp
+        percent_to_next_phase = moons_sorted[1].percent - moons_sorted[0].percent
+        steps_to_next_phase = round(motor_resolution/4 * percent_to_next_phase)
+        time_per_step = int(timerange / steps_to_next_phase)
+
         if moons_sorted[1].timestamp > int(time.time()):
-            
-            pass
+            next_step = int(time.time()+time_per_step)
+            # Maybe while here? 
+            if int(time.time()) >= next_step:
+                # motor increment or something
+                pass
 
         moons_sorted.pop(0)
         
-
-# for moon in moons_sorted:
-#     moon_queue.put(moon)
-
-# print(moons_sorted[1].moon)
-        
 moon_thread = threading.Thread(target=moon_worker, daemon=True)
 moon_thread.start()
+
+
 
 # Sanity check data structures and access
 #########################################
