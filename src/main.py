@@ -143,12 +143,23 @@ def moon_worker():
         # Could probably make this more elegant, but I think clarity works
         # for now. 
         timerange = moons_sorted[1].timestamp - moons_sorted[0].timestamp
+        print("Timerange: "+str(timerange))
         # need to reset percent to where we actually are
+        
         percent_to_next_phase = moons_sorted[1].percent - moons_sorted[0].percent
-        steps_to_next_phase = round(motor_resolution/4 * percent_to_next_phase)
+        print("Percent to next phase: "+str(percent_to_next_phase))
+
+        steps_to_next_phase = round((motor_resolution/4) * percent_to_next_phase)
+        print("Steps to next phase: "+str(steps_to_next_phase))
+
         time_per_step = int(timerange / steps_to_next_phase)
-        current_percent = moons_sorted[0].percent
+        print("Time per step: "+str(time_per_step))         
+                 
+        current_percent = moons_sorted[0].percent                         
         percent_per_step = percent_to_next_phase / steps_to_next_phase
+        
+        
+        print()
         print(time_per_step)
         print(percent_per_step)
         current_time = int(time.time())
