@@ -58,7 +58,7 @@ with open('moon_sample.json') as user_file:
 moon_data = json.loads(moons_json_raw)
 
 cursor = connection.cursor()
-cursor.execute("CREATE TABLE IF NOT EXISTS current_moon (phase REAL, timestamp TEXT)")
+cursor.execute("CREATE TABLE IF NOT EXISTS current_moon (phase REAL, timestamp TEXT, percent REAL)")
 
 # Our moon class really only needs the name of the next phase and 
 # the timestamp of that phase.
@@ -144,33 +144,38 @@ def moon_worker():
             # may want to do this at the end of each cycle, but perhaps a non-blocking thread?
             # IE spawn a new thread, or have a new separate threaded function for this. 
             pass
-
-        # Getting some numbers to work with.
-        # Could probably make this more elegant, but I think clarity works
-        # for now. 
+        
+        # This should give us the number of seconds between "known" quarter phases.
+        # Quarter phases are returned from the API.
         timerange = moons_sorted[1].timestamp - moons_sorted[0].timestamp
-        print("Timerange: "+str(timerange))
+        print("Timerange: "+str(timerange)) 
         
-        # need to reset percent to where we actually are
-        
-        percent_to_next_phase = moons_sorted[1].percent - moons_sorted[0].percent
+         # We need to update the percent of the phase on load.
+        time_delta_to_now = time.time()-moons_sorted[0].timestamp # gives us the seconds since stored phase start time
+        remaining_percent_of_current_phase = (timerange - time_delta_to_now) / timerange # gives us the percent remaining of the current phase
+        percent_to_next_phase = (moons_sorted[1].percent - moons_sorted[0].percent)*(remaining_percent_of_current_phase)
+        print(f"Time delta: {time_delta_to_now}")
+        print(f"Remaining percent of current phase: {remaining_percent_of_current_phase}")
         print("Percent to next phase: "+str(percent_to_next_phase))
 
         steps_to_next_phase = round(motor_resolution * percent_to_next_phase)
         print("Steps to next phase: "+str(steps_to_next_phase))
 
         time_per_step = int(timerange / steps_to_next_phase)
-        print("Time per step: "+str(time_per_step))         
-                 
-        current_percent = moons_sorted[0].percent    
-        print("Current percent: "+str(current_percent))             
+        print("Time per step: "+str(time_per_step))                 
                 
         percent_per_step = percent_to_next_phase / steps_to_next_phase
         print("Percent per step: "+str(percent_per_step))        
         
+        # Update percent
+        moons_sorted[0].percent = moons_sorted[0].percent + (time_delta_to_now/timerange)
+        current_percent = moons_sorted[0].percent
+        print("Current percent: "+str(current_percent))
+        set_moon_mask_position(current_percent)     
+        
         current_time = int(time.time())
+        print("Current time: "+str(current_time))
       
-
         while moons_sorted[1].timestamp > int(time.time()):
             next_step = int(current_time+time_per_step)
             print("Next step: "+str(next_step))
@@ -179,7 +184,8 @@ def moon_worker():
             print("Sleeping.")
             if time.time() >= next_step:
                 # motor increment by current percent
-                moon_position = set_moon_mask_position(current_percent+percent_per_step)
+                current_percent = current_percent+percent_per_step
+                set_moon_mask_position(current_percent)
                 current_time = time.time()
                 print("incrementing") 
 
