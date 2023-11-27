@@ -12,7 +12,7 @@ connection = sqlite3.connect("moons_and_tides.db")
 
 latitude = 45.38988
 longitude = -65.97948
-motor_resolution = 45000
+motor_resolution = 200
 
 # def get_moon_data(latitude, longitude):
 
@@ -132,6 +132,12 @@ def moon_worker():
         # if we don't have anything in our list, break 
         if len(moons_sorted) == 1:
             break
+        
+        # Update list if second element is now in the past
+        # by removing the first element.
+        if moons_sorted[1].timestamp <= time.time():
+            moons_sorted.pop(0)
+            print("Outdated entry removed")
 
         if len(moons_sorted) == 2:
             # we want to trigger the API call at this point to replenish our queue
@@ -144,24 +150,24 @@ def moon_worker():
         # for now. 
         timerange = moons_sorted[1].timestamp - moons_sorted[0].timestamp
         print("Timerange: "+str(timerange))
+        
         # need to reset percent to where we actually are
         
         percent_to_next_phase = moons_sorted[1].percent - moons_sorted[0].percent
         print("Percent to next phase: "+str(percent_to_next_phase))
 
-        steps_to_next_phase = round((motor_resolution/4) * percent_to_next_phase)
+        steps_to_next_phase = round(motor_resolution * percent_to_next_phase)
         print("Steps to next phase: "+str(steps_to_next_phase))
 
         time_per_step = int(timerange / steps_to_next_phase)
         print("Time per step: "+str(time_per_step))         
                  
-        current_percent = moons_sorted[0].percent                         
+        current_percent = moons_sorted[0].percent    
+        print("Current percent: "+str(current_percent))             
+                
         percent_per_step = percent_to_next_phase / steps_to_next_phase
+        print("Percent per step: "+str(percent_per_step))        
         
-        
-        print()
-        print(time_per_step)
-        print(percent_per_step)
         current_time = int(time.time())
       
 
@@ -177,6 +183,7 @@ def moon_worker():
                 current_time = time.time()
                 print("incrementing") 
 
+        # I think this is a wasted pop since we do it at the top of the while loop just as effectively.
         moons_sorted.pop(0)
         
 moon_thread = threading.Thread(target=moon_worker)
