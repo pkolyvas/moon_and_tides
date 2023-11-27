@@ -12,7 +12,7 @@ connection = sqlite3.connect("moons_and_tides.db")
 
 latitude = 45.38988
 longitude = -65.97948
-motor_resolution = 2000
+motor_resolution = 45000
 
 # def get_moon_data(latitude, longitude):
 
@@ -135,29 +135,40 @@ def moon_worker():
 
         if len(moons_sorted) == 2:
             # we want to trigger the API call at this point to replenish our queue
+            # may want to do this at the end of each cycle, but perhaps a non-blocking thread?
+            # IE spawn a new thread, or have a new separate threaded function for this. 
             pass
- 
-        # Get timerange in order calculate steps per interval of time. The result will be in seconds.
-        # We need to re-write this because not everything will be 1/2 of the motor
 
         # Getting some numbers to work with.
         # Could probably make this more elegant, but I think clarity works
         # for now. 
         timerange = moons_sorted[1].timestamp - moons_sorted[0].timestamp
+        # need to reset percent to where we actually are
         percent_to_next_phase = moons_sorted[1].percent - moons_sorted[0].percent
         steps_to_next_phase = round(motor_resolution/4 * percent_to_next_phase)
         time_per_step = int(timerange / steps_to_next_phase)
+        current_percent = moons_sorted[0].percent
+        percent_per_step = percent_to_next_phase / steps_to_next_phase
+        print(time_per_step)
+        print(percent_per_step)
+        current_time = int(time.time())
+      
 
-        if moons_sorted[1].timestamp > int(time.time()):
-            next_step = int(time.time()+time_per_step)
-            # Maybe while here? 
-            if int(time.time()) >= next_step:
-                # motor increment or something
-                pass
+        while moons_sorted[1].timestamp > int(time.time()):
+            next_step = int(current_time+time_per_step)
+            print("Next step: "+str(next_step))
+            print("Current time: "+str(time.time()))
+            time.sleep(5)
+            print("Sleeping.")
+            if time.time() >= next_step:
+                # motor increment by current percent
+                moon_position = set_moon_mask_position(current_percent+percent_per_step)
+                current_time = time.time()
+                print("incrementing") 
 
         moons_sorted.pop(0)
         
-moon_thread = threading.Thread(target=moon_worker, daemon=True)
+moon_thread = threading.Thread(target=moon_worker)
 moon_thread.start()
 
 
