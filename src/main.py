@@ -4,13 +4,15 @@ import json
 import os
 import time
 import threading, queue
-import motor_control
+# import motor_control
+from urllib.parse import urlparse
+import apploader
+import tides
 
-connection = sqlite3.connect("moons_and_tides.db")
-
-latitude = 45.38988
-longitude = -65.97948
-motor_resolution = 200
+connection = sqlite3.connect(apploader.config['db']['sqlite3_db'])
+latitude = float(apploader.config['location']['latitude'])
+longitude = float(apploader.config['location']['longitude'])
+motor_resolution = int(apploader.config['motor']['resolution'])
 
 # def get_moon_data(latitude, longitude):
 
@@ -22,7 +24,7 @@ motor_resolution = 200
 #        }
 
 #     headers = {
-#         "X-RapidAPI-Key": os.environ.get('RAPIDAPI_KEY'),
+#         "X-RapidAPI-Key": apploader.config['apis']['moon_api'],
 #         "X-RapidAPI-Host": "moon-phase.p.rapidapi.com"
 #     }
 
@@ -162,10 +164,11 @@ def moon_worker():
             time.sleep(5)
             print("Sleeping.")
             if time.time() >= next_step:
+                # TODO review this once calibration is set
                 # motor increment by current percent
                 current_percent = current_percent+percent_per_step
                 set_moon_mask_position(current_percent)
-                motor_control.simple_anticlockwise()
+                # motor_control.simple_anticlockwise()
                 current_time = time.time()
                 print("incrementing") 
 

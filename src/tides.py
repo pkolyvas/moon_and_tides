@@ -3,13 +3,13 @@
 #     url = "https://api.marea.ooo/v2/tides"
 
 #     querystring = {
-#         "duration":"1440",
+#         "duration":"10080",
 #         "latitude":latitude,
 #         "longitude":longitude
 #         }
 
 #     headers = {
-#         "x-marea-api-token": os.environ.get('MAREA_API_TOKEN'),
+#         "x-marea-api-token": apploader.config['apis']['marea_api'],
 #     }
 
 #     tides_json_raw = requests.get(url, headers=headers, params=querystring)
@@ -25,8 +25,6 @@ with open('current_tides.json') as user_file:
     tides_json_raw = user_file.read()
     
 tide_data = json.loads(tides_json_raw)
-
-
 
 class Tide:
     def __init__(self, tide, timestamp, height, next_tide=None) -> None:

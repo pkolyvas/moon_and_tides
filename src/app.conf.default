@@ -1,0 +1,13 @@
+[location]
+latitude = 
+longitude = 
+
+[api_keys]
+moon_api =
+marea_api = 
+
+[motor]
+resolution = 200
+
+[db]
+sqlite3_db = moons_and_tides.db
