@@ -4,11 +4,9 @@ import json
 import os
 import time
 import threading, queue
-import board
-from adafruit_motorkit import MotorKit
+import motor_control
 
 connection = sqlite3.connect("moons_and_tides.db")
-kit = MotorKit(i2c=board.I2C())
 
 latitude = 45.38988
 longitude = -65.97948
@@ -167,7 +165,7 @@ def moon_worker():
                 # motor increment by current percent
                 current_percent = current_percent+percent_per_step
                 set_moon_mask_position(current_percent)
-                # kit.stepper1.onestep()
+                motor_control.simple_anticlockwise()
                 current_time = time.time()
                 print("incrementing") 
 
