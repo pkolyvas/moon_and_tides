@@ -1,13 +1,19 @@
+[DEFAULT]
+offline = False
+
 [location]
 latitude = 
 longitude = 
 
 [api_keys]
-moon_api =
-marea_api = 
+moon_api_url = 
+moon_api_key =
+marea_api_url = 
+marea_api_key = 
 
 [motor]
 resolution = 200
 
 [db]
 sqlite3_db = moons_and_tides.db
+

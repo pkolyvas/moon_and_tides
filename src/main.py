@@ -3,39 +3,46 @@ import requests
 import json
 import os
 import time
-import threading, queue
+import threading
 # import motor_control
 from urllib.parse import urlparse
 import apploader
-import tides
+# import tides
 
 connection = sqlite3.connect(apploader.config['db']['sqlite3_db'])
 latitude = float(apploader.config['location']['latitude'])
 longitude = float(apploader.config['location']['longitude'])
 motor_resolution = int(apploader.config['motor']['resolution'])
 
-# def get_moon_data(latitude, longitude):
+def get_moon_data(latitude, longitude):
+    # if bool(apploader.config['DEFAULT']['offline']):
+    #     print("-- OFFLINE MODE --")
+    #     with open('current_tides.json') as user_file:
+    #         moon_file_json_raw = user_file.read()
+    #         return json.loads(moon_file_json_raw)
 
-#     url = "https://moon-phase.p.rapidapi.com/advanced"
+    url = "https://moon-phase.p.rapidapi.com/advanced"
 
-#     querystring = {
-#        "lat":str(latitude),
-#        "lon":str(longitude)
-#        }
+    querystring = {
+       "lat":str(latitude),
+       "lon":str(longitude)
+       }
 
-#     headers = {
-#         "X-RapidAPI-Key": apploader.config['apis']['moon_api'],
-#         "X-RapidAPI-Host": "moon-phase.p.rapidapi.com"
-#     }
+    headers = {
+        "X-RapidAPI-Key": apploader.config['apis']['moon_api_key'],
+        "X-RapidAPI-Host": "moon-phase.p.rapidapi.com"
+    }
 
-#     moons_json_raw = requests.get(url, headers=headers, params=querystring)
+    api_response = requests.get(url, headers=headers, params=querystring)
+    moons_json_raw = api_response.json()
     
-#     return  json.loads(moons_json_raw.json())
+    return  moons_json_raw
 
-with open('moon_sample.json') as user_file:
-    moons_json_raw = user_file.read()
+# with open('moon_sample.json') as user_file:
+#     moons_json_raw = user_file.read()
 
-moon_data = json.loads(moons_json_raw)
+# moon_data = json.loads(moons_json_raw)
+moon_data = get_moon_data(latitude, longitude)
 
 cursor = connection.cursor()
 cursor.execute("CREATE TABLE IF NOT EXISTS current_moon (phase REAL, timestamp TEXT, percent REAL)")
