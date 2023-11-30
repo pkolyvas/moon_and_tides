@@ -53,7 +53,7 @@ font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
 button_a = "Button A"
 
 while True:
-    draw.text(10,25, button_a, font=font, fill=(255, 255, 255))
+    draw.text((10,25), button_a, font=font, fill=(255, 255, 255))
     display.display(buffer)
     time.sleep(1.0 / 60)
 
