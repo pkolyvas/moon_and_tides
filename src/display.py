@@ -50,7 +50,9 @@ display = ST7789(
 
 font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 20)
 top_row_height = 63
+top_row_left_justification = 10
 bottom_row_height = 153
+bottom_row_right_justification = 310
 
 button_a = "Swap"
 button_b = "Calibrate"
@@ -58,10 +60,10 @@ button_x = "Info & Logs"
 button_y = "Back"
 
 while True:
-    draw.text((10,top_row_height), button_a, font=font, fill=(255, 255, 255))
-    draw.text((10,bottom_row_height), button_b, font=font, fill=(255, 255, 255))
-    draw.text((200,top_row_height), button_x, font=font, fill=(255, 255, 255))
-    draw.text((255,bottom_row_height), button_y, font=font, fill=(255, 255, 255))
+    draw.text((top_row_left_justification,top_row_height), button_a, font=font, fill=(255, 255, 255))
+    draw.text((top_row_left_justification,bottom_row_height), button_b, font=font, fill=(255, 255, 255), align=right)
+    draw.text((bottom_row_right_justification,top_row_height), button_x, font=font, fill=(255, 255, 255))
+    draw.text((bottom_row_right_justification,bottom_row_height), button_y, font=font, fill=(255, 255, 255), align=right)
     display.display(buffer)
     time.sleep(1.0 / 60)
 
