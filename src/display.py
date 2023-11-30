@@ -59,13 +59,25 @@ button_b = "Calibrate"
 button_x = "Info & Logs"
 button_y = "Back"
 
+class dhmbutton:
+    def __init__(self, name, menu, button) -> None:
+        self.name = name
+        self.menu = menu
+        self.button = button
+
+current_screen = "info"
+
 while True:
+        
     draw.text((top_row_left_justification,top_row_height), button_a, font=font, fill=(255, 255, 255))
     draw.text((top_row_left_justification,bottom_row_height), button_b, font=font, fill=(255, 255, 255))
     draw.text((bottom_row_right_justification,top_row_height), button_x, font=font, fill=(255, 255, 255))
     draw.text((bottom_row_right_justification,bottom_row_height), button_y, font=font, fill=(255, 255, 255))
     display.display(buffer)
     time.sleep(1.0 / 60)
+
+
+
 
 
 

@@ -17,3 +17,5 @@ resolution = 200
 [db]
 sqlite3_db = moons_and_tides.db
 
+[visuals]
+moon_white = (253, 244, 220)
