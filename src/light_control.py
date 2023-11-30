@@ -32,7 +32,7 @@ def tide(level, brightness):
         
 def setpixelbrightness(new_brightness):
     pixels.deinit()
-    pixels.neopixel.NeoPixel(board.D18, 20, brightness=pixel_brightness)
+    pixels= neopixel.NeoPixel(board.D18, 20, brightness=pixel_brightness)
     pixel_brightness = new_brightness
     
 def soft_on(brightness, color):
@@ -40,7 +40,7 @@ def soft_on(brightness, color):
     while current_brightness < brightness:
         pixels.deinit()
         current_brightness += 0.1
-        pixels.neopixel.NeoPixel(board.D18, 20, brightness=current_brightness)
+        pixels = neopixel.NeoPixel(board.D18, 20, brightness=current_brightness)
         pixels.fill(color)
         time.sleep(0.1)
         
