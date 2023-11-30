@@ -11,7 +11,8 @@ pixels = neopixel.NeoPixel(board.D18, 20, brightness=pixel_brightness)
 
 def moonlight(brightness):
     color = moon_white
-    moon_color = [int(number) for number in color]
+    #moon_color = [int(number) for number in color]
+    moon_color = color
     soft_on(brightness, moon_color)
 
 
