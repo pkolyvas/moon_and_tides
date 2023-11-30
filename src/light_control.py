@@ -44,7 +44,7 @@ def soft_on(brightness, color):
         current_brightness += 0.05
         pixels = neopixel.NeoPixel(board.D18, 20, brightness=current_brightness)
         pixels.fill(color)
-        time.sleep(0.05)
+        time.sleep(0.1)
         
 moonlight(1)
 
