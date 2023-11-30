@@ -49,7 +49,7 @@ display = ST7789(
 )
 
 font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 20)
-top_row_height = 58
+top_row_height = 63
 bottom_row_height = 153
 
 button_a = "Swap"
