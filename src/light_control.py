@@ -3,7 +3,8 @@ import neopixel
 import apploader
 import time
 
-moon_white = apploader.config["visuals"]["moon_white"]
+# moon_white = apploader.config["visuals"]["moon_white"]
+moon_white = (253, 220, 160)
 tide_blue = (0,60,220)
 pixel_brightness = 0.5
 
