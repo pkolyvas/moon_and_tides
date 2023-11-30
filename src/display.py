@@ -56,10 +56,10 @@ button_x = "Info & Logs"
 button_y = "Back"
 
 while True:
-    draw.text((15,35), button_a, font=font, fill=(255, 255, 255))
-    draw.text((15,155), button_b, font=font, fill=(255, 255, 255))
-    draw.text((205,35), button_x, font=font, fill=(255, 255, 255))
-    draw.text((205,155), button_y, font=font, fill=(255, 255, 255))
+    draw.text((10,35), button_a, font=font, fill=(255, 255, 255))
+    draw.text((10,153), button_b, font=font, fill=(255, 255, 255))
+    draw.text((200,35), button_x, font=font, fill=(255, 255, 255))
+    draw.text((255,153), button_y, font=font, fill=(255, 255, 255))
     display.display(buffer)
     time.sleep(1.0 / 60)
 
