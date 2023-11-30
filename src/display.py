@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 from ST7789 import ST7789, BG_SPI_CS_FRONT
 from displayhatmini import DisplayHATMini
-from PIL import Image, ImageDraw
+from PIL import Image, ImageDraw, ImageFont
 
 import random
 import time
+import sys
 
 # Buttons
 BUTTON_A = 5
@@ -30,10 +31,11 @@ HEIGHT = 240
 buffer = Image.new("RGB", (WIDTH, HEIGHT))
 draw = ImageDraw.Draw(buffer)
 
-draw.rectangle((0, 0, 50, 50), (255, 0, 0))
-draw.rectangle((320-50, 0, 320, 50), (0, 255, 0))
-draw.rectangle((0, 240-50, 50, 240), (0, 0, 255))
-draw.rectangle((320-50, 240-50, 320, 240), (255, 255, 0))
+# draw.rectangle((0, 0, 50, 50), (255, 0, 0))
+# draw.rectangle((320-50, 0, 320, 50), (0, 255, 0))
+# draw.rectangle((0, 240-50, 50, 240), (0, 0, 255))
+# draw.rectangle((320-50, 240-50, 320, 240), (255, 255, 0))
+
 
 display = ST7789(
     port=SPI_PORT,
@@ -46,9 +48,16 @@ display = ST7789(
     spi_speed_hz=60 * 1000 * 1000
 )
 
+font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 30)
+
+button_a = "Button A"
+
 while True:
+    draw.text(10,25, button_a, font=font, fill=(255, 255, 255))
     display.display(buffer)
     time.sleep(1.0 / 60)
+
+
 
 # reference this as well : https://github.com/pimoroni/displayhatmini-python/blob/main/examples/pygame-button-interrupt.py 
 
@@ -62,6 +71,11 @@ while True:
 
 # TODO: Menu: Swap Displays (Tide to moon, moon to screen), Calibrate Moon Phase, Settings & Info, Back.
 
-def tide_display(high, low):
-    # TODO: Clock
-    # TODO: Tide display
+# def tide_display(high, low):
+#     # TODO: Clock
+#     # TODO: Tide display
+
+# def settings():
+
+
+
