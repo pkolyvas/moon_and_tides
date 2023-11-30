@@ -38,7 +38,8 @@ def setpixelbrightness(new_brightness):
 def soft_on(brightness, color):
     current_brightness = 0.0
     while current_brightness < brightness:
-        pixels.deinit()
+        if current_brightness != 0:
+          pixels.deinit()
         current_brightness += 0.1
         pixels = neopixel.NeoPixel(board.D18, 20, brightness=current_brightness)
         pixels.fill(color)
