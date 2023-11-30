@@ -48,12 +48,18 @@ display = ST7789(
     spi_speed_hz=60 * 1000 * 1000
 )
 
-font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 30)
+font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 20)
 
-button_a = "Button A"
+button_a = "Swap"
+button_b = "Calibrate"
+button_x = "Info & Logs"
+button_y = "Back"
 
 while True:
-    draw.text((10,25), button_a, font=font, fill=(255, 255, 255))
+    draw.text((15,35), button_a, font=font, fill=(255, 255, 255))
+    draw.text((15,155), button_b, font=font, fill=(255, 255, 255))
+    draw.text((205,35), button_x, font=font, fill=(255, 255, 255))
+    draw.text((205,155), button_y, font=font, fill=(255, 255, 255))
     display.display(buffer)
     time.sleep(1.0 / 60)
 
