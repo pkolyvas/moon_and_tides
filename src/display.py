@@ -53,3 +53,15 @@ while True:
 # reference this as well : https://github.com/pimoroni/displayhatmini-python/blob/main/examples/pygame-button-interrupt.py 
 
 # TODO: Need at a minimum a tide display, a tide/moon swap, and a calibrate moon display. 
+
+# TODO: Boot display for 30 seconds. 
+
+# TODO: Main display is tide display
+
+# TODO: Any button press brings up the menu, no other button press menu goes away
+
+# TODO: Menu: Swap Displays (Tide to moon, moon to screen), Calibrate Moon Phase, Settings & Info, Back.
+
+def tide_display(high, low):
+    # TODO: Clock
+    # TODO: Tide display
