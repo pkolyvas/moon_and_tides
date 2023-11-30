@@ -1,6 +1,7 @@
 import board
 import neopixel
 import apploader
+import time
 
 moon_white = apploader.config["visuals"]["moon_white"]
 tide_blue = (0,60,220)
@@ -9,12 +10,12 @@ pixel_brightness = 0.5
 pixels = neopixel.NeoPixel(board.D18, 20, brightness=pixel_brightness)
 
 def moonlight(brightness):
-    setpixelbrightness(brightness)
-    pixels.fill((253,244,220))
+    color = moon_white
+    moon_color = [int(number) for number in color]
+    soft_on(brightness, moon_color)
 
 
 def tide(level, brightness):
-    setpixelbrightness(brightness)
     if level <= 0.25:
         for pixel in pixels[range(15,18)]:
             pixel = tide_blue
@@ -33,6 +34,16 @@ def setpixelbrightness(new_brightness):
     pixels.neopixel.NeoPixel(board.D18, 20, brightness=pixel_brightness)
     pixel_brightness = new_brightness
     
-def soft_on(brightness):
-    for 
-    
+def soft_on(brightness, color):
+    current_brightness = 0.0
+    while current_brightness < brightness:
+        pixels.deinit()
+        current_brightness += 0.1
+        pixels.neopixel.NeoPixel(board.D18, 20, brightness=current_brightness)
+        pixels.fill(color)
+        time.sleep(0.1)
+        
+moonlight(1)
+
+sleep(5)
+
