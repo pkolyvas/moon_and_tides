@@ -6,7 +6,7 @@ import time
 # moon_white = apploader.config["visuals"]["moon_white"]
 moon_white = (253, 220, 160)
 tide_blue = (0,60,220)
-pixel_brightness = 0.5
+pixel_brightness = 1
 
 pixels = neopixel.NeoPixel(board.D18, 20, brightness=pixel_brightness)
 
@@ -41,10 +41,10 @@ def soft_on(brightness, color):
     while current_brightness < brightness:
         if current_brightness != 0:
           pixels.deinit()
-        current_brightness += 0.1
+        current_brightness += 0.05
         pixels = neopixel.NeoPixel(board.D18, 20, brightness=current_brightness)
         pixels.fill(color)
-        time.sleep(0.1)
+        time.sleep(0.05)
         
 moonlight(1)
 
