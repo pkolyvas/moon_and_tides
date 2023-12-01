@@ -77,7 +77,7 @@ while True:
     # draw.text((bottom_row_right_justification,top_row_height), button_x, font=font, fill=(255, 255, 255))
     # draw.text((bottom_row_right_justification,bottom_row_height), button_y, font=font, fill=(255, 255, 255))
     draw.text((first_column_left_justification,top_row_height), ipaddress, font=font, fill=(255, 255, 255))
-    draw.text((first_column_left_justification,bottom_row_height), button_a, font=font, fill=(255, 255, 255)))
+    draw.text((first_column_left_justification,bottom_row_height), button_a, font=font, fill=(255, 255, 255))
     display.display(buffer)
     time.sleep(1.0 / 60)
 
