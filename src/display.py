@@ -6,6 +6,7 @@ from PIL import Image, ImageDraw, ImageFont
 import random
 import time
 import sys
+import os
 
 # Buttons
 BUTTON_A = 5
@@ -50,7 +51,7 @@ display = ST7789(
 
 font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 20)
 top_row_height = 63
-top_row_left_justification = 10
+first_column_left_justification = 10
 bottom_row_height = 153
 bottom_row_right_justification = 310
 
@@ -59,11 +60,24 @@ button_b = "Calibrate"
 button_x = "Info & Logs"
 button_y = "Back"
 
+ipaddress = os.popen("ifconfig wlan0 \
+                     | grep 'inet addr' \
+                     | awk -F: '{print $2}' \
+                     | awk '{print $1}'").read()
+
+ssid = os.popen("iwconfig wlan0 \
+                | grep 'ESSID' \
+                | awk '{print $4}' \
+                | awk -F\\\" '{print $2}'").read()
+
 while True:
-    draw.text((top_row_left_justification,top_row_height), button_a, font=font, fill=(255, 255, 255))
-    draw.text((top_row_left_justification,bottom_row_height), button_b, font=font, fill=(255, 255, 255))
-    draw.text((bottom_row_right_justification,top_row_height), button_x, font=font, fill=(255, 255, 255))
-    draw.text((bottom_row_right_justification,bottom_row_height), button_y, font=font, fill=(255, 255, 255))
+    
+    # draw.text((top_row_left_justification,top_row_height), button_a, font=font, fill=(255, 255, 255))
+    # draw.text((top_row_left_justification,bottom_row_height), button_b, font=font, fill=(255, 255, 255))
+    # draw.text((bottom_row_right_justification,top_row_height), button_x, font=font, fill=(255, 255, 255))
+    # draw.text((bottom_row_right_justification,bottom_row_height), button_y, font=font, fill=(255, 255, 255))
+    draw.text((first_column_left_justification,top_row_height), ipaddress, font=font, fill=(255, 255, 255))
+    draw.text((first_column_left_justification,bottom_row_height), button_a, font=font, fill=(255, 255, 255)))
     display.display(buffer)
     time.sleep(1.0 / 60)
 
@@ -86,6 +100,8 @@ while True:
 #     # TODO: Tide display
 
 # def settings():
+
+
 
 
 
