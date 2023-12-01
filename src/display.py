@@ -61,9 +61,9 @@ button_x = "Info & Logs"
 button_y = "Back"
 
 ipaddress = os.popen("ifconfig wlan0 \
-                     | grep 'inet addr' \
-                     | awk -F: '{print $2}' \
-                     | awk '{print $1}'").read()
+                     | grep 'inet' \
+                     | awk '{print $2}' \
+                     | awk 'NR==1{print $1}'").read()
 
 ssid = os.popen("iwconfig wlan0 \
                 | grep 'ESSID' \
@@ -77,7 +77,7 @@ while True:
     # draw.text((bottom_row_right_justification,top_row_height), button_x, font=font, fill=(255, 255, 255))
     # draw.text((bottom_row_right_justification,bottom_row_height), button_y, font=font, fill=(255, 255, 255))
     draw.text((first_column_left_justification,top_row_height), ipaddress, font=font, fill=(255, 255, 255))
-    draw.text((first_column_left_justification,bottom_row_height), button_a, font=font, fill=(255, 255, 255))
+    draw.text((first_column_left_justification,bottom_row_height), ssid, font=font, fill=(255, 255, 255))
     display.display(buffer)
     time.sleep(1.0 / 60)
 
