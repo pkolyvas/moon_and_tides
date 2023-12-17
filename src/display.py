@@ -49,6 +49,8 @@ display = ST7789(
     spi_speed_hz=60 * 1000 * 1000
 )
 
+display_hat = DisplayHATMini(None)
+
 font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 20)
 top_row_height = 63
 first_column_left_justification = 10
@@ -69,6 +71,9 @@ ssid = os.popen("iwconfig wlan0 \
                 | grep 'ESSID' \
                 | awk '{print $4}' \
                 | awk -F\\\" '{print $2}'").read()
+
+def display_button():
+    display_hat.on
 
 while True:
     
