@@ -57,25 +57,6 @@ left_column_left_justification = 10
 bottom_row_height = 153
 right_column_right_justification = 310
 
-
-
-# 
-def display_button():
-    display_hat.on
-
-def button_callback(channel, event):
-    if event == "press":
-        print(f"Button {channel} was pressed")
-    elif event == "release":
-        print(f"Button {channel} was released")
-
-button_map = {
-    "A": display_hat.button_a,
-    "B": display_hat.button_b,
-    "X": display_hat.button_x,
-    "Y": display_hat.button_y
-}
-
 def calibrate_moon_screen():
     button_a = "Backward"
     button_b = "Forward"
@@ -89,9 +70,14 @@ def calibrate_moon_screen():
         draw.text((right_column_right_justification,bottom_row_height), button_y, font=font, fill=(255, 255, 255))
         display.display(buffer)
 
-        for button_name, button in button_map.items():
-            button.when_pressed = lambda: button_callback(button_name, "press")
-            button.when_released = lambda: button_callback(button_name, "release")
+        if display_hat.read_button(display_hat.BUTTON_A):
+            print("Button A")
+        if display_hat.read_button(display_hat.BUTTON_B):
+            print("Button B")
+        if display_hat.read_button(display_hat.BUTTON_X):
+            print("Button X")
+        if display_hat.read_button(display_hat.BUTTON_Y):
+            print("Button Y")
 
 calibrate_moon_screen()
        
