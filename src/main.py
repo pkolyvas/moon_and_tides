@@ -4,7 +4,8 @@ import json
 import os
 import time
 import threading
-# import motor_control
+import motor_control
+import light_control
 from urllib.parse import urlparse
 import apploader
 # import tides
@@ -90,7 +91,6 @@ for moon in moon_data["moon_phases"]:
 # is limited. We should be able to remove items from the front of the 
 # list when they're in the past
 moons_sorted = sorted(moons)
-moon_calibrated = False
 
 ## To Do Calculate time to next phase
 ## To Do Calculate daily number of steps for the motor
@@ -101,8 +101,7 @@ moon_calibrated = False
 # step. That gives us clear correlation with the four
 # moon phases: new (0), first quarter (50 steps), etc. etc.
 # We also want to set and store the absolute position.
-def set_moon_mask_position(phase_percentage):
-    if moon_calibrated = False:
+def set_moon_mask_position(phase_percentage):  
     position = phase_percentage * motor_resolution
     return int(position)
 
@@ -111,10 +110,16 @@ def set_moon_mask_position(phase_percentage):
 # TODO: calibration routine (led, hole in mask at back or something).
 # Will also need to set a global calibration = true mode to prevent another function 
 # from moving the motor
-moon_position = set_moon_mask_position(0.5)
 
 def moon_worker():
+    # Calibrate
+    light_control.moonlight()
+    motor_control.motor_calibration()
+    moon_position = 0
+    motor_position = 0
+    first_load = True
     while True:
+        first_load = true
         # if we don't have anything in our list, break 
         if len(moons_sorted) == 1:
             break
@@ -157,8 +162,25 @@ def moon_worker():
         moons_sorted[0].percent = moons_sorted[0].percent + (time_delta_to_now/timerange)
         current_percent = moons_sorted[0].percent
         print("Current percent: "+str(current_percent))
-        set_moon_mask_position(current_percent)     
+        moon_position = set_moon_mask_position(current_percent)
         
+        # If it's first load we need to set the position based on the calibrated full moon.
+        if first_load == True:
+            for i in range(moon_position):
+                motor_control.simple_anticlockwise()
+            motor_position = moon_position
+        # If we're moving through the loop and the system is calibrated, we want to correct any error
+        else:
+            if moon_position > motor_position:
+                delta = moon_position - motor_position
+                for i in range(delta):
+                    motor_control.simple_anticlockwise()
+                motor_position = moon_position
+            if moon_position < motor_position:
+                delta = motor_position - moon_position
+                for i in range(delta):
+                    motor_control.simple_clockwise()
+
         current_time = int(time.time())
         print("Current time: "+str(current_time))
       
@@ -169,17 +191,16 @@ def moon_worker():
             time.sleep(5)
             print("Sleeping.")
             if time.time() >= next_step:
-                # TODO review this once calibration is set
-                # motor increment by current percent
                 current_percent = current_percent+percent_per_step
-                set_moon_mask_position(current_percent)
-                # motor_control.simple_anticlockwise()
-                current_time = time.time()
+                motor_position = set_moon_mask_position(current_percent)
                 print("incrementing") 
-
+                motor_control.simple_anticlockwise()
+                current_time = time.time()
+                
         # I think this is a wasted pop since we do it at the top of the while loop just as effectively.
         moons_sorted.pop(0)
-        
+
+
 moon_thread = threading.Thread(target=moon_worker)
 moon_thread.start()
 

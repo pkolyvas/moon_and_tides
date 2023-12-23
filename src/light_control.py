@@ -10,11 +10,10 @@ pixel_brightness = 1
 
 pixels = neopixel.NeoPixel(board.D18, 20, brightness=pixel_brightness)
 
-def moonlight(brightness):
-    color = moon_white
-    #moon_color = [int(number) for number in color]
-    moon_color = color
-    soft_on(brightness, moon_color)
+def moonlight():
+    # Reset lights they're being used for something else
+    pixels.deinit()	
+    pixels.fill(moon_white)
 
 
 def tide(level, brightness):
@@ -31,22 +30,4 @@ def tide(level, brightness):
         for pixel in pixels[range(1,18)]:
             pixel = tide_blue
         
-def setpixelbrightness(new_brightness):
-    pixels.deinit()
-    pixels= neopixel.NeoPixel(board.D18, 20, brightness=pixel_brightness)
-    pixel_brightness = new_brightness
-    
-def soft_on(brightness, color):
-    current_brightness = 0.0
-    while current_brightness < brightness:
-        if current_brightness != 0:
-          pixels.deinit()
-        current_brightness += 0.05
-        pixels = neopixel.NeoPixel(board.D18, 20, brightness=current_brightness)
-        pixels.fill(color)
-        time.sleep(0.1)
-        
-moonlight(1)
-
-sleep(5)
 

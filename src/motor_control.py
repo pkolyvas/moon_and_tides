@@ -5,7 +5,7 @@ from adafruit_motorkit import MotorKit
 
 kit = MotorKit(i2c=board.I2C())
 
-# calibration in this case will 
+# We will need a calibration screen
 def motor_calibration():
   while True:
     if keyboard.read_key() == 'left':
@@ -13,6 +13,8 @@ def motor_calibration():
     if keyboard.read_key() == 'right':
       set_position(-1)
     if keyboard.read_key() == 'down':
+      for i in range(100):
+        kit.stepper1.onestep(direction=stepper.BACKWARD)
       return True
 
 def set_position(steps):
