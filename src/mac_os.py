@@ -30,4 +30,8 @@ def calibration_light(state):
       pass
    
 
-
+# TODO: 
+   # Retrieve new data
+   # If no collection, read saved data
+   # Calibrate full moon
+   # Display current
