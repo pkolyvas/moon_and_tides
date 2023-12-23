@@ -21,8 +21,7 @@ def motor_calibration():
       return True
 
 def set_position(steps):
-    # TODO: move motor one step in either direction. Clockwise (positive), anti-clockwise (negative) 
-    # print(f"Moving moon mask {direction} the following number of steps: {steps}")
+    # TODO: move motor one step in either direction. Forward for my stepper is anti-clockwise, backward is clockwise
     if steps == -1:
       simple_forward()
     elif steps == 1:
