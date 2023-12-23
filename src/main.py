@@ -44,10 +44,6 @@ def get_moon_data(latitude, longitude):
 # moon_data = json.loads(moons_json_raw)
 moon_data = get_moon_data(latitude, longitude)
 
-cursor = connection.cursor()
-cursor.execute("CREATE TABLE IF NOT EXISTS current_moon (phase REAL, timestamp TEXT, percent REAL)")
-cursor.execute("CREATE TABLE IF NOT EXISTS tides (tide TEXT, date TEXT, height REAL, timestamp INT)")
-
 # Our moon class really only needs the name of the next phase and 
 # the timestamp of that phase.
 class Moon:
@@ -94,6 +90,7 @@ for moon in moon_data["moon_phases"]:
 # is limited. We should be able to remove items from the front of the 
 # list when they're in the past
 moons_sorted = sorted(moons)
+moon_calibrated = False
 
 ## To Do Calculate time to next phase
 ## To Do Calculate daily number of steps for the motor
@@ -105,6 +102,7 @@ moons_sorted = sorted(moons)
 # moon phases: new (0), first quarter (50 steps), etc. etc.
 # We also want to set and store the absolute position.
 def set_moon_mask_position(phase_percentage):
+    if moon_calibrated = False:
     position = phase_percentage * motor_resolution
     return int(position)
 
