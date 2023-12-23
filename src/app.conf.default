@@ -5,8 +5,8 @@ offline = False
 latitude = 
 longitude = 
 
-[api_keys]
-moon_api_url = 
+[apis]
+moon_api_url = https://moon-phase.p.rapidapi.com/advanced
 moon_api_key =
 marea_api_url = 
 marea_api_key = 

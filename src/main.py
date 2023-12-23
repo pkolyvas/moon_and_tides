@@ -43,6 +43,7 @@ def get_moon_data(latitude, longitude):
 #     moons_json_raw = user_file.read()
 
 # moon_data = json.loads(moons_json_raw)
+print("Getting moon data.")
 moon_data = get_moon_data(latitude, longitude)
 
 # Our moon class really only needs the name of the next phase and 
@@ -119,7 +120,6 @@ def moon_worker():
     motor_position = 0
     first_load = True
     while True:
-        first_load = true
         # if we don't have anything in our list, break 
         if len(moons_sorted) == 1:
             break
@@ -166,20 +166,23 @@ def moon_worker():
         
         # If it's first load we need to set the position based on the calibrated full moon.
         if first_load == True:
+            print(f"First Load. Moving mask to {moon_position}.")
             for i in range(moon_position):
-                motor_control.simple_anticlockwise()
+                motor_control.simple_backward()
             motor_position = moon_position
         # If we're moving through the loop and the system is calibrated, we want to correct any error
         else:
             if moon_position > motor_position:
+                print("Motor behind. Fixing.")
                 delta = moon_position - motor_position
                 for i in range(delta):
-                    motor_control.simple_anticlockwise()
+                    motor_control.simple_backward()
                 motor_position = moon_position
             if moon_position < motor_position:
+                print("Motor ahead. Fixing.")
                 delta = motor_position - moon_position
                 for i in range(delta):
-                    motor_control.simple_clockwise()
+                    motor_control.simple_forward()
 
         current_time = int(time.time())
         print("Current time: "+str(current_time))
@@ -194,7 +197,7 @@ def moon_worker():
                 current_percent = current_percent+percent_per_step
                 motor_position = set_moon_mask_position(current_percent)
                 print("incrementing") 
-                motor_control.simple_anticlockwise()
+                motor_control.simple_backward()
                 current_time = time.time()
                 
         # I think this is a wasted pop since we do it at the top of the while loop just as effectively.
