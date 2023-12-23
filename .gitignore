@@ -1,3 +1,4 @@
 /src/*.db
 **env_*
 app.conf
+**__pycache__
