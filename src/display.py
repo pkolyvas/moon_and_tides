@@ -55,19 +55,20 @@ font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 20)
 top_row_height = 63
 left_column_left_justification = 10
 bottom_row_height = 153
-right_column_right_justification = 310
+right_column_right_justification = 250
 
 def calibrate_moon_screen():
     button_a = "Backward"
     button_b = "Forward"
     button_x = "Done"
-    button_y = "Back"   
+    #button_y = "Back"   
 
     while True:
         draw.text((left_column_left_justification,top_row_height), button_a, font=font, fill=(255, 255, 255))
         draw.text((left_column_left_justification,bottom_row_height), button_b, font=font, fill=(255, 255, 255))
-        draw.text((right_column_right_justification,top_row_height), button_x, font=font, fill=(255, 255, 255))
-        draw.text((right_column_right_justification,bottom_row_height), button_y, font=font, fill=(255, 255, 255))
+        draw.text((right_column_right_justification,top_row_height), button_x, font=font, fill=(0, 255, 0))
+        draw.text((75,10), "Calibrating Moon", font=font, fill=(150, 150, 255))
+        #draw.text((right_column_right_justification,bottom_row_height), button_y, font=font, fill=(255, 255, 255))
         display.display(buffer)
 
         if display_hat.read_button(display_hat.BUTTON_A):
@@ -75,9 +76,11 @@ def calibrate_moon_screen():
         if display_hat.read_button(display_hat.BUTTON_B):
             print("Button B")
         if display_hat.read_button(display_hat.BUTTON_X):
-            print("Button X")
+            break
         if display_hat.read_button(display_hat.BUTTON_Y):
             print("Button Y")
+
+def moon_display(phase, )
 
 calibrate_moon_screen()
        
