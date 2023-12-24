@@ -89,7 +89,7 @@ def tide_worker():
         # while moon_calibrated == False:
         #     time.sleep(1)
         
-        tide_tod_clock = str(datetime.fromtimestamp(time.time()))
+        tide_tod_clock = str(datetime.fromtimestamp(time.time()).strftime('%H:%M'))
 
         # TODO: pop-off the first element if it's in the past.
 
@@ -112,6 +112,7 @@ def tide_worker():
 def tide_display(trend, next, afternext, progress, clock):     
 
         heading_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 28)
+        clock_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 58)
 
         #while True:
         if progress <= 0.33:
@@ -125,9 +126,10 @@ def tide_display(trend, next, afternext, progress, clock):
         draw = ImageDraw.Draw(screen)
 
         #draw.text((right_column_right_justification,bottom_row_height), button_y, font=font, fill=(255, 255, 255))
-        draw.text((25, 25), trend, font=heading_font, fill=(255, 255, 255))
-        draw.text((25, 200), next, font=default_font, fill=(255, 255, 255))
-        draw.text((250, 200), next, font=default_font, fill=(255, 255, 255))
+        draw.text((15, 15), trend, font=heading_font, fill=(255, 255, 255))
+        draw.text((65, 130), clock, font=clock_font, fill=(255,255,255))
+        draw.text((25, 210), next, font=default_font, fill=(255, 255, 255))
+        draw.text((180, 210), afternext, font=default_font, fill=(255, 255, 255))
         
         # draw.text((left_column_left_justification,bottom_row_height), button_b, font=font, fill=(255, 255, 255))
         # draw.text((right_column_right_justification,top_row_height), button_x, font=font, fill=(0, 255, 0))
