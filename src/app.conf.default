@@ -8,7 +8,7 @@ longitude =
 [apis]
 moon_api_url = https://moon-phase.p.rapidapi.com/advanced
 moon_api_key =
-marea_api_url = 
+marea_api_url = https://api.marea.ooo/v2/tides
 marea_api_key = 
 
 [motor]

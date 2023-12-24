@@ -57,22 +57,37 @@ for tide in tide_data["extremes"]:
     tide_list.append(new_tide)  
 
 tides_sorted = sorted(tide_list)
+tide_display_trend = ""
+tide_display_next = ""
+tide_display_afternext = ""
 
 def tide_worker():
     while True:
-
+        # while moon_calibrated == False:
+        #     time.sleep(1)
+        
         clock = datetime.fromtimestamp(time.time())
+        center_text
 
         print(clock.strftime("%H:%M"))
 
         if tides_sorted[0].tide == "HIGH TIDE":
+            tide_display
+            
+            
             print("Rising Tide.")
-            print(f"High tide is at {datetime.fromtimestamp(tides_sorted[0].timestamp-tide_correction).strftime('%H:%M')}. High tide will be {tides_sorted[0].height}m above sea level.")
-            print(f"Next low tide is at {datetime.fromtimestamp(tides_sorted[1].timestamp-tide_correction).strftime('%H:%M')}")
+            print(f"High tide is at {datetime.fromtimestamp(tides_sorted[0].timestamp).strftime('%H:%M')}. High tide will be {tides_sorted[0].height}m above sea level.")
+            print(f"Next low tide is at {datetime.fromtimestamp(tides_sorted[1].timestamp).strftime('%H:%M')}")
 
         else:
             print("Tide Receding")
-            print(f"Low tide is at {datetime.fromtimestamp(tides_sorted[0].timestamp-tide_correction).strftime('%H:%M')}. Low tide will be {tides_sorted[0].height}m below sea level.")
-            print(f"Next high tide is at {datetime.fromtimestamp(tides_sorted[1].timestamp-tide_correction).strftime('%H:%M')}")
+            print(f"Low tide is at {datetime.fromtimestamp(tides_sorted[0].timestamp).strftime('%H:%M')}. Low tide will be {tides_sorted[0].height}m below sea level.")
+            print(f"Next high tide is at {datetime.fromtimestamp(tides_sorted[1].timestamp).strftime('%H:%M')}")
 
         time.sleep(15)
+
+def tide_display():
+     
+        
+tide_thread = threading.Thread(target=tide_worker)
+tide_thread.start()
