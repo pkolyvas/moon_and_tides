@@ -42,9 +42,6 @@ def get_moon_data(latitude, longitude):
     
     return  moons_json_raw
 
-# with open('moon_sample.json') as user_file:
-#     moons_json_raw = user_file.read()
-
 # moon_data = json.loads(moons_json_raw)
 print("Getting moon data.")
 moon_data = get_moon_data(latitude, longitude)
@@ -275,12 +272,12 @@ tides_sorted = sorted(tide_list)
             
 # 3 main threads: Moon, Tide and Screen 
 moon_thread = threading.Thread(target=moon_worker)
-tide_thread = threading.Thread(target=tide_worker)
+#tide_thread = threading.Thread(target=tide_worker)
 #screen_thread = threading.Thread(target=screen_worker)
 
 moon_thread.start()
 #screen_thread.start()
-tide_thread.start()
+#tide_thread.start()
 
 # Sanity check data structures and access
 #########################################

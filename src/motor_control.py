@@ -21,7 +21,7 @@ def motor_calibration():
       return True
 
 def set_position(steps):
-    # TODO: move motor one step in either direction. Forward for my stepper is anti-clockwise, backward is clockwise
+    # TODO: improve function move motor one step in either direction. Forward for my stepper is anti-clockwise, backward is clockwise
     if steps == -1:
       simple_forward()
     elif steps == 1:
