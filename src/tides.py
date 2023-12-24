@@ -97,47 +97,46 @@ def tide_worker():
 
         if tides_sorted[0].tide == "HIGH TIDE":         
             tide_display_trend = "A Rising Tide"
-            tide_display_next = "High tide: " + str(datetime.fromtimestamp(tides_sorted[0].timestamp).strftime('%H:%M'))
-            tide_display_afternext = "Low tide: " +str(datetime.fromtimestamp(tides_sorted[1].timestamp).strftime('%H:%M'))
+            tide_display_next = "High: " + str(datetime.fromtimestamp(tides_sorted[0].timestamp).strftime('%H:%M'))
+            tide_display_afternext = "Low: " +str(datetime.fromtimestamp(tides_sorted[1].timestamp).strftime('%H:%M'))
                     
         else:
             tide_display_trend = "Tide Receding"
-            tide_display_next = "Low tide: " + str(datetime.fromtimestamp(tides_sorted[0].timestamp).strftime('%H:%M'))
-            tide_display_afternext = "High tide: " + str(datetime.fromtimestamp(tides_sorted[1].timestamp).strftime('%H:%M'))
+            tide_display_next = "Low: " + str(datetime.fromtimestamp(tides_sorted[0].timestamp).strftime('%H:%M'))
+            tide_display_afternext = "High: " + str(datetime.fromtimestamp(tides_sorted[1].timestamp).strftime('%H:%M'))
         
         tide_display(tide_display_trend, tide_display_next, tide_display_afternext, tide_progress_remaining, tide_tod_clock)
-        
+        print("Tide worker: Active")
         time.sleep(15)
 
 def tide_display(trend, next, afternext, progress, clock):     
 
         heading_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 28)
 
-        while True:
-            if progress <= 0.33:
-                tide_image = "high_tide.png"
-            elif progress > 0.33 and progress <= 0.66:
-                tide_image = "mid_tide.png"
-            elif progress > 0.66:
-                tide_image = "low_tide.png"
-            
-            screen = Image.open(tide_image)
-            draw = ImageDraw.Draw(screen)
+        #while True:
+        if progress <= 0.33:
+            tide_image = "high_tide.png"
+        elif progress > 0.33 and progress <= 0.66:
+            tide_image = "mid_tide.png"
+        elif progress > 0.66:
+            tide_image = "low_tide.png"
+        
+        screen = Image.open(tide_image)
+        draw = ImageDraw.Draw(screen)
 
-            #draw.text((right_column_right_justification,bottom_row_height), button_y, font=font, fill=(255, 255, 255))
-            draw.text((25, 25), trend, font=heading_font, fill=(255, 255, 255))
-            draw.text
-            
-            # draw.text((left_column_left_justification,bottom_row_height), button_b, font=font, fill=(255, 255, 255))
-            # draw.text((right_column_right_justification,top_row_height), button_x, font=font, fill=(0, 255, 0))
-            # draw.text((75,10), "Calibrating Moon", font=font, fill=(150, 150, 255))
-            #draw.text((right_column_right_justification,bottom_row_height), button_y, font=font, fill=(255, 255, 255))
-            
-            if active_display == "tide":
-                display.display(screen)
-                print("Active display: Tide")
-            print(f"Current values: {trend}, {next}, {afternext}, {progress}.")
-            time.sleep(15)
+        #draw.text((right_column_right_justification,bottom_row_height), button_y, font=font, fill=(255, 255, 255))
+        draw.text((25, 25), trend, font=heading_font, fill=(255, 255, 255))
+        draw.text((25, 200), next, font=default_font, fill=(255, 255, 255))
+        draw.text((250, 200), next, font=default_font, fill=(255, 255, 255))
+        
+        # draw.text((left_column_left_justification,bottom_row_height), button_b, font=font, fill=(255, 255, 255))
+        # draw.text((right_column_right_justification,top_row_height), button_x, font=font, fill=(0, 255, 0))
+        # draw.text((75,10), "Calibrating Moon", font=font, fill=(150, 150, 255))
+        #draw.text((right_column_right_justification,bottom_row_height), button_y, font=font, fill=(255, 255, 255))
+        
+        if active_display == "tide":
+            display.display(screen)
+            print("Active display: Tide")
 
 def menu_display():
     pass
