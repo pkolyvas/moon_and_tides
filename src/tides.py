@@ -108,6 +108,13 @@ def tide_worker():
         tide_display(tide_display_trend, tide_display_next, tide_display_afternext, tide_progress_remaining, tide_tod_clock)
         print("Tide worker: Active")
         time.sleep(15)
+        if time.time() > tides_sorted[0].timestamp:
+            tides_sorted.pop(0)
+            tides_in_queue = len(tides_sorted)
+            if tides_in_queue <= 2:
+                #TODO: Need to refresh tide list
+                pass
+            print(f"Updating tides list. {tides_in_queue} tides remaining in queue.")
 
 def tide_display(trend, next, afternext, progress, clock):     
 
