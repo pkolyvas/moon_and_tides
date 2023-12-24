@@ -95,7 +95,7 @@ def tide_worker():
 
         # TODO: pop-off the first element if it's in the past.
 
-        tide_progress_remaining = TIDAL_HALF_PERIOD / (tides_sorted[0].timestamp - clock)
+        tide_progress_remaining = TIDAL_HALF_PERIOD / (tides_sorted[0].timestamp - time.time())
 
         if tides_sorted[0].tide == "HIGH TIDE":         
             tide_display_trend = "A Rising Tide"
