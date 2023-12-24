@@ -35,8 +35,8 @@ def get_tide_data(latitude, longitude):
     return tides_json_raw
     
 tide_data = get_tide_data(latitude, longitude)
-print(tide_data)
-print(type(tide_data))
+# print(tide_data)
+# print(type(tide_data))
 
 class Tide:
     def __init__(self, tide, timestamp, height, next_tide=None) -> None:
@@ -77,7 +77,3 @@ def tide_worker():
             print(f"Next high tide is at {datetime.fromtimestamp(tides_sorted[1].timestamp-tide_correction).strftime('%H:%M')}")
 
         time.sleep(15)
-        
-        
-tide_thread = threading.Thread(target=tide_worker)
-tide_thread.start()

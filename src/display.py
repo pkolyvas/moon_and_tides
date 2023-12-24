@@ -57,6 +57,7 @@ left_column_left_justification = 10
 bottom_row_height = 153
 right_column_right_justification = 250
 
+# The Calibrating Moon screen's button control is in the motor calibration function.
 def calibrate_moon_screen():
     button_a = "Backward"
     button_b = "Forward"
@@ -70,32 +71,6 @@ def calibrate_moon_screen():
         draw.text((75,10), "Calibrating Moon", font=font, fill=(150, 150, 255))
         #draw.text((right_column_right_justification,bottom_row_height), button_y, font=font, fill=(255, 255, 255))
         display.display(buffer)
-
-        if display_hat.read_button(display_hat.BUTTON_A):
-            print("Button A")
-        if display_hat.read_button(display_hat.BUTTON_B):
-            print("Button B")
-        if display_hat.read_button(display_hat.BUTTON_X):
-            break
-        if display_hat.read_button(display_hat.BUTTON_Y):
-            print("Button Y")
-
-def moon_display(phase, )
-
-calibrate_moon_screen()
-       
-# while True:
-    
-#     # draw.text((top_row_left_justification,top_row_height), button_a, font=font, fill=(255, 255, 255))
-#     # draw.text((top_row_left_justification,bottom_row_height), button_b, font=font, fill=(255, 255, 255))
-#     # draw.text((bottom_row_right_justification,top_row_height), button_x, font=font, fill=(255, 255, 255))
-#     # draw.text((bottom_row_right_justification,bottom_row_height), button_y, font=font, fill=(255, 255, 255))
-#     draw.text((first_column_left_justification,top_row_height), ipaddress, font=font, fill=(255, 255, 255))
-#     draw.text((first_column_left_justification,bottom_row_height), ssid, font=font, fill=(255, 255, 255))
-#     display.display(buffer)
-#     time.sleep(1.0 / 60)
-
-
 
 # reference this as well : https://github.com/pimoroni/displayhatmini-python/blob/main/examples/pygame-button-interrupt.py 
 
@@ -124,3 +99,9 @@ calibrate_moon_screen()
 #                 | awk '{print $4}' \
 #                 | awk -F\\\" '{print $2}'").read()
 #
+
+# Screens:
+# Moon display
+# Tide display
+# Menu Screen (toggled by any button)
+# Info

@@ -6,6 +6,8 @@ import time
 import threading
 import motor_control
 import light_control
+import display
+import tides
 from urllib.parse import urlparse
 import apploader
 # import tides
@@ -14,6 +16,7 @@ connection = sqlite3.connect(apploader.config['db']['sqlite3_db'])
 latitude = float(apploader.config['location']['latitude'])
 longitude = float(apploader.config['location']['longitude'])
 motor_resolution = int(apploader.config['motor']['resolution'])
+tide_correction = int(apploader.config['location']['correction'])
 
 def get_moon_data(latitude, longitude):
     # if bool(apploader.config['DEFAULT']['offline']):
@@ -93,9 +96,6 @@ for moon in moon_data["moon_phases"]:
 # list when they're in the past
 moons_sorted = sorted(moons)
 
-## To Do Calculate time to next phase
-## To Do Calculate daily number of steps for the motor
-
 # This simple function takes the phase percentage and
 # will calculate the number of motor steps to move the
 # mask. The moto is a 200 step motor or 1.8 degrees per
@@ -106,19 +106,22 @@ def set_moon_mask_position(phase_percentage):
     position = phase_percentage * motor_resolution
     return int(position)
 
-# We set the moon position to "Full Moon" when the application loads
-# We will also use this for calibration
-# TODO: calibration routine (led, hole in mask at back or something).
-# Will also need to set a global calibration = true mode to prevent another function 
-# from moving the motor
-
 def moon_worker():
-    # Calibrate
+    # Start moonlight and calibrate moon on start
     light_control.moonlight()
+    requested_screen = "calibration"
     motor_control.motor_calibration()
+    requested_screen = "tides"
+
+    # Moon position is 0 after calibration
+    # We set motor position to compare
     moon_position = 0
     motor_position = 0
+
+    # Toggle for first run
     first_load = True
+
+    # Enter thread's main loop
     while True:
         # if we don't have anything in our list, break 
         if len(moons_sorted) == 1:
@@ -204,8 +207,97 @@ def moon_worker():
         moons_sorted.pop(0)
 
 
+def get_tide_data(latitude, longitude): 
+    # if bool(apploader.config['DEFAULT']['offline']):
+    #     print("-- OFFLINE MODE --")
+    #     with open('current_tides.json') as user_file:
+    #         raw_json_file = user_file.read()
+    #         return json.loads(raw_json_file)
+
+    url = apploader.config['apis']['marea_api_url']
+
+    querystring = {
+        "duration":"10080",
+        "latitude":latitude,
+        "longitude":longitude
+        }
+
+    headers = {
+        "x-marea-api-token": apploader.config['apis']['marea_api_key'],
+    }
+    
+    api_response = requests.get(url, headers=headers, params=querystring)
+    tides_json_raw = api_response.json()
+    
+    return tides_json_raw
+    
+tide_data = get_tide_data(latitude, longitude)
+# print(tide_data)
+# print(type(tide_data))
+
+class Tide:
+    def __init__(self, tide, timestamp, height, next_tide=None) -> None:
+        self.tide = tide
+        self.timestamp = timestamp
+        self.height = height
+        
+    # Sorting logic
+    def __eq__(self, other):
+        return self.timestamp == other.timestamp
+
+    def __lt__(self, other):
+        return self.timestamp < other.timestamp
+
+tide_list = []
+
+for tide in tide_data["extremes"]:
+    new_tide = Tide(tide["state"], tide["timestamp"], tide["height"])
+    tide_list.append(new_tide)  
+
+tides_sorted = sorted(tide_list)
+
+def tide_worker():
+    while True:
+
+        clock = datetime.fromtimestamp(time.time())
+
+        print(clock.strftime("%H:%M"))
+
+        if tides_sorted[0].tide == "HIGH TIDE":
+            print("Rising Tide.")
+            print(f"High tide is at {datetime.fromtimestamp(tides_sorted[0].timestamp-tide_correction).strftime('%H:%M')}. High tide will be {tides_sorted[0].height}m above sea level.")
+            print(f"Next low tide is at {datetime.fromtimestamp(tides_sorted[1].timestamp-tide_correction).strftime('%H:%M')}")
+
+        else:
+            print("Tide Receding")
+            print(f"Low tide is at {datetime.fromtimestamp(tides_sorted[0].timestamp-tide_correction).strftime('%H:%M')}. Low tide will be {tides_sorted[0].height}m below sea level.")
+            print(f"Next high tide is at {datetime.fromtimestamp(tides_sorted[1].timestamp-tide_correction).strftime('%H:%M')}")
+
+        time.sleep(15)
+
+# Screen on startup is calibration
+# current_screen = "calibration"
+# requested_screen = "calibration"
+
+# def screen_worker():
+#     while True:
+#         if requested_screen == current_screen:
+#             pass
+#         elif requested_screen == "moon":
+#             display.moon_display_screen()
+#             current_screen = "moon"
+#         elif requested_screen == "tides":
+#             display.tide_display_screen()
+#             current_screen = "tides"
+            
+# 3 main threads: Moon, Tide and Screen 
 moon_thread = threading.Thread(target=moon_worker)
+tide_thread = threading.Thread(target=tide_worker)
+#screen_thread = threading.Thread(target=screen_worker)
+
 moon_thread.start()
+#screen_thread.start()
+tide_thread.start()
 
 # Sanity check data structures and access
 #########################################
