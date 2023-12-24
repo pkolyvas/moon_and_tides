@@ -1,21 +1,22 @@
 import board
-import keyboard
 import time
 from adafruit_motor import stepper
 from adafruit_motorkit import MotorKit
+from displayhatmini import DisplayHATMini
 
 kit = MotorKit(i2c=board.I2C())
+display_hat = DisplayHATMini(None)
 
 # We will need a calibration screen
 def motor_calibration():
   print("Calibrating moon.")
   while True:
-    if keyboard.read_key() == 'left':
+    if display_hat.read_button(display_hat.BUTTON_A):
       set_position(1)
-    if keyboard.read_key() == 'right':
+    if display_hat.read_button(display_hat.BUTTON_X):
       set_position(-1)
-    if keyboard.read_key() == 'down':
-      print
+    if display_hat.read_button(display_hat.BUTTON_B):
+      print("Done calibration. Resetting moon.")
       for i in range(100):
         kit.stepper1.onestep()
         time.sleep(0.05)
@@ -37,3 +38,5 @@ def simple_backward():
   time.sleep(0.05)
 
 # TODO: Make the movement correct for any hemisphere (Longitude)
+  
+  

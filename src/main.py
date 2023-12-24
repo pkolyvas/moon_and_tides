@@ -114,6 +114,8 @@ def moon_worker():
     light_control.moonlight()
     display.calibrate_moon_screen(active_display)
     motor_control.motor_calibration()
+    
+    # Resetting display to tide after moon calibration
     global active_display
     active_display = "tide"
 
@@ -282,7 +284,7 @@ def tide_worker():
         tide_progress_remaining = (tides_sorted[0].timestamp - time.time()) / TIDAL_HALF_PERIOD
 
         if tides_sorted[0].tide == "HIGH TIDE":         
-            tide_display_trend = "A Rising Tide"
+            tide_display_trend = "Rising Tide"
             tide_display_next = "High: " + str(datetime.fromtimestamp(tides_sorted[0].timestamp).strftime('%H:%M'))
             tide_display_afternext = "Low: " +str(datetime.fromtimestamp(tides_sorted[1].timestamp).strftime('%H:%M'))
                     
