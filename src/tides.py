@@ -8,7 +8,6 @@ from datetime import datetime
 
 latitude = float(apploader.config['location']['latitude'])
 longitude = float(apploader.config['location']['longitude'])
-tide_correction = int(apploader.config['location']['correction'])
 
 def get_tide_data(latitude, longitude): 
     # if bool(apploader.config['DEFAULT']['offline']):
