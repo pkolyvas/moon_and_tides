@@ -72,6 +72,8 @@ def calibrate_moon_screen():
         #draw.text((right_column_right_justification,bottom_row_height), button_y, font=font, fill=(255, 255, 255))
         display.display(buffer)
 
+calibrate_moon_screen()
+
 # reference this as well : https://github.com/pimoroni/displayhatmini-python/blob/main/examples/pygame-button-interrupt.py 
 
 # TODO: Need at a minimum a tide display, a tide/moon swap, and a calibrate moon display. 
