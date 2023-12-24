@@ -139,4 +139,4 @@ def menu_display():
 tide_thread = threading.Thread(target=tide_worker)
 tide_thread.start()
 time.sleep(2)
-tide_display()
+tide_display(tide_display_trend, tide_display_next, tide_display_afternext, tide_progress_remaining, clock)
