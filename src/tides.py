@@ -60,6 +60,7 @@ tides_sorted = sorted(tide_list)
 tide_display_trend = ""
 tide_display_next = ""
 tide_display_afternext = ""
+tide_progress = None
 
 def tide_worker():
     while True:
@@ -67,26 +68,29 @@ def tide_worker():
         #     time.sleep(1)
         
         clock = datetime.fromtimestamp(time.time())
-        center_text
 
-        print(clock.strftime("%H:%M"))
+        # TODO: pop-off the first element if it's in the past.
 
-        if tides_sorted[0].tide == "HIGH TIDE":
-            tide_display
-            
-            
-            print("Rising Tide.")
-            print(f"High tide is at {datetime.fromtimestamp(tides_sorted[0].timestamp).strftime('%H:%M')}. High tide will be {tides_sorted[0].height}m above sea level.")
-            print(f"Next low tide is at {datetime.fromtimestamp(tides_sorted[1].timestamp).strftime('%H:%M')}")
-
+        if tides_sorted[0].tide == "HIGH TIDE":         
+            tide_display_trend = "A Rising Tide"
+            tide_display_next = "High tide will be at " + str(datetime.fromtimestamp(tides_sorted[0].timestamp).strftime('%H:%M'))
+            tide_display_afternext = "Low tide will be at " +str(datetime.fromtimestamp(tides_sorted[1].timestamp).strftime('%H:%M'))
+            # TODO: Calculate progress to next tide phase based on time remaining to phase and average tide phase time
+            #tide_progress = 
         else:
-            print("Tide Receding")
-            print(f"Low tide is at {datetime.fromtimestamp(tides_sorted[0].timestamp).strftime('%H:%M')}. Low tide will be {tides_sorted[0].height}m below sea level.")
-            print(f"Next high tide is at {datetime.fromtimestamp(tides_sorted[1].timestamp).strftime('%H:%M')}")
+            tide_display_trend = "Tide Receding"
+            tide_display_next = "Low tide will be at " + str(datetime.fromtimestamp(tides_sorted[0].timestamp).strftime('%H:%M'))
+            tide_display_afternext = "High tide will be at " + str(datetime.fromtimestamp(tides_sorted[1].timestamp).strftime('%H:%M'))
+            # TODO: Calculate progress to next tide phase based on time remaining to phase and average tide phase time
+            #tide_progress = 
 
         time.sleep(15)
 
 def tide_display():
+    pass
+
+def menu_display():
+    pass
      
         
 tide_thread = threading.Thread(target=tide_worker)
