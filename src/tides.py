@@ -78,41 +78,40 @@ tide_list = []
 
 for tide in tide_data["extremes"]:
     new_tide = Tide(tide["state"], tide["timestamp"], tide["height"])
-    tide_list.append(new_tide)  
-
+    tide_list.append(new_tide) 
+    
 tides_sorted = sorted(tide_list)
-tide_display_trend = ""
-tide_display_next = ""
-tide_display_afternext = ""
-tide_progress_remaining = None
-clock = None
+    
+active_display = "tide"
 
 def tide_worker():
     while True:
         # while moon_calibrated == False:
         #     time.sleep(1)
         
-        clock = datetime.fromtimestamp(time.time())
+        tide_tod_clock = str(datetime.fromtimestamp(time.time()))
 
         # TODO: pop-off the first element if it's in the past.
 
-        tide_progress_remaining = TIDAL_HALF_PERIOD / (tides_sorted[0].timestamp - time.time())
+        tide_progress_remaining = (tides_sorted[0].timestamp - time.time()) / TIDAL_HALF_PERIOD
 
         if tides_sorted[0].tide == "HIGH TIDE":         
             tide_display_trend = "A Rising Tide"
-            tide_display_next = "High tide will be at " + str(datetime.fromtimestamp(tides_sorted[0].timestamp).strftime('%H:%M'))
-            tide_display_afternext = "Low tide will be at " +str(datetime.fromtimestamp(tides_sorted[1].timestamp).strftime('%H:%M'))
+            tide_display_next = "High tide: " + str(datetime.fromtimestamp(tides_sorted[0].timestamp).strftime('%H:%M'))
+            tide_display_afternext = "Low tide: " +str(datetime.fromtimestamp(tides_sorted[1].timestamp).strftime('%H:%M'))
                     
         else:
             tide_display_trend = "Tide Receding"
-            tide_display_next = "Low tide will be at " + str(datetime.fromtimestamp(tides_sorted[0].timestamp).strftime('%H:%M'))
-            tide_display_afternext = "High tide will be at " + str(datetime.fromtimestamp(tides_sorted[1].timestamp).strftime('%H:%M'))
-            
+            tide_display_next = "Low tide: " + str(datetime.fromtimestamp(tides_sorted[0].timestamp).strftime('%H:%M'))
+            tide_display_afternext = "High tide: " + str(datetime.fromtimestamp(tides_sorted[1].timestamp).strftime('%H:%M'))
+        
+        tide_display(tide_display_trend, tide_display_next, tide_display_afternext, tide_progress_remaining, tide_tod_clock)
+        
         time.sleep(15)
 
 def tide_display(trend, next, afternext, progress, clock):     
 
-        heading_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 28)
+        heading_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 28)
 
         while True:
             if progress <= 0.33:
@@ -122,21 +121,26 @@ def tide_display(trend, next, afternext, progress, clock):
             elif progress > 0.66:
                 tide_image = "low_tide.png"
             
-            screen = Image.open()
+            screen = Image.open(tide_image)
             draw = ImageDraw.Draw(screen)
 
             #draw.text((right_column_right_justification,bottom_row_height), button_y, font=font, fill=(255, 255, 255))
             draw.text((25, 25), trend, font=heading_font, fill=(255, 255, 255))
+            draw.text
+            
             # draw.text((left_column_left_justification,bottom_row_height), button_b, font=font, fill=(255, 255, 255))
             # draw.text((right_column_right_justification,top_row_height), button_x, font=font, fill=(0, 255, 0))
             # draw.text((75,10), "Calibrating Moon", font=font, fill=(150, 150, 255))
             #draw.text((right_column_right_justification,bottom_row_height), button_y, font=font, fill=(255, 255, 255))
-            display.display(screen)
+            
+            if active_display == "tide":
+                display.display(screen)
+                print("Active display: Tide")
+            print(f"Current values: {trend}, {next}, {afternext}, {progress}.")
+            time.sleep(15)
 
 def menu_display():
     pass
         
 tide_thread = threading.Thread(target=tide_worker)
 tide_thread.start()
-time.sleep(2)
-tide_display(tide_display_trend, tide_display_next, tide_display_afternext, tide_progress_remaining, clock)
