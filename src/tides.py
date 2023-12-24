@@ -144,7 +144,7 @@ def tide_display(trend, next, afternext, progress, clock):
         draw.text((15, 15), trend, font=heading_font, fill=(255, 255, 255))
         draw.text((65, 130), clock, font=clock_font, fill=(255,255,255))
         draw.text((15, 210), next, font=default_font, fill=(255, 255, 255))
-        draw.text((195, 210), afternext, font=default_font, fill=(255, 255, 255)
+        draw.text((195, 210), afternext, font=default_font, fill=(255, 255, 255))
         
         if active_display == "tide":
             display.display(screen)
