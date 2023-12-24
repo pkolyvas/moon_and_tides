@@ -116,18 +116,18 @@ def tide_display(trend, next, afternext, progress, clock):
         
         if trend == "Tide Receding":
             if progress <= 0.20: 
-                tide_image = "low_tide.png"
+                tide_image = "images/low_tide.png"
             elif progress > 0.20 and progress <= 0.80:
-                tide_image = "mid_tide.png"
+                tide_image = "images/mid_tide.png"
             elif progress > 0.80:
-                tide_image = "high_tide.png"
+                tide_image = "images/high_tide.png"
         else:
             if progress <= 0.20: 
-                tide_image = "high_tide.png"
+                tide_image = "images/high_tide.png"
             elif progress > 0.20 and progress <= 0.80:
-                tide_image = "mid_tide.png"
+                tide_image = "images/mid_tide.png"
             elif progress > 0.80:
-                tide_image = "low_tide.png"
+                tide_image = "images/low_tide.png"
             
         
         screen = Image.open(tide_image)
