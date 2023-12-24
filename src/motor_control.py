@@ -8,13 +8,14 @@ kit = MotorKit(i2c=board.I2C())
 
 # We will need a calibration screen
 def motor_calibration():
-  print("Calibration moon.")
+  print("Calibrating moon.")
   while True:
     if keyboard.read_key() == 'left':
       set_position(1)
     if keyboard.read_key() == 'right':
       set_position(-1)
     if keyboard.read_key() == 'down':
+      print
       for i in range(100):
         kit.stepper1.onestep()
         time.sleep(0.05)

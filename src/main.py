@@ -1,16 +1,14 @@
 import sqlite3
 import requests
 import json
-import os
 import time
 import threading
 import motor_control
 import light_control
 import display
-import tides
+from datetime import datetime
 from urllib.parse import urlparse
 import apploader
-# import tides
 
 connection = sqlite3.connect(apploader.config['db']['sqlite3_db'])
 latitude = float(apploader.config['location']['latitude'])
@@ -18,6 +16,16 @@ longitude = float(apploader.config['location']['longitude'])
 motor_resolution = int(apploader.config['motor']['resolution'])
 tide_correction = int(apploader.config['location']['correction'])
 
+# This function helps us control what's onscreen
+# Other functions can request a screen.
+def display_control():   
+    return active_display
+
+global active_display
+active_display = "calibration"
+
+# Retreive moon data from the API
+# API key configured in your app.conf
 def get_moon_data(latitude, longitude):
     # if bool(apploader.config['DEFAULT']['offline']):
     #     print("-- OFFLINE MODE --")
@@ -42,8 +50,6 @@ def get_moon_data(latitude, longitude):
     
     return  moons_json_raw
 
-# moon_data = json.loads(moons_json_raw)
-print("Getting moon data.")
 moon_data = get_moon_data(latitude, longitude)
 
 # Our moon class really only needs the name of the next phase and 
@@ -89,8 +95,8 @@ for moon in moon_data["moon_phases"]:
 # Here we sort them such that we create a list which will
 # allow us to use the next moon, and, following that,
 # retain a list of subsequent moons in case internet connectivity
-# is limited. We should be able to remove items from the front of the 
-# list when they're in the past
+# is limited. We remove items from the front of the 
+# list when they're in the past via the moon worker thread.
 moons_sorted = sorted(moons)
 
 # This simple function takes the phase percentage and
@@ -106,9 +112,10 @@ def set_moon_mask_position(phase_percentage):
 def moon_worker():
     # Start moonlight and calibrate moon on start
     light_control.moonlight()
-    requested_screen = "calibration"
+    display.calibrate_moon_screen(active_display)
     motor_control.motor_calibration()
-    requested_screen = "tides"
+    global active_display
+    active_display = "tide"
 
     # Moon position is 0 after calibration
     # We set motor position to compare
@@ -203,7 +210,14 @@ def moon_worker():
         # I think this is a wasted pop since we do it at the top of the while loop just as effectively.
         moons_sorted.pop(0)
 
+# Tidal half period in seconds (low to high or high to low)
+TIDAL_HALF_PERIOD = 22350
 
+# Configuration load
+latitude = float(apploader.config['location']['latitude'])
+longitude = float(apploader.config['location']['longitude'])
+
+# Tide data request
 def get_tide_data(latitude, longitude): 
     # if bool(apploader.config['DEFAULT']['offline']):
     #     print("-- OFFLINE MODE --")
@@ -229,9 +243,9 @@ def get_tide_data(latitude, longitude):
     return tides_json_raw
     
 tide_data = get_tide_data(latitude, longitude)
-# print(tide_data)
-# print(type(tide_data))
 
+# Our tide class stores the name of the next tide (high/low) and the timestamp of the tide. 
+# It also accepts height but the height value isn't used currently.
 class Tide:
     def __init__(self, tide, timestamp, height, next_tide=None) -> None:
         self.tide = tide
@@ -247,37 +261,53 @@ class Tide:
 
 tide_list = []
 
+# Here we iterate over the next tides to create an 
+# object for each high or low tide with a timestamp
 for tide in tide_data["extremes"]:
     new_tide = Tide(tide["state"], tide["timestamp"], tide["height"])
-    tide_list.append(new_tide)  
+    tide_list.append(new_tide) 
 
+# Here we sort them such that we create a list which will
+# allow us to use the next tides, and, following that,
+# retain a list of subsequent tides in case internet connectivity
+# is limited. We remove items from the front of the 
+# list when they're in the past via the tide worker thread
 tides_sorted = sorted(tide_list)
 
+def tide_worker():
+    while True:
+        
+        tide_tod_clock = str(datetime.fromtimestamp(time.time()).strftime('%H:%M'))
 
+        tide_progress_remaining = (tides_sorted[0].timestamp - time.time()) / TIDAL_HALF_PERIOD
 
-# Screen on startup is calibration
-# current_screen = "calibration"
-# requested_screen = "calibration"
+        if tides_sorted[0].tide == "HIGH TIDE":         
+            tide_display_trend = "A Rising Tide"
+            tide_display_next = "High: " + str(datetime.fromtimestamp(tides_sorted[0].timestamp).strftime('%H:%M'))
+            tide_display_afternext = "Low: " +str(datetime.fromtimestamp(tides_sorted[1].timestamp).strftime('%H:%M'))
+                    
+        else:
+            tide_display_trend = "Tide Receding"
+            tide_display_next = "Low: " + str(datetime.fromtimestamp(tides_sorted[0].timestamp).strftime('%H:%M'))
+            tide_display_afternext = "High: " + str(datetime.fromtimestamp(tides_sorted[1].timestamp).strftime('%H:%M'))
+        
+        display.tide_display(active_display, tide_display_trend, tide_display_next, tide_display_afternext, tide_progress_remaining, tide_tod_clock)
+        print("Tide worker: Active")
+        time.sleep(15)
+        if time.time() > tides_sorted[0].timestamp:
+            tides_sorted.pop(0)
+            tides_in_queue = len(tides_sorted)
+            if tides_in_queue <= 2:
+                #TODO: Need to refresh tide list
+                pass
+            print(f"Updating tides list. {tides_in_queue} tides remaining in queue.")
+        
+tide_thread = threading.Thread(target=tide_worker)
+tide_thread.start()
 
-# def screen_worker():
-#     while True:
-#         if requested_screen == current_screen:
-#             pass
-#         elif requested_screen == "moon":
-#             display.moon_display_screen()
-#             current_screen = "moon"
-#         elif requested_screen == "tides":
-#             display.tide_display_screen()
-#             current_screen = "tides"
-            
-# 3 main threads: Moon, Tide and Screen 
 moon_thread = threading.Thread(target=moon_worker)
-#tide_thread = threading.Thread(target=tide_worker)
-#screen_thread = threading.Thread(target=screen_worker)
-
 moon_thread.start()
-#screen_thread.start()
-#tide_thread.start()
+
 
 # Sanity check data structures and access
 #########################################

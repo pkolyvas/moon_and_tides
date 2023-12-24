@@ -115,49 +115,6 @@ def tide_worker():
                 #TODO: Need to refresh tide list
                 pass
             print(f"Updating tides list. {tides_in_queue} tides remaining in queue.")
-
-def tide_display(trend, next, afternext, progress, clock):     
-
-        heading_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 28)
-        clock_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 58)
-        
-        if trend == "Tide Receding":
-            if progress <= 0.20: 
-                tide_image = "images/low_tide.png"
-            elif progress > 0.20 and progress <= 0.80:
-                tide_image = "images/mid_tide.png"
-            elif progress > 0.80:
-                tide_image = "images/high_tide.png"
-        else:
-            if progress <= 0.20: 
-                tide_image = "images/high_tide.png"
-            elif progress > 0.20 and progress <= 0.80:
-                tide_image = "images/mid_tide.png"
-            elif progress > 0.80:
-                tide_image = "images/low_tide.png"
-            
-        
-        screen = Image.open(tide_image)
-        draw = ImageDraw.Draw(screen)
-        
-        if (trend == "Tide Receding" and progress < 0.05) or (trend == "A Rising Tide" and progress > 0.95):
-            trend = "Low Tide"
-            print("Low Tide Conditions.")
-        elif (trend == "Tide Receding" and progress > 0.95) or (trend == "A Rising Tide" and progress < 0.05):
-            trend = "High Tide"
-            print("High Tide Conditions.")
-
-        draw.text((15, 15), trend, font=heading_font, fill=(255, 255, 255))
-        draw.text((65, 130), clock, font=clock_font, fill=(255,255,255))
-        draw.text((15, 210), next, font=default_font, fill=(255, 255, 255))
-        draw.text((195, 210), afternext, font=default_font, fill=(255, 255, 255))
-        
-        if active_display == "tide":
-            display.display(screen)
-            print("Active display: Tide")
-
-def menu_display():
-    pass
         
 tide_thread = threading.Thread(target=tide_worker)
 tide_thread.start()
