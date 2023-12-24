@@ -113,8 +113,7 @@ def tide_display(trend, next, afternext, progress, clock):
 
         heading_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 28)
         clock_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 58)
-
-        #while True:
+        
         if trend == "Tide Receding":
             if progress <= 0.20: 
                 tide_image = "low_tide.png"
