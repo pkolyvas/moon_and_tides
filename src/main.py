@@ -192,7 +192,7 @@ def moon_worker():
             next_step = int(current_time+time_per_step)
             print("Next step: "+str(next_step))
             print("Current time: "+str(time.time()))
-            time.sleep(5)
+            time.sleep(15)
             print("Moon worker: Active")
             if time.time() >= next_step:
                 current_percent = current_percent+percent_per_step
