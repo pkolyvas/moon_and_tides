@@ -52,8 +52,8 @@ def calibrate_moon_screen(display_controller):
     draw = ImageDraw.Draw(buffer)
 
     button_a = "Backward"
-    button_b = "Forward"
-    button_x = "Done" 
+    button_b = "Done"
+    button_x = "Forward" 
     
     draw.text((left_column_left_justification,top_row_height), button_a, font=font, fill=(255, 255, 255))
     draw.text((left_column_left_justification,bottom_row_height), button_b, font=font, fill=(255, 255, 255))
