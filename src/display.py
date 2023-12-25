@@ -87,10 +87,10 @@ def tide_display(display_controller, trend, next, afternext, progress, clock):
         screen = Image.open(tide_image)
         draw = ImageDraw.Draw(screen)
         
-        if (trend == "Tide Receding" and progress < 0.05) or (trend == "A Rising Tide" and progress > 0.95):
+        if (trend == "Tide Receding" and progress < 0.05) or (trend == "Rising Tide" and progress > 0.95):
             trend = "Low Tide"
             print("Low Tide Conditions.")
-        elif (trend == "Tide Receding" and progress > 0.95) or (trend == "A Rising Tide" and progress < 0.05):
+        elif (trend == "Tide Receding" and progress > 0.95) or (trend == "Rising Tide" and progress < 0.05):
             trend = "High Tide"
             print("High Tide Conditions.")
 
