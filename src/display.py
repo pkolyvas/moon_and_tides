@@ -52,7 +52,7 @@ def calibrate_moon_screen(display_controller):
     draw = ImageDraw.Draw(buffer)
 
     button_a = "Backward"
-    button_b = "Done"
+        button_b = "Done"
     button_x = "Forward" 
     
     draw.text((left_column_left_justification,top_row_height), button_a, font=default_font, fill=(255, 255, 255))
@@ -93,6 +93,8 @@ def tide_display(display_controller, trend, next, afternext, progress, clock):
         elif (trend == "Tide Receding" and progress > 0.95) or (trend == "Rising Tide" and progress < 0.05):
             trend = "High Tide"
             print("High Tide Conditions.")
+
+        print(f"Tide worker: Progress to next tide is {progress}")
 
         draw.text((15, 15), trend, font=heading_font, fill=(255, 255, 255))
         draw.text((65, 130), clock, font=clock_font, fill=(255,255,255))
