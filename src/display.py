@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 from ST7789 import ST7789, BG_SPI_CS_FRONT
-from displayhatmini import DisplayHATMini
 from PIL import Image, ImageDraw, ImageFont
 
 import random
@@ -39,8 +38,6 @@ display = ST7789(
     rotation=180,
     spi_speed_hz=60 * 1000 * 1000
 )
-
-display_hat = DisplayHATMini(None)
 
 font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 20)
 top_row_height = 63
