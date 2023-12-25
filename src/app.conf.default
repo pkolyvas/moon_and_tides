@@ -19,3 +19,4 @@ sqlite3_db = moons_and_tides.db
 
 [visuals]
 moon_white = (253, 244, 220)
+neopixels_num = 10

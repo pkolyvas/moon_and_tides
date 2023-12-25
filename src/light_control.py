@@ -6,11 +6,12 @@ import time
 
 
 # moon_white = apploader.config["visuals"]["moon_white"]
+num_pixels = int(apploader.config["visuals"]["neopixels_num"])
 moon_white = (250, 140, 80)
 tide_blue = (0,60,220)
 pixel_brightness = 1
 
-pixels = neopixel.NeoPixel(board.D18, 9)
+pixels = neopixel.NeoPixel(board.D18, num_pixels)
 
 def moonlight():
     # Reset lights they're being used for something else
