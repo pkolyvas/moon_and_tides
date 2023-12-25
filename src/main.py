@@ -190,14 +190,14 @@ def moon_worker():
       
         while moons_sorted[1].timestamp > int(time.time()):
             next_step = int(current_time+time_per_step)
-            print("Next step: "+str(next_step))
-            print("Current time: "+str(time.time()))
+            #print("Next step: "+str(next_step))
+            #print("Current time: "+str(time.time()))
             time.sleep(15)
             print("Moon worker: Active")
             if time.time() >= next_step:
                 current_percent = current_percent+percent_per_step
                 motor_position = set_moon_mask_position(current_percent)
-                print("incrementing") 
+                print("Moon Worker: Moving mask") 
                 motor_control.simple_backward()
                 current_time = time.time()
                 
