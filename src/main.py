@@ -16,9 +16,6 @@ longitude = float(apploader.config['location']['longitude'])
 motor_resolution = int(apploader.config['motor']['resolution'])
 tide_correction = int(apploader.config['location']['correction'])
 
-global active_display
-active_display = "calibration"
-
 # Retreive moon data from the API
 # API key configured in your app.conf
 def get_moon_data(latitude, longitude):
@@ -107,7 +104,7 @@ def set_moon_mask_position(phase_percentage):
 def moon_worker():
     # Start moonlight and calibrate moon on start
     light_control.moonlight()
-    display.calibrate_moon_screen(active_display)
+    display.calibrate_moon_screen("calibration")
     motor_control.motor_calibration()
     
     # Resetting display to tide after moon calibration
