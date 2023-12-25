@@ -16,11 +16,6 @@ longitude = float(apploader.config['location']['longitude'])
 motor_resolution = int(apploader.config['motor']['resolution'])
 tide_correction = int(apploader.config['location']['correction'])
 
-# This function helps us control what's onscreen
-# Other functions can request a screen.
-def display_control():   
-    return active_display
-
 global active_display
 active_display = "calibration"
 
