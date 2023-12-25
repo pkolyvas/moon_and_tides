@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 from ST7789 import ST7789, BG_SPI_CS_FRONT
-from displayhatmini import DisplayHATMini
 from PIL import Image, ImageDraw, ImageFont
 
 import random
@@ -29,15 +28,6 @@ BACKLIGHT = 13
 WIDTH = 320
 HEIGHT = 240
 
-buffer = Image.new("RGB", (WIDTH, HEIGHT))
-draw = ImageDraw.Draw(buffer)
-
-# draw.rectangle((0, 0, 50, 50), (255, 0, 0))
-# draw.rectangle((320-50, 0, 320, 50), (0, 255, 0))
-# draw.rectangle((0, 240-50, 50, 240), (0, 0, 255))
-# draw.rectangle((320-50, 240-50, 320, 240), (255, 255, 0))
-
-
 display = ST7789(
     port=SPI_PORT,
     cs=SPI_CS,
@@ -49,38 +39,72 @@ display = ST7789(
     spi_speed_hz=60 * 1000 * 1000
 )
 
-font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 20)
+default_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 20)
 top_row_height = 63
-first_column_left_justification = 10
+left_column_left_justification = 10
 bottom_row_height = 153
-bottom_row_right_justification = 310
+right_column_right_justification = 220
 
-button_a = "Swap"
-button_b = "Calibrate"
-button_x = "Info & Logs"
-button_y = "Back"
+# The Calibrating Moon screen's button control is in the motor calibration function.
+def calibrate_moon_screen(display_controller):
 
-ipaddress = os.popen("ifconfig wlan0 \
-                     | grep 'inet' \
-                     | awk '{print $2}' \
-                     | awk 'NR==1{print $1}'").read()
+    buffer = Image.new("RGB", (WIDTH, HEIGHT))
+    draw = ImageDraw.Draw(buffer)
 
-ssid = os.popen("iwconfig wlan0 \
-                | grep 'ESSID' \
-                | awk '{print $4}' \
-                | awk -F\\\" '{print $2}'").read()
-
-while True:
+    button_a = "Backward"
+    button_b = "Done"
+    button_x = "Forward" 
     
-    # draw.text((top_row_left_justification,top_row_height), button_a, font=font, fill=(255, 255, 255))
-    # draw.text((top_row_left_justification,bottom_row_height), button_b, font=font, fill=(255, 255, 255))
-    # draw.text((bottom_row_right_justification,top_row_height), button_x, font=font, fill=(255, 255, 255))
-    # draw.text((bottom_row_right_justification,bottom_row_height), button_y, font=font, fill=(255, 255, 255))
-    draw.text((first_column_left_justification,top_row_height), ipaddress, font=font, fill=(255, 255, 255))
-    draw.text((first_column_left_justification,bottom_row_height), ssid, font=font, fill=(255, 255, 255))
-    display.display(buffer)
-    time.sleep(1.0 / 60)
+    draw.text((left_column_left_justification,top_row_height), button_a, font=default_font, fill=(255, 255, 255))
+    draw.text((left_column_left_justification,bottom_row_height), button_b, font=default_font, fill=(0, 255, 0))
+    draw.text((right_column_right_justification,top_row_height), button_x, font=default_font, fill=(255, 255, 255))
+    draw.text((75,10), "Calibrating Moon", font=default_font, fill=(150, 150, 255))
+    if display_controller == "calibration":
+        display.display(buffer)
+        print("Active display: Moon calibration")
 
+def tide_display(display_controller, trend, next, afternext, progress, clock):     
+
+        heading_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 28)
+        clock_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 58)
+        
+        if trend == "Tide Receding":
+            if progress <= 0.20: 
+                tide_image = "images/low_tide.png"
+            elif progress > 0.20 and progress <= 0.80:
+                tide_image = "images/mid_tide.png"
+            elif progress > 0.80:
+                tide_image = "images/high_tide.png"
+        else:
+            if progress <= 0.20: 
+                tide_image = "images/high_tide.png"
+            elif progress > 0.20 and progress <= 0.80:
+                tide_image = "images/mid_tide.png"
+            elif progress > 0.80:
+                tide_image = "images/low_tide.png"
+            
+        
+        screen = Image.open(tide_image)
+        draw = ImageDraw.Draw(screen)
+        
+        if (trend == "Tide Receding" and progress < 0.05) or (trend == "Rising Tide" and progress > 0.95):
+            trend = "Low Tide"
+            print("Low Tide Conditions.")
+        elif (trend == "Tide Receding" and progress > 0.95) or (trend == "Rising Tide" and progress < 0.05):
+            trend = "High Tide"
+            print("High Tide Conditions.")
+
+        draw.text((15, 15), trend, font=heading_font, fill=(255, 255, 255))
+        draw.text((65, 130), clock, font=clock_font, fill=(255,255,255))
+        draw.text((15, 210), next, font=default_font, fill=(255, 255, 255))
+        draw.text((195, 210), afternext, font=default_font, fill=(255, 255, 255))
+        
+        if display_controller == "tide":
+            display.display(screen)
+            print("Active display: Tide")
+
+def menu_display():
+    pass
 
 
 # reference this as well : https://github.com/pimoroni/displayhatmini-python/blob/main/examples/pygame-button-interrupt.py 
@@ -100,8 +124,13 @@ while True:
 #     # TODO: Tide display
 
 # def settings():
+#ipaddress = os.popen("ifconfig wlan0 \
+#                      | grep 'inet' \
+#                      | awk '{print $2}' \
+#                      | awk 'NR==1{print $1}'").read()
 
-
-
-
-
+# ssid = os.popen("iwconfig wlan0 \
+#                 | grep 'ESSID' \
+#                 | awk '{print $4}' \
+#                 | awk -F\\\" '{print $2}'").read()
+#

@@ -5,10 +5,10 @@ offline = False
 latitude = 
 longitude = 
 
-[api_keys]
-moon_api_url = 
+[apis]
+moon_api_url = https://moon-phase.p.rapidapi.com/advanced
 moon_api_key =
-marea_api_url = 
+marea_api_url = https://api.marea.ooo/v2/tides
 marea_api_key = 
 
 [motor]
@@ -19,3 +19,4 @@ sqlite3_db = moons_and_tides.db
 
 [visuals]
 moon_white = (253, 244, 220)
+neopixels_num = 10

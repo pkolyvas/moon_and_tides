@@ -1,19 +1,23 @@
 import sqlite3
 import requests
 import json
-import os
 import time
 import threading
-# import motor_control
+import motor_control
+import light_control
+import display
+from datetime import datetime
 from urllib.parse import urlparse
 import apploader
-# import tides
 
 connection = sqlite3.connect(apploader.config['db']['sqlite3_db'])
 latitude = float(apploader.config['location']['latitude'])
 longitude = float(apploader.config['location']['longitude'])
 motor_resolution = int(apploader.config['motor']['resolution'])
+tide_correction = int(apploader.config['location']['correction'])
 
+# Retreive moon data from the API
+# API key configured in your app.conf
 def get_moon_data(latitude, longitude):
     # if bool(apploader.config['DEFAULT']['offline']):
     #     print("-- OFFLINE MODE --")
@@ -38,15 +42,7 @@ def get_moon_data(latitude, longitude):
     
     return  moons_json_raw
 
-# with open('moon_sample.json') as user_file:
-#     moons_json_raw = user_file.read()
-
-# moon_data = json.loads(moons_json_raw)
 moon_data = get_moon_data(latitude, longitude)
-
-cursor = connection.cursor()
-cursor.execute("CREATE TABLE IF NOT EXISTS current_moon (phase REAL, timestamp TEXT, percent REAL)")
-cursor.execute("CREATE TABLE IF NOT EXISTS tides (tide TEXT, date TEXT, height REAL, timestamp INT)")
 
 # Our moon class really only needs the name of the next phase and 
 # the timestamp of that phase.
@@ -91,12 +87,9 @@ for moon in moon_data["moon_phases"]:
 # Here we sort them such that we create a list which will
 # allow us to use the next moon, and, following that,
 # retain a list of subsequent moons in case internet connectivity
-# is limited. We should be able to remove items from the front of the 
-# list when they're in the past
+# is limited. We remove items from the front of the 
+# list when they're in the past via the moon worker thread.
 moons_sorted = sorted(moons)
-
-## To Do Calculate time to next phase
-## To Do Calculate daily number of steps for the motor
 
 # This simple function takes the phase percentage and
 # will calculate the number of motor steps to move the
@@ -104,18 +97,29 @@ moons_sorted = sorted(moons)
 # step. That gives us clear correlation with the four
 # moon phases: new (0), first quarter (50 steps), etc. etc.
 # We also want to set and store the absolute position.
-def set_moon_mask_position(phase_percentage):
+def set_moon_mask_position(phase_percentage):  
     position = phase_percentage * motor_resolution
     return int(position)
 
-# We set the moon position to "Full Moon" when the application loads
-# We will also use this for calibration
-# TODO: calibration routine (led, hole in mask at back or something).
-# Will also need to set a global calibration = true mode to prevent another function 
-# from moving the motor
-moon_position = set_moon_mask_position(0.5)
-
 def moon_worker():
+    # Start moonlight and calibrate moon on start
+    light_control.moonlight()
+    display.calibrate_moon_screen("calibration")
+    motor_control.motor_calibration()
+    
+    # Resetting display to tide after moon calibration
+    global active_display
+    active_display = "tide"
+
+    # Moon position is 0 after calibration
+    # We set motor position to compare
+    moon_position = 0
+    motor_position = 0
+
+    # Toggle for first run
+    first_load = True
+
+    # Enter thread's main loop
     while True:
         # if we don't have anything in our list, break 
         if len(moons_sorted) == 1:
@@ -159,31 +163,146 @@ def moon_worker():
         moons_sorted[0].percent = moons_sorted[0].percent + (time_delta_to_now/timerange)
         current_percent = moons_sorted[0].percent
         print("Current percent: "+str(current_percent))
-        set_moon_mask_position(current_percent)     
+        moon_position = set_moon_mask_position(current_percent)
         
+        # If it's first load we need to set the position based on the calibrated full moon.
+        if first_load == True:
+            print(f"First Load. Moving mask to {moon_position}.")
+            for i in range(moon_position):
+                motor_control.simple_backward()
+            motor_position = moon_position
+        # If we're moving through the loop and the system is calibrated, we want to correct any error
+        else:
+            if moon_position > motor_position:
+                print("Motor behind. Fixing.")
+                delta = moon_position - motor_position
+                for i in range(delta):
+                    motor_control.simple_backward()
+                motor_position = moon_position
+            if moon_position < motor_position:
+                print("Motor ahead. Fixing.")
+                delta = motor_position - moon_position
+                for i in range(delta):
+                    motor_control.simple_forward()
+
         current_time = int(time.time())
         print("Current time: "+str(current_time))
       
         while moons_sorted[1].timestamp > int(time.time()):
             next_step = int(current_time+time_per_step)
-            print("Next step: "+str(next_step))
-            print("Current time: "+str(time.time()))
-            time.sleep(5)
-            print("Sleeping.")
+            #print("Next step: "+str(next_step))
+            #print("Current time: "+str(time.time()))
+            time.sleep(15)
+            print("Moon worker: Active")
             if time.time() >= next_step:
-                # TODO review this once calibration is set
-                # motor increment by current percent
                 current_percent = current_percent+percent_per_step
-                set_moon_mask_position(current_percent)
-                # motor_control.simple_anticlockwise()
+                motor_position = set_moon_mask_position(current_percent)
+                print("Moon Worker: Moving mask") 
+                motor_control.simple_backward()
                 current_time = time.time()
-                print("incrementing") 
-
+                
         # I think this is a wasted pop since we do it at the top of the while loop just as effectively.
         moons_sorted.pop(0)
+
+# Tidal half period in seconds (low to high or high to low)
+TIDAL_HALF_PERIOD = 22350
+
+# Configuration load
+latitude = float(apploader.config['location']['latitude'])
+longitude = float(apploader.config['location']['longitude'])
+
+# Tide data request
+def get_tide_data(latitude, longitude): 
+    # if bool(apploader.config['DEFAULT']['offline']):
+    #     print("-- OFFLINE MODE --")
+    #     with open('current_tides.json') as user_file:
+    #         raw_json_file = user_file.read()
+    #         return json.loads(raw_json_file)
+
+    url = apploader.config['apis']['marea_api_url']
+
+    querystring = {
+        "duration":"10080",
+        "latitude":latitude,
+        "longitude":longitude
+        }
+
+    headers = {
+        "x-marea-api-token": apploader.config['apis']['marea_api_key'],
+    }
+    
+    api_response = requests.get(url, headers=headers, params=querystring)
+    tides_json_raw = api_response.json()
+    
+    return tides_json_raw
+    
+tide_data = get_tide_data(latitude, longitude)
+
+# Our tide class stores the name of the next tide (high/low) and the timestamp of the tide. 
+# It also accepts height but the height value isn't used currently.
+class Tide:
+    def __init__(self, tide, timestamp, height, next_tide=None) -> None:
+        self.tide = tide
+        self.timestamp = timestamp
+        self.height = height
         
+    # Sorting logic
+    def __eq__(self, other):
+        return self.timestamp == other.timestamp
+
+    def __lt__(self, other):
+        return self.timestamp < other.timestamp
+
+tide_list = []
+
+# Here we iterate over the next tides to create an 
+# object for each high or low tide with a timestamp
+for tide in tide_data["extremes"]:
+    new_tide = Tide(tide["state"], tide["timestamp"], tide["height"])
+    tide_list.append(new_tide) 
+
+# Here we sort them such that we create a list which will
+# allow us to use the next tides, and, following that,
+# retain a list of subsequent tides in case internet connectivity
+# is limited. We remove items from the front of the 
+# list when they're in the past via the tide worker thread
+tides_sorted = sorted(tide_list)
+
+def tide_worker():
+    while True:
+        time.sleep(15)
+
+        tide_tod_clock = str(datetime.fromtimestamp(time.time()).strftime('%H:%M'))
+
+        tide_progress_remaining = (tides_sorted[0].timestamp - time.time()) / TIDAL_HALF_PERIOD
+
+        if tides_sorted[0].tide == "HIGH TIDE":         
+            tide_display_trend = "Rising Tide"
+            tide_display_next = "High: " + str(datetime.fromtimestamp(tides_sorted[0].timestamp).strftime('%H:%M'))
+            tide_display_afternext = "Low: " +str(datetime.fromtimestamp(tides_sorted[1].timestamp).strftime('%H:%M'))
+                    
+        else:
+            tide_display_trend = "Tide Receding"
+            tide_display_next = "Low: " + str(datetime.fromtimestamp(tides_sorted[0].timestamp).strftime('%H:%M'))
+            tide_display_afternext = "High: " + str(datetime.fromtimestamp(tides_sorted[1].timestamp).strftime('%H:%M'))
+        
+        # TODO: We need a better way to switch between active displays.
+        display.tide_display("tide", tide_display_trend, tide_display_next, tide_display_afternext, tide_progress_remaining, tide_tod_clock)
+        print("Tide worker: Active")
+        
+        if time.time() > tides_sorted[0].timestamp:
+            tides_sorted.pop(0)
+            tides_in_queue = len(tides_sorted)
+            if tides_in_queue <= 2:
+                #TODO: Need to refresh tide list
+                pass
+            print(f"Updating tides list. {tides_in_queue} tides remaining in queue.")
+        
+tide_thread = threading.Thread(target=tide_worker)
 moon_thread = threading.Thread(target=moon_worker)
 moon_thread.start()
+tide_thread.start()
+
 
 # Sanity check data structures and access
 #########################################
