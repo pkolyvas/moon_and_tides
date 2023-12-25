@@ -39,7 +39,7 @@ display = ST7789(
     spi_speed_hz=60 * 1000 * 1000
 )
 
-font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 20)
+default_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 20)
 top_row_height = 63
 left_column_left_justification = 10
 bottom_row_height = 153
