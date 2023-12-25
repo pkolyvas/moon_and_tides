@@ -274,7 +274,7 @@ tides_sorted = sorted(tide_list)
 def tide_worker():
     while True:
         time.sleep(15)
-        
+
         tide_tod_clock = str(datetime.fromtimestamp(time.time()).strftime('%H:%M'))
 
         tide_progress_remaining = (tides_sorted[0].timestamp - time.time()) / TIDAL_HALF_PERIOD
@@ -289,7 +289,7 @@ def tide_worker():
             tide_display_next = "Low: " + str(datetime.fromtimestamp(tides_sorted[0].timestamp).strftime('%H:%M'))
             tide_display_afternext = "High: " + str(datetime.fromtimestamp(tides_sorted[1].timestamp).strftime('%H:%M'))
         
-        display.tide_display(active_display, tide_display_trend, tide_display_next, tide_display_afternext, tide_progress_remaining, tide_tod_clock)
+        display.tide_display("tide", tide_display_trend, tide_display_next, tide_display_afternext, tide_progress_remaining, tide_tod_clock)
         print("Tide worker: Active")
         
         if time.time() > tides_sorted[0].timestamp:

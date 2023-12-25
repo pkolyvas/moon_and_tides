@@ -43,7 +43,7 @@ font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 20)
 top_row_height = 63
 left_column_left_justification = 10
 bottom_row_height = 153
-right_column_right_justification = 250
+right_column_right_justification = 220
 
 # The Calibrating Moon screen's button control is in the motor calibration function.
 def calibrate_moon_screen(display_controller):
@@ -56,8 +56,8 @@ def calibrate_moon_screen(display_controller):
     button_x = "Forward" 
     
     draw.text((left_column_left_justification,top_row_height), button_a, font=font, fill=(255, 255, 255))
-    draw.text((left_column_left_justification,bottom_row_height), button_b, font=font, fill=(255, 255, 255))
-    draw.text((right_column_right_justification,top_row_height), button_x, font=font, fill=(0, 255, 0))
+    draw.text((left_column_left_justification,bottom_row_height), button_b, font=font, fill=(0, 255, 0))
+    draw.text((right_column_right_justification,top_row_height), button_x, font=font, fill=(255, 255, 255))
     draw.text((75,10), "Calibrating Moon", font=font, fill=(150, 150, 255))
     if display_controller == "calibration":
         display.display(buffer)
