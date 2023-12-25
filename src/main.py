@@ -193,7 +193,7 @@ def moon_worker():
             print("Next step: "+str(next_step))
             print("Current time: "+str(time.time()))
             time.sleep(5)
-            print("Sleeping.")
+            print("Moon worker: Active")
             if time.time() >= next_step:
                 current_percent = current_percent+percent_per_step
                 motor_position = set_moon_mask_position(current_percent)
@@ -286,6 +286,7 @@ def tide_worker():
             tide_display_next = "Low: " + str(datetime.fromtimestamp(tides_sorted[0].timestamp).strftime('%H:%M'))
             tide_display_afternext = "High: " + str(datetime.fromtimestamp(tides_sorted[1].timestamp).strftime('%H:%M'))
         
+        # TODO: We need a better way to switch between active displays.
         display.tide_display("tide", tide_display_trend, tide_display_next, tide_display_afternext, tide_progress_remaining, tide_tod_clock)
         print("Tide worker: Active")
         
