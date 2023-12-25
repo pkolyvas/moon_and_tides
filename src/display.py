@@ -55,9 +55,9 @@ def calibrate_moon_screen(display_controller):
     button_b = "Done"
     button_x = "Forward" 
     
-    draw.text((left_column_left_justification,top_row_height), button_a, font=font, fill=(255, 255, 255))
-    draw.text((left_column_left_justification,bottom_row_height), button_b, font=font, fill=(0, 255, 0))
-    draw.text((right_column_right_justification,top_row_height), button_x, font=font, fill=(255, 255, 255))
+    draw.text((left_column_left_justification,top_row_height), button_a, font=default_font, fill=(255, 255, 255))
+    draw.text((left_column_left_justification,bottom_row_height), button_b, font=default_font, fill=(0, 255, 0))
+    draw.text((right_column_right_justification,top_row_height), button_x, font=default_font, fill=(255, 255, 255))
     draw.text((75,10), "Calibrating Moon", font=font, fill=(150, 150, 255))
     if display_controller == "calibration":
         display.display(buffer)
