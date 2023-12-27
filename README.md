@@ -2,6 +2,7 @@
 
 A RPi Zero & 3D printed project. 
 
+![IMG_1253](https://github.com/pkolyvas/moon_and_tides/assets/43178667/b17be359-96a7-4a00-8a7c-f6911aabca4a)
 
 
 Eventually, you'll find the code, 3D models, and instructions for building. For now, it's just the code.
