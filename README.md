@@ -12,7 +12,7 @@ Eventually, you'll find the code, 3D models, and instructions for building. For 
 - RPi with the appropriate hats listed in the hardware section.
 - A python environment run as root (on the RPi some of the libraries require root for hardware access.)
 - API Keys to the APIs I've used here. They are not free.
-  - [Marea Tides API](https://api.marea.ooo/doc/v2#overview). This one is about $4 USD for 10,000 requests. I expect this to to last longer than the API is available. There are likely free sources to explore over time.
+  - [Marea Tides API](https://api.marea.ooo/doc/v2#overview). This one is about $4 USD for 10,000 requests. I expect my credits to last longer than the API is available. There are likely free sources to explore over time.
   - [Moon Phase](https://rapidapi.com/user/MoonAPIcom). This one is free at 500/requests a month. Each single request contains about a month's worth of data. 
 
 ## Hardware
