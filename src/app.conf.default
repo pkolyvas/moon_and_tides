@@ -24,8 +24,8 @@ moon_white = (253, 244, 220)
 neopixels_num = 10
 
 [logging]
-# Log levels are formatted as logging.LEVEL. ex. logger.DEBUG. 
+# Log levels are formatted as logging.LEVEL. ex. logging.DEBUG. 
 # Levels are DEBUG, INFO, WARNING, ERROR
-level = logger.WARNING
+level = logging.WARNING
 location = moon_and_tides.log
-format = utf-8
+encoding = utf-8

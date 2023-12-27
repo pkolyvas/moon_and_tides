@@ -2,14 +2,14 @@ import sqlite3
 import requests
 import time
 import threading
-
+import json
 from datetime import datetime
 from urllib.parse import urlparse
 import logging  
 import apploader
 
 # Dev mode imports allow us to develop without needing RPi hardware available
-# A dev_requirements.txt is provided. It is maintained mannually.
+# A dev_requirements.txt is provided. It is maintained manually.
 if bool(apploader.config['DEFAULT']['dev']):
     import dev as motor_control
     import dev as light_control
@@ -19,15 +19,13 @@ else:
     import light_control
     import display
 
-logging.basicConfig(filename=apploader.config['logging']['location'], encoding=apploader.config['logging']['format'], level=apploader.config['logging']['level'])
-
 connection = sqlite3.connect(apploader.config['db']['sqlite3_db'])
 latitude = float(apploader.config['location']['latitude'])
 longitude = float(apploader.config['location']['longitude'])
 motor_resolution = int(apploader.config['motor']['resolution'])
 tide_correction = int(apploader.config['location']['correction'])
 
-# Retreive moon data from the API
+# Retrieve moon data from the API
 # API key configured in your app.conf
 def get_moon_data(latitude, longitude):
     # if bool(apploader.config['DEFAULT']['offline']):
@@ -50,6 +48,13 @@ def get_moon_data(latitude, longitude):
 
     api_response = requests.get(url, headers=headers, params=querystring)
     moons_json_raw = api_response.json()
+    
+    # Write the response to disk if we're in dev mode
+    if apploader.config['DEFAULT']['dev']:
+        logging.debug('Moon: writing API response to disk.')
+        with open('moon_response.json', 'a') as file:
+            file_contents = json.dumps(moons_json_raw)
+            file.write(file_contents)
     
     return  moons_json_raw
 
@@ -86,7 +91,7 @@ moons = []
 
 # We need to get the current moon if we're loading up and put it at the front of the 
 # list. 
-moons.append(Moon(moon_data["moon"]["phase_name"], moon_data["timestamp"], float(moon_data["moon"]["phase"])))
+moons.append(Moon(moon_data["moon"]["phase_name"], int(time.time()), float(moon_data["moon"]["phase"])))
 
 # Here we iterate over the next moon phases to create an 
 # object for each moon phase with a timestamp
@@ -99,8 +104,13 @@ for moon in moon_data["moon_phases"]:
 # allow us to use the next moon, and, following that,
 # retain a list of subsequent moons in case internet connectivity
 # is limited. We remove items from the front of the 
-# list when they're in the past via the moon worker thread.
+# list when they're in the past via the moon worker thread. 
 moons_sorted = sorted(moons)
+if apploader.config['DEFAULT']['dev']:
+    for moon in moons_sorted:
+        logging.debug('Moons entries sorted: %s:%s',
+                      moon.moon, moon.timestamp
+        )
 
 # This simple function takes the phase percentage and
 # will calculate the number of motor steps to move the
@@ -118,9 +128,9 @@ def moon_worker():
     display.calibrate_moon_screen("calibration")
     motor_control.motor_calibration()
     
-    # Resetting display to tide after moon calibration
-    global active_display
-    active_display = "tide"
+    # # Resetting display to tide after moon calibration
+    # global active_display
+    # active_display = "tide"
 
     # Moon position is 0 after calibration
     # We set motor position to compare
@@ -138,9 +148,16 @@ def moon_worker():
         
         # Update list if second element is now in the past
         # by removing the first element.
+        logging.info("Moon worker: evaluating entries.")
+        logging.debug(
+                "Moon worker: First entry = %s:%s, Second = %s:%s, Current time = %s", 
+                moons_sorted[0].moon, moons_sorted[0].timestamp, 
+                moons_sorted[1].moon, moons_sorted[1].timestamp, 
+                int(time.time())
+        )
         if moons_sorted[1].timestamp <= time.time():
             moons_sorted.pop(0)
-            print("Outdated entry removed")
+            logging.info("Moon worker: Outdated entry removed")
 
         if len(moons_sorted) == 2:
             # we want to trigger the API call at this point to replenish our queue
@@ -151,7 +168,7 @@ def moon_worker():
         # This should give us the number of seconds between "known" quarter phases.
         # Quarter phases are returned from the API.
         timerange = moons_sorted[1].timestamp - moons_sorted[0].timestamp
-        print("Timerange: "+str(timerange)) 
+        logging.info('Moon worker: Time between phases: %s', str(timerange)) 
         
          # We need to update the percent of the phase on load.
         time_delta_to_now = time.time()-moons_sorted[0].timestamp # gives us the seconds since stored phase start time
@@ -312,10 +329,16 @@ def tide_worker():
             print(f"Updating tides list. {tides_in_queue} tides remaining in queue.")
         
 def main():
+    # Logging configuration managed by the app.conf file
+    logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', filename=apploader.config['logging']['location'], encoding=apploader.config['logging']['encoding'], level=apploader.config['logging']['level'])
+    logging.info('App started')
+    
+    # Threads
     tide_thread = threading.Thread(target=tide_worker)
     moon_thread = threading.Thread(target=moon_worker)
     moon_thread.start()
     tide_thread.start()
+    
     #TODO: Deinit lights function
 
 if __name__ == "__main__":
