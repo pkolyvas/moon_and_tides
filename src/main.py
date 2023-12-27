@@ -205,28 +205,28 @@ def moon_worker():
         time_delta_to_now = time.time()-moons_sorted[0].timestamp # gives us the seconds since stored phase start time
         remaining_percent_of_current_phase = (timerange - time_delta_to_now) / timerange # gives us the percent remaining of the current phase
         percent_to_next_phase = (moons_sorted[1].percent - moons_sorted[0].percent)*(remaining_percent_of_current_phase)
-        logging.debug("Time delta: %s", (time_delta_to_now))
-        logging.debug("Remaining percent of current phase: %s", remaining_percent_of_current_phase)
-        print("Percent to next phase: "+str(percent_to_next_phase))
+        logging.debug("Moon worker: Time delta is %s", (time_delta_to_now))
+        logging.debug("Moon worker: Remaining percent of current phase is %s", remaining_percent_of_current_phase)
+        logging.info("Moon worker: Percent to next phase is %s", str(percent_to_next_phase))
 
         steps_to_next_phase = round(motor_resolution * percent_to_next_phase)
-        print("Steps to next phase: "+str(steps_to_next_phase))
+        logging.debug("Moon worker: Steps to next phase are %s", str(steps_to_next_phase))
 
         time_per_step = int(timerange / steps_to_next_phase)
-        print("Time per step: "+str(time_per_step))                 
+        logging.debug("Moon worker: Time per step is %s", str(time_per_step))                 
                 
         percent_per_step = percent_to_next_phase / steps_to_next_phase
-        print("Percent per step: "+str(percent_per_step))        
+        logging.info("Moon worker: Percent per step is %s", str(percent_per_step))        
         
         # Update percent
         moons_sorted[0].percent = moons_sorted[0].percent + (time_delta_to_now/timerange)
         current_percent = moons_sorted[0].percent
-        print("Current percent: "+str(current_percent))
+        logging.info("Moon worker: Current percent is %s", str(current_percent))
         moon_position = set_moon_mask_position(current_percent)
         
         # If it's first load we need to set the position based on the calibrated full moon. Then we set first load to false.
         if first_load == True:
-            print(f"First Load. Moving mask to {moon_position}.")
+            logging.info("Moon worker: First Load. Moving mask to %s", moon_position)
             for i in range(moon_position):
                 motor_control.simple_backward()
             motor_position = moon_position
@@ -234,19 +234,19 @@ def moon_worker():
         # If we're moving through the loop and the system is calibrated, we want to correct any error
         else:
             if moon_position > motor_position:
-                print("Motor behind. Fixing.")
+                logging.warning("Moon worker: Motor behind. Fixing.")
                 delta = moon_position - motor_position
                 for i in range(delta):
                     motor_control.simple_backward()
                 motor_position = moon_position
             elif moon_position < motor_position:
-                print("Motor ahead. Fixing.")
+                logging.warning("Moon worker: Motor ahead. Fixing.")
                 delta = motor_position - moon_position
                 for i in range(delta):
                     motor_control.simple_forward()
 
         current_time = int(time.time())
-        print("Current time: "+str(current_time))
+        logging.debug("Moon worker: Current time %s", str(current_time))
       
         while moons_sorted[1].timestamp > int(time.time()):
             next_step = int(current_time+time_per_step)
@@ -265,8 +265,6 @@ def moon_worker():
         # It might be worse: I might be popping out two entries by accident. 
         # moons_sorted.pop(0)
 
-
-    
 
 # Our tide class stores the name of the next tide (high/low) and the timestamp of the tide. 
 # It also accepts height but the height value isn't used currently.
@@ -334,7 +332,7 @@ def tide_worker():
             if tides_in_queue <= 2:
                 #TODO: Need to refresh tide list
                 pass
-            print(f"Updating tides list. {tides_in_queue} tides remaining in queue.")
+            logging.info(f"Updating tides list. %s tides remaining in queue.", (tides_in_queue))
         
 def main():
     logging.basicConfig(filename=apploader.config['logging']['location'], encoding=apploader.config['logging']['encoding'], level=apploader.config['logging']['level'])
@@ -345,7 +343,8 @@ def main():
     moon_thread.start()
     tide_thread.start()
     
-    #TODO: Deinit lights function
+    #TODO: Deinit lights function on exit
+    #TODO: Clean exit
 
 if __name__ == "__main__":
     main()
