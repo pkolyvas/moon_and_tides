@@ -20,7 +20,7 @@ def motor_calibration():
       logging.info("Done calibration. Resetting moon.")
       for i in range(100):
         kit.stepper1.onestep()
-        time.sleep(0.05)
+        time.sleep(0.10)
       return True
 
 def set_position(steps):
@@ -36,7 +36,7 @@ def simple_forward():
 
 def simple_backward():
   kit.stepper1.onestep(direction=stepper.BACKWARD)
-  time.sleep(0.05)
+  time.sleep(0.10)
 
 # TODO: Make the movement correct for any hemisphere (Longitude)
   
