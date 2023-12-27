@@ -1,13 +1,15 @@
+import logging
+
 def motor_calibration():
-  print("Dev: Motor calibrating")
+  logging.info("Dev Mode: Moon motor calibration: Motor calibrating")
   pass
 
 def simple_forward():
-  print("Motor moving forward. This is counter clockwise.")
+  logging.debug("Motor moving forward. This is counter clockwise.")
   pass
 
 def simple_backward():
-  print("Motor moving backwards. This is clockwise / correct for northern hemisphere.")
+  logging.debug("Motor moving backwards. This is clockwise / correct for northern hemisphere.")
   pass
 
 def calibrate_moon_screen(display_controller):
@@ -17,13 +19,16 @@ def calibrate_moon_screen(display_controller):
 def tide_display(display_controller, trend, next, afternext, progress, clock):     
   if (trend == "Tide Receding" and progress < 0.05) or (trend == "Rising Tide" and progress > 0.95):
         trend = "Low Tide"
-        print("Low Tide Conditions.")
+        logging.info("Low Tide Conditions.")
   elif (trend == "Tide Receding" and progress > 0.95) or (trend == "Rising Tide" and progress < 0.05):
       trend = "High Tide"
-      print("High Tide Conditions.")
+      logging.info("High Tide Conditions.")
   if display_controller == "tide":
-      print("Active display: Tide")
+      logging.info("Active display: Tide")
 
 def moonlight():
-   print("Moon light on.")
+   logging.info("Moon light on.")
+   pass
+ 
+def devmode():
    pass

@@ -28,4 +28,4 @@ neopixels_num = 10
 # Levels are DEBUG, INFO, WARNING, ERROR
 level = logger.WARNING
 location = moon_and_tides.log
-format = utf-8
+encoding = utf-8

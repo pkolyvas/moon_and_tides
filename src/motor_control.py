@@ -1,5 +1,6 @@
 import board
 import time
+import logging
 from adafruit_motor import stepper
 from adafruit_motorkit import MotorKit
 from displayhatmini import DisplayHATMini
@@ -9,17 +10,17 @@ display_hat = DisplayHATMini(None)
 
 # We will need a calibration screen
 def motor_calibration():
-  print("Calibrating moon.")
+  logging.info(" Moon motor calibration: Motor calibrating")
   while True:
     if display_hat.read_button(display_hat.BUTTON_A):
       set_position(1)
     if display_hat.read_button(display_hat.BUTTON_X):
       set_position(-1)
     if display_hat.read_button(display_hat.BUTTON_B):
-      print("Done calibration. Resetting moon.")
+      logging.info("Done calibration. Resetting moon.")
       for i in range(100):
         kit.stepper1.onestep()
-        time.sleep(0.05)
+        time.sleep(0.10)
       return True
 
 def set_position(steps):
@@ -35,7 +36,7 @@ def simple_forward():
 
 def simple_backward():
   kit.stepper1.onestep(direction=stepper.BACKWARD)
-  time.sleep(0.05)
+  time.sleep(0.10)
 
 # TODO: Make the movement correct for any hemisphere (Longitude)
   

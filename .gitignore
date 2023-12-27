@@ -4,3 +4,4 @@
 **env_*
 **__pycache__
 **.DS_Store
+/src/*.json
