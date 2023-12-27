@@ -1,7 +1,6 @@
-/src/*.db
+**.db
+**app.conf
+**.log
 **env_*
-app.conf
 **__pycache__
 **.DS_Store
-**src/__pycache__
-

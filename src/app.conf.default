@@ -1,5 +1,7 @@
 [DEFAULT]
-offline = False
+# Set these to 1 if you'd like to enable them
+offline = 0
+dev = 0
 
 [location]
 latitude = 
