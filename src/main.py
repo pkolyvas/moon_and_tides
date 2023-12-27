@@ -1,14 +1,25 @@
 import sqlite3
 import requests
-import json
 import time
 import threading
-import motor_control
-import light_control
-import display
+
 from datetime import datetime
 from urllib.parse import urlparse
+import logging  
 import apploader
+
+# Dev mode imports allow us to develop without needing RPi hardware available
+# A dev_requirements.txt is provided. It is maintained mannually.
+if bool(apploader.config['DEFAULT']['dev']):
+    import dev as motor_control
+    import dev as light_control
+    import dev as display
+else:
+    import motor_control
+    import light_control
+    import display
+
+logging.basicConfig(filename=apploader.config['logging']['location'], encoding=apploader.config['logging']['format'], level=apploader.config['logging']['level'])
 
 connection = sqlite3.connect(apploader.config['db']['sqlite3_db'])
 latitude = float(apploader.config['location']['latitude'])
@@ -179,7 +190,7 @@ def moon_worker():
                 for i in range(delta):
                     motor_control.simple_backward()
                 motor_position = moon_position
-            if moon_position < motor_position:
+            elif moon_position < motor_position:
                 print("Motor ahead. Fixing.")
                 delta = motor_position - moon_position
                 for i in range(delta):
@@ -193,16 +204,17 @@ def moon_worker():
             #print("Next step: "+str(next_step))
             #print("Current time: "+str(time.time()))
             time.sleep(15)
-            print("Moon worker: Active")
+            logging.debug('Moon worker: Active')
             if time.time() >= next_step:
                 current_percent = current_percent+percent_per_step
                 motor_position = set_moon_mask_position(current_percent)
-                print("Moon Worker: Moving mask") 
+                logging.info('Moon Worker: Moving mask')
                 motor_control.simple_backward()
                 current_time = time.time()
                 
         # I think this is a wasted pop since we do it at the top of the while loop just as effectively.
-        moons_sorted.pop(0)
+        # It might be worse: I might be popping out two entries by accident. 
+        # moons_sorted.pop(0)
 
 # Tidal half period in seconds (low to high or high to low)
 TIDAL_HALF_PERIOD = 22350
@@ -237,6 +249,7 @@ def get_tide_data(latitude, longitude):
     return tides_json_raw
     
 tide_data = get_tide_data(latitude, longitude)
+print(tide_data)
 
 # Our tide class stores the name of the next tide (high/low) and the timestamp of the tide. 
 # It also accepts height but the height value isn't used currently.
@@ -288,7 +301,7 @@ def tide_worker():
         
         # TODO: We need a better way to switch between active displays.
         display.tide_display("tide", tide_display_trend, tide_display_next, tide_display_afternext, tide_progress_remaining, tide_tod_clock)
-        print("Tide worker: Active")
+        logging.debug('Tide worker: Active')
         
         if time.time() > tides_sorted[0].timestamp:
             tides_sorted.pop(0)
@@ -298,11 +311,15 @@ def tide_worker():
                 pass
             print(f"Updating tides list. {tides_in_queue} tides remaining in queue.")
         
-tide_thread = threading.Thread(target=tide_worker)
-moon_thread = threading.Thread(target=moon_worker)
-moon_thread.start()
-tide_thread.start()
+def main():
+    tide_thread = threading.Thread(target=tide_worker)
+    moon_thread = threading.Thread(target=moon_worker)
+    moon_thread.start()
+    tide_thread.start()
+    #TODO: Deinit lights function
 
+if __name__ == "__main__":
+    main()
 
 # Sanity check data structures and access
 #########################################

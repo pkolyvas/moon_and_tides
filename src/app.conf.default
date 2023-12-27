@@ -1,5 +1,7 @@
 [DEFAULT]
-offline = False
+# Set these to 1 if you'd like to enable them
+offline = 0
+dev = 0
 
 [location]
 latitude = 
@@ -20,3 +22,10 @@ sqlite3_db = moons_and_tides.db
 [visuals]
 moon_white = (253, 244, 220)
 neopixels_num = 10
+
+[logging]
+# Log levels are formatted as logging.LEVEL. ex. logger.DEBUG. 
+# Levels are DEBUG, INFO, WARNING, ERROR
+level = logger.WARNING
+location = moon_and_tides.log
+format = utf-8

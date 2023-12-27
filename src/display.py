@@ -45,6 +45,11 @@ left_column_left_justification = 10
 bottom_row_height = 153
 right_column_right_justification = 220
 
+# Stubbing a screen class
+class Screen:
+    def __init__(self, name) -> None:
+        pass
+
 # The Calibrating Moon screen's button control is in the motor calibration function.
 def calibrate_moon_screen(display_controller):
 
@@ -65,45 +70,43 @@ def calibrate_moon_screen(display_controller):
 
 def tide_display(display_controller, trend, next, afternext, progress, clock):     
 
-        heading_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 28)
-        clock_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 58)
+    heading_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 28)
+    clock_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 58)
+    
+    if trend == "Tide Receding":
+        if progress <= 0.20: 
+            tide_image = "images/low_tide.png"
+        elif progress > 0.20 and progress <= 0.80:
+            tide_image = "images/mid_tide.png"
+        elif progress > 0.80:
+            tide_image = "images/high_tide.png"
+    else:
+        if progress <= 0.20: 
+            tide_image = "images/high_tide.png"
+        elif progress > 0.20 and progress <= 0.80:
+            tide_image = "images/mid_tide.png"
+        elif progress > 0.80:
+            tide_image = "images/low_tide.png"
         
-        if trend == "Tide Receding":
-            if progress <= 0.20: 
-                tide_image = "images/low_tide.png"
-            elif progress > 0.20 and progress <= 0.80:
-                tide_image = "images/mid_tide.png"
-            elif progress > 0.80:
-                tide_image = "images/high_tide.png"
-        else:
-            if progress <= 0.20: 
-                tide_image = "images/high_tide.png"
-            elif progress > 0.20 and progress <= 0.80:
-                tide_image = "images/mid_tide.png"
-            elif progress > 0.80:
-                tide_image = "images/low_tide.png"
-            
-        
-        screen = Image.open(tide_image)
-        draw = ImageDraw.Draw(screen)
-        
-        if (trend == "Tide Receding" and progress < 0.05) or (trend == "Rising Tide" and progress > 0.95):
-            trend = "Low Tide"
-            print("Low Tide Conditions.")
-        elif (trend == "Tide Receding" and progress > 0.95) or (trend == "Rising Tide" and progress < 0.05):
-            trend = "High Tide"
-            print("High Tide Conditions.")
+    
+    screen = Image.open(tide_image)
+    draw = ImageDraw.Draw(screen)
+    
+    if (trend == "Tide Receding" and progress < 0.05) or (trend == "Rising Tide" and progress > 0.95):
+        trend = "Low Tide"
+        print("Low Tide Conditions.")
+    elif (trend == "Tide Receding" and progress > 0.95) or (trend == "Rising Tide" and progress < 0.05):
+        trend = "High Tide"
+        print("High Tide Conditions.")
 
-        print(f"Tide worker: Progress to next tide is {progress}")
-
-        draw.text((15, 15), trend, font=heading_font, fill=(255, 255, 255))
-        draw.text((65, 130), clock, font=clock_font, fill=(255,255,255))
-        draw.text((15, 210), next, font=default_font, fill=(255, 255, 255))
-        draw.text((195, 210), afternext, font=default_font, fill=(255, 255, 255))
-        
-        if display_controller == "tide":
-            display.display(screen)
-            print("Active display: Tide")
+    draw.text((15, 15), trend, font=heading_font, fill=(255, 255, 255))
+    draw.text((65, 130), clock, font=clock_font, fill=(255,255,255))
+    draw.text((15, 210), next, font=default_font, fill=(255, 255, 255))
+    draw.text((195, 210), afternext, font=default_font, fill=(255, 255, 255))
+    
+    if display_controller == "tide":
+        display.display(screen)
+        print("Active display: Tide")
 
 def menu_display():
     pass
