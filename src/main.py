@@ -348,9 +348,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-# Sanity check data structures and access
-#########################################
-# print("Current phase: "+str(moon_data["moon"]["phase"])) 
-# print("Days until next new moon: "+str(moon_data["moon_phases"]["new_moon"]["next"]["days_ahead"]))
-# print("Steps to set moon mask: "+str(set_mask_position(float(moon_data["moon"]["phase"]))))
