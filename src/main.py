@@ -3,7 +3,6 @@ import json
 import requests
 import time
 import threading
-
 from datetime import datetime
 from urllib.parse import urlparse
 import logging  
