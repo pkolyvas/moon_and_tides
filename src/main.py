@@ -230,7 +230,7 @@ def moon_worker():
             for i in range(moon_position):
                 motor_control.simple_backward()
             motor_position = moon_position
-            first_load == False
+            first_load = False
         # If we're moving through the loop and the system is calibrated, we want to correct any error
         else:
             if moon_position > motor_position:
