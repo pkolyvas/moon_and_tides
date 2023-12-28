@@ -30,6 +30,9 @@ tide_correction = int(apploader.config['location']['correction'])
 TIDAL_HALF_PERIOD = 22350
 
 # Tide data request
+# We could probably turn the two request functions into a 
+# single function (DRY) and parameterize everything but meh,
+# that seems like a lot of effort with other things to do.
 def get_tide_data(latitude, longitude): 
     url = apploader.config['apis']['marea_api_url']
 
