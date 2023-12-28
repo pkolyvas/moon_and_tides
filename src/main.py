@@ -32,12 +32,6 @@ TIDAL_HALF_PERIOD = 22350
 
 # Tide data request
 def get_tide_data(latitude, longitude): 
-    # if bool(apploader.config['DEFAULT']['offline']):
-    #     print("-- OFFLINE MODE --")
-    #     with open('current_tides.json') as user_file:
-    #         raw_json_file = user_file.read()
-    #         return json.loads(raw_json_file)
-
     url = apploader.config['apis']['marea_api_url']
 
     querystring = {
@@ -64,12 +58,6 @@ def get_tide_data(latitude, longitude):
 # Retreive moon data from the API
 # API key configured in your app.conf
 def get_moon_data(latitude, longitude):
-    # if bool(apploader.config['DEFAULT']['offline']):
-    #     print("-- OFFLINE MODE --")
-    #     with open('current_tides.json') as user_file:
-    #         moon_file_json_raw = user_file.read()
-    #         return json.loads(moon_file_json_raw)
-
     url = "https://moon-phase.p.rapidapi.com/advanced"
 
     querystring = {
