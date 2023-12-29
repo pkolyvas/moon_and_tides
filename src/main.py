@@ -298,7 +298,7 @@ def tide_worker():
             tide_list = []
             new_tide = Tide(tide["state"], tide["timestamp"], tide["height"])
             tide_list.append(new_tide) 
-        return list
+        return tide_list
 
     # Here we sort them such that we create a list which will
     # allow us to use the next tides, and, following that,
