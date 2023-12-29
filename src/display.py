@@ -90,7 +90,7 @@ def tide_display(display_controller, trend, next, afternext, progress, clock):
     
     screen = Image.open('images/tide_bg.png')
     tide = Image.open('images/water.png')
-    screen.paste(tide, (0, int(-10+(125*progress))))
+    screen.paste(tide, (0, int(255-(125*progress))))
     draw = ImageDraw.Draw(screen)
 
     
