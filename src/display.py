@@ -44,7 +44,7 @@ right_column_right_justification = 220
 # Stubbing a screen class
 class Screen:
     def __init__(self, name) -> None:
-        pass
+        self.name = name
 
 # The Calibrating Moon screen's button control is in the motor calibration function.
 def calibrate_moon_screen(display_controller):
@@ -68,25 +68,22 @@ def tide_display(display_controller, trend, next, afternext, progress, clock):
 
     heading_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 28)
     clock_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 58)
+       
+    screen = Image.open('images/tide_bg.png')
+    tide = Image.open('images/water.png')
     
+    # When the tide is receding we need the image to lower
+    # When the tide is rising we need the image to raise
+    # Tide receding: 1 = high tide, 0=low tide
+    # Tide rising: 1=low tide, 0=high tide
+    # Progress always goes down to 0
     if trend == "Tide Receding":
-        if progress <= 0.20: 
-            tide_image = "images/low_tide.png"
-        elif progress > 0.20 and progress <= 0.80:
-            tide_image = "images/mid_tide.png"
-        elif progress > 0.80:
-            tide_image = "images/high_tide.png"
+        screen.paste(tide, (0, int(245-(111*progress))))
     else:
-        if progress <= 0.20: 
-            tide_image = "images/high_tide.png"
-        elif progress > 0.20 and progress <= 0.80:
-            tide_image = "images/mid_tide.png"
-        elif progress > 0.80:
-            tide_image = "images/low_tide.png"
-        
+        screen.paste(tide, (0, int(134+(111*progress))))
     
-    screen = Image.open(tide_image)
     draw = ImageDraw.Draw(screen)
+
     
     if (trend == "Tide Receding" and progress < 0.05) or (trend == "Rising Tide" and progress > 0.95):
         trend = "Low Tide"

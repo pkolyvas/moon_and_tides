@@ -32,7 +32,7 @@ def set_position(steps):
 
 def simple_forward():
   kit.stepper1.onestep()
-  time.sleep(0.05)
+  time.sleep(0.10)
 
 def simple_backward():
   kit.stepper1.onestep(direction=stepper.BACKWARD)

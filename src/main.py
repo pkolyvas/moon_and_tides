@@ -30,6 +30,9 @@ tide_correction = int(apploader.config['location']['correction'])
 TIDAL_HALF_PERIOD = 22350
 
 # Tide data request
+# We could probably turn the two request functions into a 
+# single function (DRY) and parameterize everything but meh,
+# that seems like a lot of effort with other things to do.
 def get_tide_data(latitude, longitude): 
     url = apploader.config['apis']['marea_api_url']
 
@@ -117,6 +120,19 @@ def set_moon_mask_position(phase_percentage):
     position = phase_percentage * motor_resolution
     return int(position)
 
+# Moon order check if we're in debug mode
+def moon_order_check(list):
+    if logging.debug:
+        for moon in list:
+            logging.debug("Moon order check: %s - %s - %s", moon.moon, moon.percent, moon.timestamp)
+        logging.debug("Current timestamp: %s", time.time())
+        
+def tide_order_check(list):
+    if logging.debug:
+        for tide in list:
+            logging.debug("Tide order check: %s - %s", tide.tide, tide.timestamp)
+        logging.debug("Current timestamp: %s", time.time())
+
 def moon_worker():
     # Start moonlight and calibrate moon on start
     light_control.moonlight()
@@ -128,48 +144,48 @@ def moon_worker():
     moon_position = 0
     motor_position = 0
     
-    # Get our moon data           
-    moon_data = get_moon_data(latitude, longitude)
-    moons = []
-
     # Here we iterate over the next moon phases to create an 
-    # object for each moon phase with a timestamp
-    for moon in moon_data["moon_phases"]:
-        moon_phase = Moon(moon, moon_data["moon_phases"][moon]["next"]["timestamp"])
-        moon_phase.set_percentage()
-        moons.append(moon_phase)
-
-    # Here we sort them such that we create a list which will
+    # object for each moon phase with a timestamp and store
+    # the objects in a list.
+    def moon_creator_iterator(data):
+        list = []
+        for moon in data["moon_phases"]:
+            moon_phase = Moon(moon, data["moon_phases"][moon]["next"]["timestamp"])
+            moon_phase.set_percentage()
+            list.append(moon_phase)
+        return list
+    
+    # Get our moon data, create objects, put it in a list, and sort the list 
+    # We sort them such that we create a list which will
     # allow us to use the next moon, and, following that,
     # retain a list of subsequent moons in case internet connectivity
     # is limited. We remove items from the front of the 
-    # list when they're in the past via the moon worker thread.
-    moons_sorted = sorted(moons)  
+    # list when they're in the past via the moon worker thread.          
+    moon_data = get_moon_data(latitude, longitude)
+    logging.info('Moon worker: getting moon data.')
+    moons_sorted = sorted(moon_creator_iterator(moon_data))
+    logging.info('Moon worker: there are %s moons in the queue', len(moons_sorted))       
     
-    # We need to remove the first element if it's in the past
-    # Currently the API returns some "next" elements in the past
+    # We need to remove the first element from the "future" moon phases if it's in the past
+    # Currently the API returns some "next"/future elements in the past (a bug)
     if moons_sorted[0].timestamp < time.time():
         logging.info('Moon worker: API returned a future moon that\'s actually in the past. Removing.')
         moons_sorted.pop(0)
     
     # We need to insert the current moon if we're loading up and put it at the front of the 
     # list. We use the computer's time instead of the timestamp returned via the API.
-    moons_sorted.insert(0, Moon(moon_data["moon"]["phase_name"], time.time(), float(moon_data["moon"]["phase"]))) 
-    
-    # Moor order check if we're in debug mode
-    if logging.debug:
-        for moon in moons_sorted:
-            logging.debug("Moon order check: %s - %s - %s", moon.moon, moon.percent, moon.timestamp)
-        logging.debug("Current timestamp: %s", time.time())
+    moons_sorted.insert(0, Moon(moon_data["moon"]["phase_name"], time.time(), float(moon_data["moon"]["phase"])))
+    logging.info('Adding the current, already-in-progress, quarter moon to the tip of the list') 
+    moon_order_check(moons_sorted)
 
     # Toggle for first run
     first_load = True
 
     # Enter thread's main loop
     while True:
-        # if we don't have anything in our list, break 
+        # if we don't have anything left in our list we error 
         if len(moons_sorted) == 1:
-            break
+           break
         
         # Update list if second element is now in the past
         # by removing the first element.
@@ -177,11 +193,14 @@ def moon_worker():
             moons_sorted.pop(0)
             logging.info("Moon worker: Outdated entry removed")
 
+        # We want to trigger the API call at this point to replenish our queue
         if len(moons_sorted) == 2:
-            # we want to trigger the API call at this point to replenish our queue
-            # may want to do this at the end of each cycle, but perhaps a non-blocking thread?
-            # IE spawn a new thread, or have a new separate threaded function for this. 
-            pass
+            logging.info('Our list is almost empty. Updating data from API.')
+            update_moons = get_moon_data(latitude, longitude)
+            new_moons = moon_creator_iterator(update_moons)
+            moons_sorted = sorted(list(set(moons_sorted + new_moons)))
+            logging.info('Moon worker: combining lists and checking order.')
+            moon_order_check(moons_sorted)
         
         # This should give us the number of seconds between "known" quarter phases.
         # Quarter phases are returned from the API.
@@ -273,23 +292,26 @@ def tide_worker():
     # Worker initialization
     # We do a bunch of data prep here. Eventually we'll check stored data before making a request.
     # That way we can resume while offline.
-    
-    tide_data = get_tide_data(latitude, longitude)
-    
-    tide_list = []
 
     # Here we iterate over the next tides to create an 
-    # object for each high or low tide with a timestamp
-    for tide in tide_data["extremes"]:
-        new_tide = Tide(tide["state"], tide["timestamp"], tide["height"])
-        tide_list.append(new_tide) 
+    # object for each high or low tide with a timestamp    
+    def tide_creator_iterator(data):
+        tide_list = []
+        for tide in data["extremes"]:
+            new_tide = Tide(tide["state"], tide["timestamp"], tide["height"])
+            tide_list.append(new_tide) 
+        return tide_list
 
     # Here we sort them such that we create a list which will
     # allow us to use the next tides, and, following that,
     # retain a list of subsequent tides in case internet connectivity
     # is limited. We remove items from the front of the 
     # list when they're in the past via the tide worker thread
-    tides_sorted = sorted(tide_list)
+    tide_data = get_tide_data(latitude, longitude)
+    logging.info('Tide worker: getting tide data from API.')
+    tides_sorted = sorted(tide_creator_iterator(tide_data))
+    logging.info('Tide worker: there are %s tides in the queue', len(tides_sorted))  
+    tide_order_check(tides_sorted)
     
     # Worker loop
     while True:
@@ -317,9 +339,14 @@ def tide_worker():
             tides_sorted.pop(0)
             tides_in_queue = len(tides_sorted)
             if tides_in_queue <= 2:
-                #TODO: Need to refresh tide list
-                pass
-            logging.info(f"Updating tides list. %s tides remaining in queue.", (tides_in_queue))
+                logging.info(f"Updating tides list. %s tides remaining in queue.", (tides_in_queue))
+                updated_tide_data = get_tide_data(latitude, longitude)
+                new_tides = tide_creator_iterator(updated_tide_data)
+                tides_sorted = sorted(list(set(tides_sorted + new_tides)))
+                logging.info('Tide worker: combining lists and checking order.')
+                tide_order_check(tides_sorted)
+                
+            
         
 def main():
     logging.basicConfig(filename=apploader.config['logging']['location'], encoding=apploader.config['logging']['encoding'], level=apploader.config['logging']['level'])
