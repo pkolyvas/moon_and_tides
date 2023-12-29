@@ -293,9 +293,8 @@ def tide_worker():
     # Here we iterate over the next tides to create an 
     # object for each high or low tide with a timestamp    
     def tide_creator_iterator(data):
-        list = []
+        tide_list = []
         for tide in data["extremes"]:
-            tide_list = []
             new_tide = Tide(tide["state"], tide["timestamp"], tide["height"])
             tide_list.append(new_tide) 
         return tide_list
