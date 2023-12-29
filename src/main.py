@@ -127,7 +127,7 @@ def moon_order_check(list):
 def tide_order_check(list):
     if logging.debug:
         for tide in list:
-            logging.debug("Tide order check: %s - %s - %s", tide.tide, tide.timestamp)
+            logging.debug("Tide order check: %s - %s", tide.tide, tide.timestamp)
         logging.debug("Current timestamp: %s", time.time())
 
 def moon_worker():
