@@ -1,11 +1,7 @@
 #!/usr/bin/env python3
 from ST7789 import ST7789, BG_SPI_CS_FRONT
 from PIL import Image, ImageDraw, ImageFont
-
-import random
-import time
-import sys
-import os
+import logging
 
 # Buttons
 BUTTON_A = 5
@@ -66,7 +62,7 @@ def calibrate_moon_screen(display_controller):
     draw.text((75,10), "Calibrating Moon", font=default_font, fill=(150, 150, 255))
     if display_controller == "calibration":
         display.display(buffer)
-        print("Active display: Moon calibration")
+        logging.info("Active display: Moon calibration")
 
 def tide_display(display_controller, trend, next, afternext, progress, clock):     
 
@@ -94,10 +90,10 @@ def tide_display(display_controller, trend, next, afternext, progress, clock):
     
     if (trend == "Tide Receding" and progress < 0.05) or (trend == "Rising Tide" and progress > 0.95):
         trend = "Low Tide"
-        print("Low Tide Conditions.")
+        logging.info("Low Tide Conditions.")
     elif (trend == "Tide Receding" and progress > 0.95) or (trend == "Rising Tide" and progress < 0.05):
         trend = "High Tide"
-        print("High Tide Conditions.")
+        logging.info("High Tide Conditions.")
 
     draw.text((15, 15), trend, font=heading_font, fill=(255, 255, 255))
     draw.text((65, 130), clock, font=clock_font, fill=(255,255,255))
@@ -106,7 +102,7 @@ def tide_display(display_controller, trend, next, afternext, progress, clock):
     
     if display_controller == "tide":
         display.display(screen)
-        print("Active display: Tide")
+        logging.info("Active display: Tide")
 
 def menu_display():
     pass

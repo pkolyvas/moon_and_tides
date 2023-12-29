@@ -14,7 +14,7 @@ def simple_backward():
 
 def calibrate_moon_screen(display_controller):
   if display_controller == "calibration":
-        print("Active display: Moon calibration")
+        logging.info("Active display: Moon calibration")
 
 def tide_display(display_controller, trend, next, afternext, progress, clock):     
   if (trend == "Tide Receding" and progress < 0.05) or (trend == "Rising Tide" and progress > 0.95):
