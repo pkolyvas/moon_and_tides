@@ -82,9 +82,10 @@ def tide_display(display_controller, trend, next, afternext, progress, clock):
     # Tide rising: 1=low tide, 0=high tide
     # Progress always goes down to 0
     if trend == "Tide Receding":
-        screen.paste(tide, (0, int(260-(125*progress))))
+        screen.paste(tide, (0, int(260-(130*progress))))
     else:
-        screen.paste(tide, (0, int(260+(125*progress))))
+        ## not right
+        screen.paste(tide, (0, int(130+(130*progress))))
     
     draw = ImageDraw.Draw(screen)
 
