@@ -48,7 +48,7 @@ right_column_right_justification = 220
 # Stubbing a screen class
 class Screen:
     def __init__(self, name) -> None:
-        pass
+        self.name = name
 
 # The Calibrating Moon screen's button control is in the motor calibration function.
 def calibrate_moon_screen(display_controller):
@@ -90,7 +90,7 @@ def tide_display(display_controller, trend, next, afternext, progress, clock):
     
     screen = Image.open('images/tide_bg.png')
     tide = Image.open('images/water.png')
-    screen.paste(tide, (0, int(255-(125*progress))))
+    screen.paste(tide, (0, int(260-(115*progress))))
     draw = ImageDraw.Draw(screen)
 
     
