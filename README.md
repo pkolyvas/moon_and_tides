@@ -29,6 +29,12 @@ This is a list of hardware used in this project. Feel free to experiment and exp
 ### Hardware
 [TODO]
 
+#### Neopixels
+
+I used Adafruit Neopixels for this project because, well, I didn't have any experience, wasn't sure what I wanted and there was limited stock. I wanted something that was flexible for this project since I was winging it with the initial design. The Neopixels offer a lot of flexibility. They also were a very easy to implement solution. 
+
+This reference page from Adafruit is incredibly helpful: [NeoPixels on Raspberry Pi](https://learn.adafruit.com/neopixels-on-raspberry-pi/overview)
+
 ### Software
 
 Clone the repository. If you're not sure how to do that, [see here](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository). 
@@ -44,7 +50,8 @@ Install the required libraries/modules:
 ```shell
 pip3 install -r requirements.txt
 ```
-Note: if you want to modify this project on hardware other than a Raspberry Pi, you can install the `dev` requirmments. `pip3 install -r dev_requirments.txt`
+
+*Note: if you want to modify this project on hardware other than a Raspberry Pi, you can install the `dev` requirements. `pip3 install -r dev_requirments.txt`*
 
 Configure the app by copying the `app.conf.default` to `app.conf` and editing the file with your Latitude and Logitude, and API keys. Set `dev` to `1` if you'd like to modify the code without RPi hardware present.
 ```shell
