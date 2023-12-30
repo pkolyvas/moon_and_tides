@@ -20,7 +20,7 @@ This is a list of hardware used in this project. Feel free to experiment and exp
 - [Raspberry Pi Zero 2 W](https://www.raspberrypi.com/products/raspberry-pi-zero-2-w/)
 - [Adafruit DC & Stepper Motor HAT](https://www.adafruit.com/product/2348)
 - [Pimoroni miniDisplay HAT](https://shop.pimoroni.com/products/display-hat-mini?variant=39496084717651)
-- Adafruit Neopixels. See the section on lights below.
+- Adafruit Neopixels. [See the section on lights below](https://github.com/pkolyvas/moon_and_tides#neopixels).
 - [TI 74AHCT125 Level Converter IC](https://www.pishop.ca/product/74ahct125-quad-level-shifter-3v-to-5v-74ahct125/)
 - A minimum 5V, 4A power supply. We use one supply for the whole project.
 
