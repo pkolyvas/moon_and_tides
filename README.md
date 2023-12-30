@@ -4,9 +4,14 @@ A RPi Zero & 3D printed project.
 
 ![IMG_1253](https://github.com/pkolyvas/moon_and_tides/assets/43178667/b17be359-96a7-4a00-8a7c-f6911aabca4a)
 
-
 Eventually, you'll find the code, 3D models, and instructions for building. For now, it's just the code.
 
+## Features
+- Display shows the tide level (graphic)
+- Display shows the next low tide, next high tide, and tide trend
+- Moon has a light inside and a motorized mask to occlude the light and approximate what the moon would look like from where you are.
+
+----
 
 ## Requirements
 - RPi with the appropriate hats listed in the hardware section.
@@ -14,6 +19,8 @@ Eventually, you'll find the code, 3D models, and instructions for building. For 
 - API Keys to the APIs I've used here. They are not free. They will at least require registration, at most cost a few bucks.
   - [Marea Tides API](https://api.marea.ooo/doc/v2#overview). This one is about $4 USD for 10,000 requests. I expect my credits to last longer than the API is available. There are likely free sources to explore over time.
   - [Moon Phase](https://rapidapi.com/user/MoonAPIcom). This one is free at 500/requests a month. Each single request contains about a month's worth of data. 
+
+----
 
 ## Hardware
 This is a list of hardware used in this project. Feel free to experiment and expand. 
@@ -24,7 +31,9 @@ This is a list of hardware used in this project. Feel free to experiment and exp
 - [TI 74AHCT125 Level Converter IC](https://www.pishop.ca/product/74ahct125-quad-level-shifter-3v-to-5v-74ahct125/)
 - A minimum 5V, 4A power supply. We use one supply for the whole project.
 
-## Installation Instructions
+----
+
+## Installation & Build Instructions
 
 ### Hardware
 [TODO]
@@ -68,8 +77,9 @@ python3 main.py
 ### Enclosure
 [TODO]
 
+----
+
 ## Todo
 - Build a function to switch between moon and tide in the globe
 - Build a menu to recalibrate the moon
-- Implement better logging
 - Multiple networks: https://raspberrypi.stackexchange.com/questions/11631/how-to-setup-multiple-wifi-networks
