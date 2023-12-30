@@ -36,7 +36,13 @@ This is a list of hardware used in this project. Feel free to experiment and exp
 ## Installation & Build Instructions
 
 ### Hardware
-[TODO]
+So, uh, I didn't really take photos while assembling. The TLDR is that you stack the stepper motor HAT on top of the Pi Zero 2 W (with headers installed) — you'll also want a stacking header with long pins that will allow the display to be installed on top of the motor header. 
+
+Then you can wire a 5v 4A + power supply into the 5v rail and ground along the right side of the HAT. From there you can solder the TI level converter chip onto the little breadboard and follow the wiring instructions linked in the Neopixels section below. 
+
+You'll also need to wire the 5v rail and ground into the motor power inputs. The board documentation recommends a *separate* power supply for the motor, but we're using it so lightly I ignored that advice. 5v 4A is enough to run the Pi, the motor, the neopixels (tested with up to 20, though I'm only using 10), and the miniDisplay HAT. 
+
+Oh, and yeah, just install the minidisplay Hat on top of the stack. That's about it.
 
 #### Neopixels
 
