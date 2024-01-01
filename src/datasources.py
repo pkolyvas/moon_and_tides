@@ -10,7 +10,7 @@ config.sections()
 config.read('app.conf')
 
 # Generic API GET Request
-def get_api_data(api_url, api_key, xheaders, query): 
+def get_api_data(api_url, xheaders, query): 
     url = api_url
 
     querystring = query

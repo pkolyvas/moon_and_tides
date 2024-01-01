@@ -36,6 +36,8 @@ display = ST7789(
 )
 
 default_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 20)
+heading_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 28)
+clock_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 58)
 top_row_height = 63
 left_column_left_justification = 10
 bottom_row_height = 153
@@ -65,9 +67,6 @@ def calibrate_moon_screen(display_controller):
         logging.info("Active display: Moon calibration")
 
 def tide_display(display_controller, trend, next, afternext, progress, clock):     
-
-    heading_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 28)
-    clock_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 58)
        
     screen = Image.open('images/tide_bg.png')
     tide = Image.open('images/water.png')
@@ -100,6 +99,22 @@ def tide_display(display_controller, trend, next, afternext, progress, clock):
     if display_controller == "tide":
         display.display(screen)
         logging.info("Active display: Tide")
+
+def sun_display(display_controller, sunrise, sunset, clock):
+    screen = Image.open('images/sun_screen.png')
+    draw = ImageDraw.Draw(screen)
+    
+    # Will need to convert the date/times
+    if sunrise > sunset:
+        draw.text((15, 15), "Sunset", font=default_font, fill=(255,255,255))
+        draw.text((15, 40), sunset, font=heading_font, fill=(255, 255, 255))
+        draw.text((225, 15), "Sunrise", font=default_font, fill=(255,255,255))
+        draw.text((225, 40), sunrise, font=heading_font, fill=(255, 255, 255))
+        draw.text((65, 130), clock, font=clock_font, fill=(255,255,255))
+
+    if display_controller == "sun":
+        display.display(screen)
+        logging.info("Active display: Sunrise and Sunset")
 
 def menu_display():
     pass

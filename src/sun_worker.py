@@ -24,9 +24,13 @@ def sun_creator_iterator(data):
         return list 
 
 def sun_worker():
+    # 
     sun_data = datasources.get_api_data(
         datasources.config["apis"]["sun_api"],
-        datasources.config["apis"]["sun_api_key"],
+        {"X-RapidAPI-Key": datasources.config['apis']['sun_api_key'],"X-RapidAPI-Host": datasources.config['apis']['sun_api_url']},
         {"latitude":datasources.config["location"]["latitude"], "logitude":datasources.config["location"]["longitude"]}
         )
     
+    while True:
+         
+       

@@ -12,6 +12,8 @@ moon_api_url = https://moon-phase.p.rapidapi.com/advanced
 moon_api_key =
 marea_api_url = https://api.marea.ooo/v2/tides
 marea_api_key = 
+sun_api_url= https://sunset-time-sunrise-time-by-city-rest-api.p.rapidapi.com
+sun_api_key= 
 
 [motor]
 resolution = 200
