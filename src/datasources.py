@@ -10,14 +10,12 @@ config.sections()
 config.read('app.conf')
 
 # Generic API GET Request
-def get_api_data(api_url, api_key, query): 
+def get_api_data(api_url, api_key, xheaders, query): 
     url = api_url
 
     querystring = query
 
-    headers = {
-        "x-marea-api-token": api_key,
-    }
+    headers = xheaders
 
     api_name = urlparse(api_url)
     
