@@ -6,7 +6,7 @@ import threading
 from datetime import datetime
 from urllib.parse import urlparse
 import logging  
-import apploader
+import datasources
 
 # Install this script with `pip install -r dev_requirements.txt` to avoid
 # RPi libraries and run on machines without GPIO/I2C/etc.
@@ -20,11 +20,11 @@ except ImportError:
     import dev as display
 
 # Not yet using the DB
-# connection = sqlite3.connect(apploader.config['db']['sqlite3_db'])
-latitude = float(apploader.config['location']['latitude'])
-longitude = float(apploader.config['location']['longitude'])
-motor_resolution = int(apploader.config['motor']['resolution'])
-tide_correction = int(apploader.config['location']['correction'])
+# connection = sqlite3.connect(datasources.config['db']['sqlite3_db'])
+latitude = float(datasources.config['location']['latitude'])
+longitude = float(datasources.config['location']['longitude'])
+motor_resolution = int(datasources.config['motor']['resolution'])
+tide_correction = int(datasources.config['location']['correction'])
 
 # Tidal half period in seconds (low to high or high to low)
 TIDAL_HALF_PERIOD = 22350
@@ -34,7 +34,7 @@ TIDAL_HALF_PERIOD = 22350
 # single function (DRY) and parameterize everything but meh,
 # that seems like a lot of effort with other things to do.
 def get_tide_data(latitude, longitude): 
-    url = apploader.config['apis']['marea_api_url']
+    url = datasources.config['apis']['marea_api_url']
 
     querystring = {
         "duration":"10080",
@@ -43,7 +43,7 @@ def get_tide_data(latitude, longitude):
         }
 
     headers = {
-        "x-marea-api-token": apploader.config['apis']['marea_api_key'],
+        "x-marea-api-token": datasources.config['apis']['marea_api_key'],
     }
     
     api_response = requests.get(url, headers=headers, params=querystring)
@@ -68,7 +68,7 @@ def get_moon_data(latitude, longitude):
        }
 
     headers = {
-        "X-RapidAPI-Key": apploader.config['apis']['moon_api_key'],
+        "X-RapidAPI-Key": datasources.config['apis']['moon_api_key'],
         "X-RapidAPI-Host": "moon-phase.p.rapidapi.com"
     }
 
@@ -349,7 +349,7 @@ def tide_worker():
             
         
 def main():
-    logging.basicConfig(filename=apploader.config['logging']['location'], encoding=apploader.config['logging']['encoding'], level=apploader.config['logging']['level'])
+    logging.basicConfig(filename=datasources.config['logging']['location'], encoding=datasources.config['logging']['encoding'], level=datasources.config['logging']['level'])
     logging.info('Moon and tides app started.')
     
     tide_thread = threading.Thread(target=tide_worker)

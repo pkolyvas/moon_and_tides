@@ -2,7 +2,14 @@ import requests
 import json
 import logging
 from urllib.parse import urlparse
+import configparser
 
+# Application Configuration
+config = configparser.ConfigParser()
+config.sections()
+config.read('app.conf')
+
+# Generic API GET Request
 def get_api_data(api_url, api_key, query): 
     url = api_url
 
