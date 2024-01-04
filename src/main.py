@@ -210,7 +210,12 @@ def moon_worker():
          # We need to update the percent of the phase on load.
         time_delta_to_now = time.time()-moons_sorted[0].timestamp # gives us the seconds since stored phase start time
         remaining_percent_of_current_phase = (timerange - time_delta_to_now) / timerange # gives us the percent remaining of the current phase
-        percent_to_next_phase = (moons_sorted[1].percent - moons_sorted[0].percent)*(remaining_percent_of_current_phase)
+        
+        # If the next phase is a new moon, we need to change the value from 0 to 1
+        if moons_sorted[1].percent == 0:
+             percent_to_next_phase = (1 - moons_sorted[0].percent)*(remaining_percent_of_current_phase)
+        else:
+            percent_to_next_phase = (moons_sorted[1].percent - moons_sorted[0].percent)*(remaining_percent_of_current_phase)
         logging.debug("Moon worker: Time delta is %s", (time_delta_to_now))
         logging.debug("Moon worker: Remaining percent of current phase is %s", remaining_percent_of_current_phase)
         logging.info("Moon worker: Percent to next phase is %s", str(percent_to_next_phase))
@@ -262,7 +267,9 @@ def moon_worker():
             logging.debug('Moon worker: Active')
             if time.time() >= next_step:
                 current_percent = current_percent+percent_per_step
+                logging.debug("Moon worker: Current percent is: %s", current_percent)
                 motor_position = set_moon_mask_position(current_percent)
+                logging.debug("")
                 logging.info('Moon Worker: Moving mask')
                 motor_control.simple_backward()
                 current_time = time.time()
