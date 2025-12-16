@@ -1,0 +1,145 @@
+{
+  "timestamp": 1765831116,
+  "datestamp": "Mon, 15 Dec 2025 20:38:36 +0000",
+  "plan": "BASIC",
+  "sun": {
+    "sunrise": 1765785360,
+    "sunrise_timestamp": "07:56",
+    "sunset": 1765813980,
+    "sunset_timestamp": "15:53",
+    "solar_noon": "11:55",
+    "day_length": "07:56",
+    "position": {
+      "altitude": -40.455384,
+      "azimuth": 283.110934,
+      "distance": 147262360.622781
+    },
+    "next_solar_eclipse": {
+      "timestamp": 1771326786,
+      "datestamp": "Tue, 17 Feb 2026 11:13:06 +0000",
+      "type": "Annular Solar Eclipse",
+      "visibility_regions": "s Argentina & Chile, s Africa, Antarctica ; [Annular: Antarctica]"
+    }
+  },
+  "moon": {
+    "phase": 0.8461115054783983,
+    "phase_name": "Waning crescent",
+    "major_phase": "Third Quarter",
+    "stage": "waning",
+    "illumination": "22%",
+    "age_days": 24,
+    "lunar_cycle": "84.61%",
+    "emoji": "🌘",
+    "zodiac": {
+      "sun_sign": "Sagittarius",
+      "moon_sign": "Scorpio"
+    },
+    "moonrise": "03:26",
+    "moonrise_timestamp": 1765769160,
+    "moonset": "12:57",
+    "moonset_timestamp": 1765803420,
+    "next_lunar_eclipse": {
+      "timestamp": 1772534092,
+      "datestamp": "Tue, 03 Mar 2026 10:34:52 +0000",
+      "type": "Total Lunar Eclipse",
+      "visibility_regions": "eastern Asia, Australia, Pacific, Americas"
+    },
+    "detailed": {
+      "position": {
+        "altitude": -56.234068,
+        "azimuth": 20.899477,
+        "distance": 404828.47217,
+        "parallactic_angle": -13.597906,
+        "phase_angle": 304.6
+      },
+      "visibility": {
+        "visible_hours": 3.5,
+        "best_viewing_time": "06:56",
+        "visibility_rating": "Fair",
+        "illumination": "21.61%",
+        "viewing_conditions": {
+          "phase_quality": "Challenging viewing conditions due to low illumination",
+          "recommended_equipment": {
+            "filters": "No filters needed",
+            "telescope": "Any size suitable",
+            "best_magnification": "Low to medium magnification (25-75x)"
+          }
+        }
+      },
+      "upcoming_phases": {
+        "new_moon": {
+          "last": {
+            "timestamp": 1763746740,
+            "datestamp": "Fri, 21 Nov 2025 17:39:00 +0000",
+            "days_ago": 24
+          },
+          "next": {
+            "timestamp": 1766252340,
+            "datestamp": "Sat, 20 Dec 2025 17:39:00 +0000",
+            "days_ahead": 4
+          }
+        },
+        "first_quarter": {
+          "last": {
+            "timestamp": 1765685640,
+            "datestamp": "Sun, 14 Dec 2025 04:14:00 +0000",
+            "days_ago": 1
+          },
+          "next": {
+            "timestamp": 1768191240,
+            "datestamp": "Mon, 12 Jan 2026 04:14:00 +0000",
+            "days_ahead": 27
+          }
+        },
+        "full_moon": {
+          "last": {
+            "timestamp": 1765127640,
+            "datestamp": "Sun, 07 Dec 2025 17:14:00 +0000",
+            "days_ago": 8,
+            "name": "Cold Moon",
+            "description": "Marks the longest nights of the year."
+          },
+          "next": {
+            "timestamp": 1767633240,
+            "datestamp": "Mon, 05 Jan 2026 17:14:00 +0000",
+            "days_ahead": 20,
+            "name": "Wolf Moon",
+            "description": "Named after the howling wolves often heard during this time."
+          }
+        },
+        "last_quarter": {
+          "last": {
+            "timestamp": 1764461220,
+            "datestamp": "Sun, 30 Nov 2025 00:07:00 +0000",
+            "days_ago": 15
+          },
+          "next": {
+            "timestamp": 1766966820,
+            "datestamp": "Mon, 29 Dec 2025 00:07:00 +0000",
+            "days_ahead": 13
+          }
+        }
+      },
+      "illumination_details": {
+        "percentage": 21.61,
+        "visible_fraction": 0.2161,
+        "phase_angle": 304.6
+      }
+    },
+    "events": {
+      "moonrise_visible": false,
+      "moonset_visible": false,
+      "optimal_viewing_period": {
+        "start_time": "04:56",
+        "end_time": "07:26",
+        "duration_hours": 2.5,
+        "viewing_quality": "Limited visibility of surface features",
+        "recommendations": [
+          "Best viewed in eastern sky before sunrise",
+          "Watch for subtle features near the limb",
+          "Low magnification best for thin crescent"
+        ]
+      }
+    }
+  }
+}

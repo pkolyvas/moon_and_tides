@@ -8,7 +8,9 @@ from displayhatmini import DisplayHATMini
 kit = MotorKit(i2c=board.I2C())
 display_hat = DisplayHATMini(None)
 
+
 # We will need a calibration screen
+# Motor calibration sets the moon at new moon (dark)
 def motor_calibration():
   logging.info(" Moon motor calibration: Motor calibrating")
   while True:
@@ -18,9 +20,6 @@ def motor_calibration():
       set_position(-1)
     if display_hat.read_button(display_hat.BUTTON_B):
       logging.info("Done calibration. Resetting moon.")
-      for i in range(100):
-        kit.stepper1.onestep()
-        time.sleep(0.10)
       return True
 
 def set_position(steps):
