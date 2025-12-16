@@ -39,11 +39,10 @@ def get_moon_data(latitude, longitude):
 
     # Logging is set to debug we write the response
     # to a file for poking.
-    if logging.debug:
-        with open("moon_api_response.json", "+a") as file:
-            moon_json_data = json.dumps(moons_json_raw)
-            file.write(moon_json_data)
-        logging.debug('Moon worker: writing JSON file')
+    with open("moon_api_response.json", "+w") as file:
+        moon_json_data = json.dumps(moons_json_raw)
+        file.write(moon_json_data)
+    logging.debug('Moon worker: writing JSON file')
 
     return moons_json_raw
 
@@ -74,6 +73,21 @@ class Moon:
             self.percent = 0.75
         else:
             self.percent = 0
+
+
+# Here we iterate over the next moon phases to create an
+# object for each moon phase with a timestamp and store
+# the objects in a list.
+def create_sorted_moon_list(data):
+    moon_list = []
+    for moon in data["moon_phases"]:
+        moon_phase = Moon(
+            moon,
+            data["moon_phases"][moon]["next"]["timestamp"]
+        )
+        moon_phase.set_percentage()
+        list.append(moon_phase)
+    sorted(moon_list)
 
 
 # This simple function takes the phase percentage and
@@ -115,7 +129,8 @@ def moon_order_check(list):
 # of the moon, based on a 29.5 average moon
 # moon cycle length
 def estimate_current_position(moon_data):
-    seconds_in_quarter = 637200
+    # 1/4 of 29.5 days in seconds
+    seconds_in_quarter = 637200 
     next_moon_time = moon_data[1].timestamp
     seconds_left_in_quarter = next_moon_time - time.time()
     percent_remaining_in_quarter = seconds_left_in_quarter / seconds_in_quarter
@@ -136,29 +151,15 @@ def moon_worker():
     moon_position = 0
     motor_position = 0
 
-    # Here we iterate over the next moon phases to create an
-    # object for each moon phase with a timestamp and store
-    # the objects in a list.
-    def moon_creator_iterator(data):
-        list = []
-        for moon in data["moon_phases"]:
-            moon_phase = Moon(
-                moon,
-                data["moon_phases"][moon]["next"]["timestamp"]
-            )
-            moon_phase.set_percentage()
-            list.append(moon_phase)
-        return list
-
     # Get our moon data, create objects, put it in a list, and sort the list
     # We sort them such that we create a list which will
     # allow us to use the next moon, and, following that,
     # retain a list of subsequent moons in case internet connectivity
     # is limited. We remove items from the front of the
     # list when they're in the past via the moon worker thread.
-    moon_data = get_moon_data(latitude, longitude)
+    raw_moon_data = get_moon_data(latitude, longitude)
     logging.info('Moon worker: getting moon data.')
-    moons_sorted = sorted(moon_creator_iterator(moon_data))
+    moons_sorted = create_sorted_moon_list(raw_moon_data)
     logging.info(
         'Moon worker: there are %s moons in the queue', len(moons_sorted)
     )
@@ -180,9 +181,9 @@ def moon_worker():
     moons_sorted.insert(
         0,
         Moon(
-            moon_data["moon"]["phase_name"],
+            raw_moon_data["moon"]["phase_name"],
             time.time(),
-            float(moon_data["moon"]["phase"])
+            float(raw_moon_data["moon"]["phase"])
         )
     )
     logging.info(
@@ -204,13 +205,12 @@ def moon_worker():
             moons_sorted.pop(0)
             logging.info("Moon worker: Outdated entry removed")
 
+        # This needs work
         # We want to trigger the API call at this point to replenish our queue
         if len(moons_sorted) == 2:
             logging.info('Our list is almost empty. Updating data from API.')
-            update_moons = get_moon_data(latitude, longitude)
-            new_moons = moon_creator_iterator(update_moons)
-            moons_sorted = sorted(list(set(moons_sorted + new_moons)))
-            logging.info('Moon worker: combining lists and checking order.')
+            updated_raw_moon_data = get_moon_data(latitude, longitude)
+            moons_sorted = create_sorted_moon_list(updated_raw_moon_data)
 
         # If it's first load we need to set the position based on
         # the calibrated full moon. Then we set first load to false.
@@ -224,20 +224,20 @@ def moon_worker():
         # Otherwise we poll the API for updated data, or pull
         # the data from our stored records
         else:
-            updated_data = get_moon_data(latitude, longitude)
-            if len(updated_data.get['moon']) != 0:
-                moon_data.pop(0)
-                moon_data.insert(
+            updated_current_moon = get_moon_data(latitude, longitude)
+            if len(updated_current_moon.get['moon']) != 0:
+                moons_sorted.pop(0)
+                moons_sorted.insert(
                     0,
                     Moon(
-                        moon_data["moon"]["phase_name"],
+                        updated_current_moon["moon"]["phase_name"],
                         time.time(),
-                        float(moon_data["moon"]["phase"])
+                        float(updated_current_moon["moon"]["phase"])
                     )
                 )
-                moon_position = float(updated_data['moon']['phase'])
+                moon_position = float(updated_current_moon['moon']['phase'])
             else:
-                moon_position = estimate_current_position(moon_data)
+                moon_position = estimate_current_position(moons_sorted)
             delta = moon_position - motor_position
             move_moon_mask(delta)
             motor_position = moon_position
