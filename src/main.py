@@ -24,13 +24,13 @@ def main():
         target=moon.moon_worker,
         args=(screen_owner,)
     )
-    display_thread = threading.Thread(
-        target=display.display_control_worker,
+    button_thread = threading.Thread(
+        target=display.button_worker,
         args=(screen_owner,)
     )
     moon_thread.start()
     tide_thread.start()
-    display_thread.start()
+    button_thread.start()
 
     # TODO: Deinit lights function on exit
     # TODO: Clean exit

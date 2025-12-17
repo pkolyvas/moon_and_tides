@@ -11,16 +11,16 @@ display_hat = DisplayHATMini(None)
 
 # We will need a calibration screen
 # Motor calibration sets the moon at new moon (dark)
-def motor_calibration():
-  logging.info(" Moon motor calibration: Motor calibrating")
-  while True:
-    if display_hat.read_button(display_hat.BUTTON_A):
-      set_position(1)
-    if display_hat.read_button(display_hat.BUTTON_X):
-      set_position(-1)
-    if display_hat.read_button(display_hat.BUTTON_B):
-      logging.info("Done calibration. Resetting moon.")
-      return True
+def motor_calibration(screen_owner):
+    logging.info(" Moon motor calibration: Motor calibrating")
+    while screen_owner.owner == "calibration":
+        if display_hat.read_button(display_hat.BUTTON_A):
+            set_position(1)
+        if display_hat.read_button(display_hat.BUTTON_X):
+            set_position(-1)
+        if display_hat.read_button(display_hat.BUTTON_B):
+            screen_owner.update_owner("tides")
+
 
 def set_position(steps):
     # TODO: improve function move motor one step in either direction. Forward for my stepper is anti-clockwise, backward is clockwise

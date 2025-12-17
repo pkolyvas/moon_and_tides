@@ -1,9 +1,13 @@
 #!/usr/bin/env python3
+from numpy.polynomial.tests.test_hermite_e import He0
+from PIL.ImageChops import screen
+from dev import motor_calibration
 import logging
 from ST7789 import ST7789, BG_SPI_CS_FRONT
 from PIL import Image, ImageDraw, ImageFont
 from displayhatmini import DisplayHATMini
 import time
+import motor_control
 
 display_hat = DisplayHATMini(None)
 
@@ -28,16 +32,8 @@ BACKLIGHT = 13
 WIDTH = 320
 HEIGHT = 240
 
-display = ST7789(
-    port=SPI_PORT,
-    cs=SPI_CS,
-    dc=SPI_DC,
-    backlight=BACKLIGHT,
-    width=WIDTH,
-    height=HEIGHT,
-    rotation=180,
-    spi_speed_hz=60 * 1000 * 1000
-)
+buffer = Image.new("RGB", (WIDTH, HEIGHT))
+display = DisplayHATMini(buffer)
 
 default_font = ImageFont.truetype(
     "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 20)
@@ -45,8 +41,6 @@ top_row_height = 63
 left_column_left_justification = 10
 bottom_row_height = 153
 right_column_right_justification = 220
-
-# Stubbing a screen class
 
 
 class Screen:
@@ -60,8 +54,6 @@ class Screen:
 # The Calibrating Moon screen's button control is in the motor calibration
 # function.
 def calibrate_moon_screen(display_controller):
-
-    buffer = Image.new("RGB", (WIDTH, HEIGHT))
     draw = ImageDraw.Draw(buffer)
 
     button_a = "Backward"
@@ -77,59 +69,55 @@ def calibrate_moon_screen(display_controller):
     draw.text((75, 10), "Calibrating Moon",
               font=default_font, fill=(150, 150, 255))
     if display_controller == "calibration":
-        display.display(buffer)
+        display.display()
         logging.info("Active display: Moon calibration")
 
 
 def tide_display(screen_owner, trend, next, afternext, progress, clock):
-
-    heading_font = ImageFont.truetype(
-        "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 28)
-    clock_font = ImageFont.truetype(
-        "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 58)
-
-    screen = Image.open('images/tide_bg.png')
-    tide = Image.open('images/water.png')
-
-    # When the tide is receding we need the image to lower
-    # When the tide is rising we need the image to raise
-    # Tide receding: 1 = high tide, 0=low tide
-    # Tide rising: 1=low tide, 0=high tide
-    # Progress always goes down to 0
-    if trend == "Tide Receding":
-        screen.paste(tide, (0, int(245 - (111 * progress))))
-    else:
-        screen.paste(tide, (0, int(134 + (111 * progress))))
-
-    draw = ImageDraw.Draw(screen)
-
-    if (trend == "Tide Receding" and progress < 0.05) or (
-            trend == "Rising Tide" and progress > 0.95):
-        trend = "Low Tide"
-        logging.info("Low Tide Conditions.")
-    elif (trend == "Tide Receding" and progress > 0.95) or (trend == "Rising Tide" and progress < 0.05):
-        trend = "High Tide"
-        logging.info("High Tide Conditions.")
-
-    draw.text((15, 15), trend, font=heading_font, fill=(255, 255, 255))
-    draw.text((65, 130), clock, font=clock_font, fill=(255, 255, 255))
-    draw.text((15, 210), next, font=default_font, fill=(255, 255, 255))
-    draw.text((195, 210), afternext, font=default_font, fill=(255, 255, 255))
-
     if screen_owner.owner == "tides":
-        display.display(screen)
+        heading_font = ImageFont.truetype(
+            "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 28)
+        clock_font = ImageFont.truetype(
+            "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 58)
+
+        screen = Image.open('images/tide_bg.png')
+        tide = Image.open('images/water.png')
+
+        # When the tide is receding we need the image to lower
+        # When the tide is rising we need the image to raise
+        # Tide receding: 1 = high tide, 0=low tide
+        # Tide rising: 1=low tide, 0=high tide
+        # Progress always goes down to 0
+        if trend == "Tide Receding":
+            screen.paste(tide, (0, int(245 - (111 * progress))))
+        else:
+            screen.paste(tide, (0, int(134 + (111 * progress))))
+
+        draw = ImageDraw.Draw(screen)
+
+        if (trend == "Tide Receding" and progress < 0.05) or (
+                trend == "Rising Tide" and progress > 0.95):
+            trend = "Low Tide"
+            logging.info("Low Tide Conditions.")
+        elif (trend == "Tide Receding" and progress > 0.95) or (trend == "Rising Tide" and progress < 0.05):
+            trend = "High Tide"
+            logging.info("High Tide Conditions.")
+
+        draw.text((15, 15), trend, font=heading_font, fill=(255, 255, 255))
+        draw.text((65, 130), clock, font=clock_font, fill=(255, 255, 255))
+        draw.text((15, 210), next, font=default_font, fill=(255, 255, 255))
+        draw.text((195, 210), afternext, font=default_font, fill=(255, 255, 255))
+
+        display.display()
         logging.info("Active display: Tide")
 
 
 def menu_display(screen_owner):
-    screen_owner.update_owner("menu")
-    button_a = "Tides on screen"
-    button_b = "Tides in the moon"
-    button_x = "Re-calibrate moon"
-    button_y = "View system details"
-
     if screen_owner.owner == "menu":
-        buffer = Image.new("RGB", (WIDTH, HEIGHT))
+        button_a = "Tides on screen"
+        button_b = "Tides in the moon"
+        button_x = "Re-calibrate moon"
+        button_y = "View system details"
         draw = ImageDraw.Draw(buffer)
         draw.text(
             (left_column_left_justification, top_row_height),
@@ -155,14 +143,14 @@ def menu_display(screen_owner):
             font=default_font,
             fill=(255, 255, 255)
         )
-        display.display(buffer)
+        display.display()
 
 
 def check_display_owner():
     pass
 
 
-def display_control_worker(screen_owner):
+def button_worker(screen_owner):
     while True:
         if (screen_owner.owner == "tides") and (
                 display_hat.read_button(display_hat.BUTTON_A) or
@@ -170,9 +158,9 @@ def display_control_worker(screen_owner):
                 display_hat.read_button(display_hat.BUTTON_X) or
                 display_hat.read_button(display_hat.BUTTON_Y)
         ):
-            menu_display(screen_owner)
+            screen_owner.update_owner("menu")
         elif screen_owner.owner == "calibration":
-            pass
+            motor_control.motor_calibration(screen_owner)
         elif screen_owner.owner == "menu":
             if display_hat.read_button(display_hat.BUTTON_A):
                 screen_owner.update_owner("tides")
@@ -188,8 +176,21 @@ def display_control_worker(screen_owner):
                 display_hat.read_button(display_hat.BUTTON_X) or
                 display_hat.read_button(display_hat.BUTTON_Y)
         ):
-            menu_display(screen_owner)
-        time.sleep(1)
+            screen_owner.update_owner("menu")
+        time.sleep(0.05)
+
+
+def display_worker(screen_owner):
+    while True:
+        if screen_owner.owner == "tides":
+            pass
+        elif screen_owner.owner == "moon":
+            pass
+        elif screen_owner.owner == "calibration":
+            calibrate_moon_screen(display)
+        time.sleep(0.5)
+
+
 
 
 # reference this as well :
