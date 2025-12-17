@@ -3,6 +3,9 @@ import logging
 import apploader
 import tides
 import moon
+import display
+
+screen_owner = display.Screen
 
 
 def main():
@@ -13,10 +16,21 @@ def main():
     )
     logging.info('Moon and tides app started.')
 
-    tide_thread = threading.Thread(target=tides.tide_worker)
-    moon_thread = threading.Thread(target=moon.moon_worker)
+    tide_thread = threading.Thread(
+        target=tides.tide_worker,
+        args=(screen_owner,)
+    )
+    moon_thread = threading.Thread(
+        target=moon.moon_worker,
+        args=(screen_owner,)
+    )
+    display_thread = threading.Thread(
+        target=display.display_control_worker,
+        args=(screen_owner,)
+    )
     moon_thread.start()
     tide_thread.start()
+    display_thread.start()
 
     # TODO: Deinit lights function on exit
     # TODO: Clean exit

@@ -38,5 +38,3 @@ def simple_backward():
   time.sleep(0.10)
 
 # TODO: Make the movement correct for any hemisphere (Longitude)
-  
-  

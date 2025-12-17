@@ -3,7 +3,7 @@ import json
 import requests
 import time
 import logging
-import datetime
+from datetime import datetime as dt
 
 try:
     import motor_control
@@ -81,7 +81,7 @@ class Tide:
         return self.timestamp < other.timestamp
 
 
-def tide_worker():
+def tide_worker(screen_owner):
     # Worker initialization
     # We do a bunch of data prep here. Eventually we'll
     # check stored data before making a request.
@@ -111,9 +111,7 @@ def tide_worker():
 
     # Worker loop
     while True:
-        time.sleep(15)
-
-        tide_tod_clock = str(datetime
+        tide_tod_clock = str(dt
                              .fromtimestamp(time.time())
                              .strftime('%H:%M')
                              )
@@ -122,23 +120,35 @@ def tide_worker():
 
         if tides_sorted[0].tide == "HIGH TIDE":
             tide_display_trend = "Rising Tide"
-            tide_display_next = "High: " + str(datetime.fromtimestamp(tides_sorted[0].timestamp).strftime('%H:%M'))
-            tide_display_afternext = "Low: " +str(datetime.fromtimestamp(tides_sorted[1].timestamp).strftime('%H:%M'))
-                    
+            tide_display_next = "High: " + str(dt.fromtimestamp(
+                tides_sorted[0].timestamp).strftime('%H:%M'))
+            tide_display_afternext = "Low: " + str(dt.fromtimestamp(
+                tides_sorted[1].timestamp).strftime('%H:%M'))
         else:
             tide_display_trend = "Tide Receding"
-            tide_display_next = "Low: " + str(datetime.fromtimestamp(tides_sorted[0].timestamp).strftime('%H:%M'))
-            tide_display_afternext = "High: " + str(datetime.fromtimestamp(tides_sorted[1].timestamp).strftime('%H:%M'))
-        
+            tide_display_next = "Low: " + str(dt.fromtimestamp(
+                tides_sorted[0].timestamp).strftime('%H:%M'))
+            tide_display_afternext = "High: " + str(dt.fromtimestamp(
+                tides_sorted[1].timestamp).strftime('%H:%M'))
+
         # TODO: We need a better way to switch between active displays.
-        display.tide_display("tide", tide_display_trend, tide_display_next, tide_display_afternext, tide_progress_remaining, tide_tod_clock)
+        display.tide_display(
+            screen_owner,
+            tide_display_trend,
+            tide_display_next,
+            tide_display_afternext,
+            tide_progress_remaining,
+            tide_tod_clock
+        )
         logging.debug('Tide worker: Active')
-        
+
         if time.time() > tides_sorted[0].timestamp:
             tides_sorted.pop(0)
             tides_in_queue = len(tides_sorted)
             if tides_in_queue <= 2:
-                logging.info(f"Updating tides list. %s tides remaining in queue.", (tides_in_queue))
+                logging.info(
+                    f"Updating tides list. %s tides remaining in queue.", (tides_in_queue)
+                )
                 updated_tide_data = get_tide_data(latitude, longitude)
                 new_tides = tide_creator_iterator(updated_tide_data)
                 tides_sorted = sorted(list(set(tides_sorted + new_tides)))

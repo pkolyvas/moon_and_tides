@@ -86,7 +86,7 @@ def create_sorted_moon_list(data):
             data["moon_phases"][moon]["next"]["timestamp"]
         )
         moon_phase.set_percentage()
-        list.append(moon_phase)
+        moon_list.append(moon_phase)
     sorted(moon_list)
 
 
@@ -130,7 +130,7 @@ def moon_order_check(list):
 # moon cycle length
 def estimate_current_position(moon_data):
     # 1/4 of 29.5 days in seconds
-    seconds_in_quarter = 637200 
+    seconds_in_quarter = 637200
     next_moon_time = moon_data[1].timestamp
     seconds_left_in_quarter = next_moon_time - time.time()
     percent_remaining_in_quarter = seconds_left_in_quarter / seconds_in_quarter
