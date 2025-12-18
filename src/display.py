@@ -188,6 +188,8 @@ def display_worker(screen_owner):
             pass
         elif screen_owner.owner == "calibration":
             calibrate_moon_screen(display)
+        elif screen_owner.owner == "menu":
+            menu_display(screen_owner)
         time.sleep(0.5)
 
 

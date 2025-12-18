@@ -3,7 +3,7 @@ import logging
 
 def motor_calibration(screen_owner):
     logging.info(
-        "Dev Mode: Moon motor calibration: Motor calibrating"
+        f"Dev Mode: Moon motor calibration: Motor calibrating. {screen_owner} "
     )
     pass
 
