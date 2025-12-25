@@ -43,4 +43,4 @@ def tide(level, brightness):
     else:
         for i in range(1, 32):
             pixels[i] = tide_blue
-    pixels.show()
+    pixels.show
