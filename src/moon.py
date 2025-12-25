@@ -54,6 +54,8 @@ class Moon:
         self.moon = moon
         self.timestamp = timestamp
         self.percent = 0
+        self.name = None
+        self.date = None
 
     # Sorting logic
     def __eq__(self, other):
@@ -78,6 +80,12 @@ class Moon:
         self.percent = percent
         self.timestamp = timestamp
 
+    def update_name(self, name):
+        self.name = name
+
+    def update_date(self, date):
+        self.date = date
+
 
 # Here we iterate over the next moon phases to create an
 # object for each moon phase with a timestamp and store
@@ -92,6 +100,14 @@ def create_sorted_moon_list(data):
         moon_phase.set_percentage()
         moon_list.append(moon_phase)
     sorted(moon_list)
+
+
+def getFullMoonFromRawData(raw_moon_data):
+    Moon(
+        raw_moon_data["moon_phases"]["full_moon"]["next"]["name"],
+        raw_moon_data["moon_phases"]["full_moon"]["next"]["datestamp"],
+        0.5
+    )
 
 
 # This simple function takes the phase percentage and
@@ -167,6 +183,7 @@ def moon_worker(screen_owner, current_moon):
     logging.info(
         'Moon worker: there are %s moons in the queue', len(moons_sorted)
     )
+    full_moon = getFullMoonFromRawData(raw_moon_data)
 
     # We need to remove the first element from the
     # "future" moon phases if it's in the past
@@ -250,6 +267,8 @@ def moon_worker(screen_owner, current_moon):
             logging.debug(f"Current motor position: {motor_position * 100}. Delta to current moon: {delta * 100}")
             # Here we only move the motor if the moon is lit up like the moon
             if screen_owner == "tides":
+                logging.debug(f"Moon is lit, updating mask with delta {delta}")
                 move_moon_mask(delta)
                 motor_position = current_moon.percent
+            display.moon_display(screen_owner, moons_sorted, full_moon)
         time.sleep(3600)

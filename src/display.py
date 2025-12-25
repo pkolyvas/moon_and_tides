@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import moon
 from numpy.polynomial.tests.test_hermite_e import He0
 from PIL.ImageChops import screen
 from dev import motor_calibration
@@ -115,6 +116,47 @@ def tide_display(screen_owner, trend, next, afternext, progress, clock):
         logging.info("Active display: Tide")
 
 
+def moon_display(screen_owner, moons_sorted, full_moon):
+    heading_font = ImageFont.truetype(
+        "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 52)
+    detail_font = ImageFont.truetype(
+        "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 28)
+    if screen_owner.owner == "moon":
+        if moons_sorted[0].percent < 0.02 or moons_sorted[0].percent > 0.98:
+            pass
+        elif moons_sorted.percent <= 0.175:
+            screen = Image.open('images/waxing_crescent.png')
+            phase_name = "Waxing Crescent"
+        elif moons_sorted.percent <= 0.30:
+            screen = Image.open('images/first_quarter.png')
+            phase_name = "First Quarter"
+        elif moons_sorted.percent <= 0.49:
+            screen = Image.open('images/waxing_gibbous.png')
+            phase_name = "Waxing Gibbous"
+        elif moons_sorted.percent < 0.52:
+            screen = Image.open('images/full_moon.png')
+            phase_name = "Full Moon"
+        elif moons_sorted.percent >= 0.52:
+            screen = Image.open('images/waning_gibbous.png')
+            phase_name = "Waning Gibbous"
+        elif moons_sorted.percent >= 0.67:
+            screen = Image.open('images/third_quarter.png')
+            phase_name = "Third Quarter"
+        elif moons_sorted.percent >= 0.825:
+            screen = Image.open('images/waxing_crescent.png')
+            phase_name = "Waning Cresent"
+        draw = ImageDraw.Draw(screen)
+
+        next_full_moon = f"{full_moon.name} on {full_moon.date}"
+        if moons_sorted[0].percent > 0.49 or moons_sorted[0].percent < 0.52:
+            draw.text((190, 140), full_moon.name, font=heading_font, fill=(255, 255, 255))
+        else: 
+            draw.text((190, 140), phase_name, font=heading_font, fill=(255,255, 255))
+            draw.text((220, 100), next_full_moon, font=detail_font, fill=(255, 255, 255))
+        display.display()
+        logging.info("Active display: Moon")
+
+
 def menu_display(screen_owner):
     if screen_owner.owner == "menu":
         button_a = "Tides on screen"
@@ -149,7 +191,7 @@ def menu_display(screen_owner):
         display.display()
 
 
-def button_worker(screen_owner):
+def button_worker(screen_owner, current_moon):
     while True:
         if (screen_owner.owner == "tides") and (
                 display_hat.read_button(display_hat.BUTTON_A) or
@@ -165,7 +207,7 @@ def button_worker(screen_owner):
                 motor_control.simple_anti_clockwise()
             if display_hat.read_button(display_hat.BUTTON_B):
                 screen_owner.update_owner("tides")
-
+                moon.move_moon_mask(current_moon.percent - 0.5)
         elif screen_owner.owner == "menu":
             if display_hat.read_button(display_hat.BUTTON_A):
                 screen_owner.update_owner("tides")
