@@ -2,6 +2,10 @@
 from ST7789 import ST7789, BG_SPI_CS_FRONT
 from displayhatmini import DisplayHATMini
 from PIL import Image, ImageDraw, ImageFont
+import datetime 
+import threading
+import sys
+import signal
 
 import random
 import time
@@ -35,29 +39,60 @@ HEIGHT = 240
 # draw.rectangle((0, 240-50, 50, 240), (0, 0, 255))
 # draw.rectangle((320-50, 240-50, 320, 240), (255, 255, 0))
 
-display = ST7789(
-    port=SPI_PORT,
-    cs=SPI_CS,
-    dc=SPI_DC,
-    backlight=BACKLIGHT,
-    width=WIDTH,
-    height=HEIGHT,
-    rotation=180,
-    spi_speed_hz=60 * 1000 * 1000
-)
-
-display_hat = DisplayHATMini(None)
+# display = ST7789(
+#     port=SPI_PORT,
+#     cs=SPI_CS,
+#     dc=SPI_DC,
+#     backlight=BACKLIGHT,
+#     width=WIDTH,
+#     height=HEIGHT,
+#     rotation=180,
+#     spi_speed_hz=60 * 1000 * 1000
+# )
+width = DisplayHATMini.WIDTH
+height = DisplayHATMini.HEIGHT
+buffer = Image.new("RGB", (width, height))
+display = DisplayHATMini(buffer)
 
 font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 20)
 
-def imagedisplay():
-    
+active_text = "time"
+
+def display_loop(active_text):
     while True:
-        screen = Image.open('low_tide.png')
-        #screen = Image.new("RGB", (WIDTH, HEIGHT))
-        draw = ImageDraw.Draw(screen)
-        draw.text((75,10), "tide", font=font, fill=(150, 150, 255))
-        #draw.text((right_column_right_justification,bottom_row_height), button_y, font=font, fill=(255, 255, 255))
-        display.display(screen)
-            
-imagedisplay()
+        image = Image.open('low_tide.png')
+        buffer.paste(image, (0,0))
+        if active_text == "time":
+            draw = ImageDraw.Draw(buffer)
+            draw.text((75,10), datetime.datetime.now().strftime("%I:%M:%S %p"), font=font, fill=(150, 150, 255))
+        else:
+            draw = ImageDraw.Draw(buffer)
+            draw.text((75,10), "Button X!", font=font, fill=(150, 150, 255))
+        display.display()
+        time.sleep(0.5)
+
+def button_loop(active_text):
+    while True:
+        if display.read_button(display.BUTTON_A):
+            active_text = "time"
+        elif display.read_button(display.BUTTON_X):
+            active_text = "x"
+        time.sleep(0.05)
+
+
+def cleanup(signum=None, frame=None):
+    display.set_backlight(0)  # turn off backlight
+    # optionally clear the display here
+    sys.exit(0)
+
+# Handle Ctrl+C and termination
+signal.signal(signal.SIGINT, cleanup)
+signal.signal(signal.SIGTERM, cleanup)
+
+try:
+    display_thread = threading.Thread(target=display_loop, args=(active_text,))
+    control_thread = threading.Thread(target=button_loop, args=(active_text,))
+    display_thread.start()
+    control_thread.start()
+finally:
+    cleanup()
