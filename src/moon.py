@@ -17,6 +17,7 @@ latitude = float(apploader.config['location']['latitude'])
 longitude = float(apploader.config['location']['longitude'])
 motor_resolution = int(apploader.config['motor']['resolution'])
 tide_correction = int(apploader.config['location']['correction'])
+moon_position = 
 
 
 # Retreive moon data from the API
@@ -53,7 +54,7 @@ class Moon:
     def __init__(self, moon, timestamp, percent=None):
         self.moon = moon
         self.timestamp = timestamp
-        self.percent = percent
+        self.percent = 0
 
     # Sorting logic
     def __eq__(self, other):
@@ -74,6 +75,9 @@ class Moon:
         else:
             self.percent = 0
 
+    def update_current_percent(self, percent):
+        self.percent = percent
+
 
 # Here we iterate over the next moon phases to create an
 # object for each moon phase with a timestamp and store
@@ -92,7 +96,7 @@ def create_sorted_moon_list(data):
 
 # This simple function takes the phase percentage and
 # will calculate the number of motor steps to move the
-# mask. The moto is a 200 step motor or 1.8 degrees per
+# mask. The motor is a 200 step motor or 1.8 degrees per
 # step. That gives us clear correlation with the four
 # moon phases: new (0), first quarter (50 steps), etc. etc.
 # We also want to set and store the absolute position.
@@ -103,7 +107,7 @@ def set_moon_mask_position(phase_percentage):
 
 # This function moves the moon mask a number of steps
 # based on a delta, which is the difference between
-# two percents.
+# two percentages.
 def move_moon_mask(delta):
     steps = round(delta * motor_resolution, 1)
     if steps > 0:

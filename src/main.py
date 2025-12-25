@@ -4,8 +4,10 @@ import apploader
 import tides
 import moon
 import display
+import time
 
 screen_owner = display.Screen
+current_moon = moon.Moon("current", time.time, 0)
 
 
 def main():

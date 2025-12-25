@@ -53,22 +53,25 @@ class Screen:
 
 # The Calibrating Moon screen's button control is in the motor calibration
 # function.
-def calibrate_moon_screen(display_controller):
-    draw = ImageDraw.Draw(buffer)
+def calibrate_moon_screen(screen_owner):
+    if screen_owner == "calibration":
+        draw = ImageDraw.Draw(buffer)
 
-    button_a = "Backward"
-    button_b = "Done"
-    button_x = "Forward"
+        button_a = "Backward"
+        button_b = "Moon Mode"
+        button_x = "Forward"
+        button_y = "Tide Mode"
 
-    draw.text((left_column_left_justification, top_row_height),
-              button_a, font=default_font, fill=(255, 255, 255))
-    draw.text((left_column_left_justification, bottom_row_height),
-              button_b, font=default_font, fill=(0, 255, 0))
-    draw.text((right_column_right_justification, top_row_height),
-              button_x, font=default_font, fill=(255, 255, 255))
-    draw.text((75, 10), "Calibrating Moon",
-              font=default_font, fill=(150, 150, 255))
-    if display_controller == "calibration":
+        draw.text((left_column_left_justification, top_row_height),
+                  button_a, font=default_font, fill=(255, 255, 255))
+        draw.text((left_column_left_justification, bottom_row_height),
+                  button_b, font=default_font, fill=(0, 255, 0))
+        draw.text((right_column_right_justification, top_row_height),
+                  button_x, font=default_font, fill=(255, 255, 255))
+        draw.text((right_column_right_justification, bottom_row_height),
+                  button_y, font=default_font, fill=(255, 255, 255))
+        draw.text((75, 10), "Calibrating Moon",
+                  font=default_font, fill=(150, 150, 255))
         display.display()
         logging.info("Active display: Moon calibration")
 
@@ -146,10 +149,6 @@ def menu_display(screen_owner):
         display.display()
 
 
-def check_display_owner():
-    pass
-
-
 def button_worker(screen_owner):
     while True:
         if (screen_owner.owner == "tides") and (
@@ -181,13 +180,14 @@ def button_worker(screen_owner):
 
 
 def display_worker(screen_owner):
+    logging.debug(f"Screen owner {screen_owner.owner}")
     while True:
         if screen_owner.owner == "tides":
             pass
         elif screen_owner.owner == "moon":
             pass
         elif screen_owner.owner == "calibration":
-            calibrate_moon_screen(display)
+            calibrate_moon_screen(screen_owner)
         elif screen_owner.owner == "menu":
             menu_display(screen_owner)
         time.sleep(0.5)

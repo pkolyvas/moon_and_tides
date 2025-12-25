@@ -14,13 +14,13 @@ pixel_brightness = 1
 pixels = neopixel.NeoPixel(board.D18, num_pixels)
 
 
-def moonlight():
-    # Reset lights they're being used for something else
-    pixels.fill(moon_white)
-    pixels.show()
+def moonlight(screen_owner):
+    if screen_owner == "calibration" or screen_owner == "tides":
+        pixels.fill(moon_white)
+        pixels.show()
 
 
-def tide(level, brightness):
+def tide(screen_owner, level, brightness):
     # Low Tide
     if level <= 0.5:
         for i in range(1, 32):
