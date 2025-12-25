@@ -10,7 +10,7 @@ from displayhatmini import DisplayHATMini
 import time
 import motor_control
 
-display_hat = DisplayHATMini(None)
+#display_hat = DisplayHATMini(None)
 
 # Buttons
 BUTTON_A = 5
