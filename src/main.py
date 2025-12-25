@@ -6,7 +6,7 @@ import moon
 import display
 import time
 
-screen_owner = display.Screen
+screen_owner = display.Screen()
 current_moon = moon.Moon("current", time.time, 0)
 
 
@@ -24,15 +24,20 @@ def main():
     )
     moon_thread = threading.Thread(
         target=moon.moon_worker,
-        args=(screen_owner,)
+        args=(screen_owner, current_moon,)
     )
     button_thread = threading.Thread(
         target=display.button_worker,
         args=(screen_owner,)
     )
+    display_thread = threading.Thread(
+        target=display.display_worker,
+        args=(screen_owner,)
+    )
     moon_thread.start()
     tide_thread.start()
     button_thread.start()
+    display_thread.start()
 
     # TODO: Deinit lights function on exit
     # TODO: Clean exit

@@ -17,7 +17,6 @@ latitude = float(apploader.config['location']['latitude'])
 longitude = float(apploader.config['location']['longitude'])
 motor_resolution = int(apploader.config['motor']['resolution'])
 tide_correction = int(apploader.config['location']['correction'])
-moon_position = 
 
 
 # Retreive moon data from the API
@@ -75,8 +74,9 @@ class Moon:
         else:
             self.percent = 0
 
-    def update_current_percent(self, percent):
+    def update_current_percent(self, percent, timestamp):
         self.percent = percent
+        self.timestamp = timestamp
 
 
 # Here we iterate over the next moon phases to create an
@@ -112,10 +112,10 @@ def move_moon_mask(delta):
     steps = round(delta * motor_resolution, 1)
     if steps > 0:
         for step in range(steps):
-            motor_control.simple_backward()
+            motor_control.simple_clockwise()
     elif steps < 0:
         for step in range(abs(steps)):
-            motor_control.simple_forward()
+            motor_control.simple_anti_clockwise()
 
 
 def moon_order_check(list):
@@ -130,7 +130,8 @@ def moon_order_check(list):
 
 
 # Returns an estimate of the absolute position
-# of the moon, based on a 29.5 average moon
+# of the moon, in raw percent (max 1)  
+# based on a 29.5 average moon
 # moon cycle length
 def estimate_current_position(moon_data):
     # 1/4 of 29.5 days in seconds
@@ -144,15 +145,14 @@ def estimate_current_position(moon_data):
         moon_data[1].percent - percent_remaining_in_quarter
 
 
-def moon_worker(screen_owner):
+def moon_worker(screen_owner, current_moon):
     # Start moonlight and calibrate moon on start
-    light_control.moonlight()
+    light_control.moonlight(screen_owner)
     display.calibrate_moon_screen(screen_owner)
     motor_control.motor_calibration(screen_owner)
 
     # Moon position is 0 after calibration
     # We set motor position to compare
-    moon_position = 0
     motor_position = 0
 
     # Get our moon data, create objects, put it in a list, and sort the list
@@ -204,6 +204,7 @@ def moon_worker(screen_owner):
             break
 
         # Update list if second element is now in the past
+        # it's our current (active) moon phase. We make it current
         # by removing the first element.
         if moons_sorted[1].timestamp <= time.time():
             moons_sorted.pop(0)
@@ -219,14 +220,14 @@ def moon_worker(screen_owner):
         # If it's first load we need to set the position based on
         # the calibrated full moon. Then we set first load to false.
         if first_load is True:
+            current_moon.update_current_percent(moons_sorted[0].percent, time.time)
             logging.info(
-                "Moon worker: First Load. Moving mask to %s", moon_position
+                "Moon worker: First Load. Moving mask to %s", current_moon.percent
             )
-            move_moon_mask(moon_position)
-            motor_position = moon_position
+            move_moon_mask(current_moon.percent)
             first_load = False
         # Otherwise we poll the API for updated data, or pull
-        # the data from our stored records
+        # the data from our stored records if the api is unavailable
         else:
             updated_current_moon = get_moon_data(latitude, longitude)
             if len(updated_current_moon.get['moon']) != 0:
@@ -240,9 +241,15 @@ def moon_worker(screen_owner):
                     )
                 )
                 moon_position = float(updated_current_moon['moon']['phase'])
+                current_moon.update_current_percent(moon_position, time.time)
+                logging.debug(f"Moon updated via API. Current percent: {current_moon.percent * 100}%")
             else:
-                moon_position = estimate_current_position(moons_sorted)
-            delta = moon_position - motor_position
-            move_moon_mask(delta)
-            motor_position = moon_position
+                current_moon.update_current_percent(estimate_current_position(moons_sorted), time.time)
+                logging.debug(f"Moon position is ESTIMATED. Current percent: {current_moon.percent * 100}%")
+            delta = current_moon.percent - motor_position
+            logging.debug(f"Current motor position: {motor_position * 100}. Delta to current moon: {delta * 100}")
+            # Here we only move the motor if the moon is lit up like the moon
+            if screen_owner == "tides":
+                move_moon_mask(delta)
+                motor_position = current_moon.percent
         time.sleep(3600)

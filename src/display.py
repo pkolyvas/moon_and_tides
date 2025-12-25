@@ -159,7 +159,13 @@ def button_worker(screen_owner):
         ):
             screen_owner.update_owner("menu")
         elif screen_owner.owner == "calibration":
-            motor_control.motor_calibration(screen_owner)
+            if display_hat.read_button(display_hat.BUTTON_A):
+                motor_control.simple_clockwise()
+            if display_hat.read_button(display_hat.BUTTON_X):
+                motor_control.simple_anti_clockwise()
+            if display_hat.read_button(display_hat.BUTTON_B):
+                screen_owner.update_owner("tides")
+
         elif screen_owner.owner == "menu":
             if display_hat.read_button(display_hat.BUTTON_A):
                 screen_owner.update_owner("tides")

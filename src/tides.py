@@ -10,7 +10,6 @@ try:
     import light_control
     import display
 except ImportError:
-    import dev as motor_control
     import dev as light_control
     import dev as display
 
@@ -93,13 +92,13 @@ def tide_worker(screen_owner):
         tide_list = []
         for tide in data["extremes"]:
             new_tide = Tide(tide["state"], tide["timestamp"], tide["height"])
-            tide_list.append(new_tide) 
+            tide_list.append(new_tide)
         return tide_list
 
     # Here we sort them such that we create a list which will
     # allow us to use the next tides, and, following that,
     # retain a list of subsequent tides in case internet connectivity
-    # is limited. We remove items from the front of the 
+    # is limited. We remove items from the front of the
     # list when they're in the past via the tide worker thread
     tide_data = get_tide_data(latitude, longitude)
     logging.info('Tide worker: getting tide data from API.')
@@ -139,6 +138,11 @@ def tide_worker(screen_owner):
             tide_display_afternext,
             tide_progress_remaining,
             tide_tod_clock
+        )
+        light_control.tide(
+            screen_owner,
+            tide_progress_remaining,
+            0.3
         )
         logging.debug('Tide worker: Active')
 

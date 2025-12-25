@@ -23,43 +23,44 @@ def moonlight(screen_owner):
 
 def tide(screen_owner, level, brightness):
     # Low Tide
-    color = tuple(x * brightness for x in tide_blue)
-    if level <= 0.05:
-        for i in range(0, 32):
-            pixels[i] = off
-    elif level > 0.05 and level <= 0.25:
-        for i in range(27, 29):
-            light = tuple(math.ceil(x * (level * 100 / 25)) for x in color)
-            pixels[i] = light
-        for i in range(0, 24):
-            pixels[i] = off
-    elif level > 0.25 and level <= 0.50:
-        for i in range(27, 29):
-            pixels[i] = color
-        for i in range(19, 21):
-            light = tuple(math.ceil(x * (level - 0.25) * 100 / 25) for x in color)
-            pixels[i] = light
-        for i in range(0, 16):
-            pixels[i] = off
-    elif level >= 0.50 and level <= 0.8:
-        for i in range(27, 29):
-            pixels[i] = color
-        for i in range(19, 21):
-            pixels[i] = color
-        for i in range(11, 13):
-            light = tuple(math.ceil(x * ((level - 0.5) * 100 / 30)) for x in color)
-            pixels[i] = light
-        for i in range(0, 8):
-            pixels[i] = off
-    else:
-        for i in range(27, 29):
-            pixels[i] = color
-        for i in range(19, 21):
-            pixels[i] = color
-        for i in range(11, 13):
-            pixels[i] = color
-        for i in range(3, 5):
-            light = tuple(math.ceil(x * ((level - 0.80) * 100 / 20)) for x in color)
-            pixels[i] = light
-    pixels.show
+    if screen_owner == "tides":
+        color = tuple(x * brightness for x in tide_blue)
+        if level <= 0.05:
+            for i in range(0, 32):
+                pixels[i] = off
+        elif level > 0.05 and level <= 0.25:
+            for i in range(27, 29):
+                light = tuple(math.ceil(x * (level * 100 / 25)) for x in color)
+                pixels[i] = light
+            for i in range(0, 24):
+                pixels[i] = off
+        elif level > 0.25 and level <= 0.50:
+            for i in range(27, 29):
+                pixels[i] = color
+            for i in range(19, 21):
+                light = tuple(math.ceil(x * (level - 0.25) * 100 / 25) for x in color)
+                pixels[i] = light
+            for i in range(0, 16):
+                pixels[i] = off
+        elif level >= 0.50 and level <= 0.8:
+            for i in range(27, 29):
+                pixels[i] = color
+            for i in range(19, 21):
+                pixels[i] = color
+            for i in range(11, 13):
+                light = tuple(math.ceil(x * ((level - 0.5) * 100 / 30)) for x in color)
+                pixels[i] = light
+            for i in range(0, 8):
+                pixels[i] = off
+        else:
+            for i in range(27, 29):
+                pixels[i] = color
+            for i in range(19, 21):
+                pixels[i] = color
+            for i in range(11, 13):
+                pixels[i] = color
+            for i in range(3, 5):
+                light = tuple(math.ceil(x * ((level - 0.80) * 100 / 20)) for x in color)
+                pixels[i] = light
+        pixels.show
 

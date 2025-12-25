@@ -8,14 +8,14 @@ def motor_calibration(screen_owner):
     pass
 
 
-def simple_forward():
+def simple_anti_clockwise():
     logging.debug(
         "Motor moving forward. This is counter clockwise."
     )
     pass
 
 
-def simple_backward():
+def simple_clockwise():
     logging.debug(
         "Motor moving backwards. This is clockwise / correct for northern hemisphere.")
     pass
@@ -38,10 +38,17 @@ def tide_display(display_controller, trend, next, afternext, progress, clock):
         logging.info("Active display: Tide")
 
 
-def moonlight():
-    logging.info("Moon light on.")
+def moonlight(screen_owner):
+    if screen_owner == "tides":
+        logging.info("Moon light on.")
     pass
 
 
-def devmode():
+def tide(screen_owner, level, brightness):
+    if screen_owner == "moon":
+        logging.info(f"Tide light on, at {level} with brightness {brightness}")
+    pass
+
+
+def devmode(screen_owner):
     pass
