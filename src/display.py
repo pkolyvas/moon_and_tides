@@ -196,8 +196,8 @@ def menu_display(screen_owner):
 
 
 def button_worker(screen_owner, current_moon):
+    old_screen_owner = "calibration"
     while True:
-        old_screen_owner = "calibration"
         if screen_owner.owner != old_screen_owner:
             logging.info(f"Screen owner change: {screen_owner.owner}")
             old_screen_owner = screen_owner.owner

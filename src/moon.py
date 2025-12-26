@@ -100,7 +100,6 @@ def create_sorted_moon_list(data):
             )
             moon_phase.set_percentage()
             moon_list.append(moon_phase)
-    logging.info(f"The moon list: {moon_list}")
     return sorted(moon_list)
 
 
@@ -209,7 +208,7 @@ def moon_worker(screen_owner, current_moon):
         )
     )
     logging.info(
-        'Adding the in-progress moon to the tip of the list'
+        f'Adding the in-progress moon to the tip of the list: {moons_sorted[0].name}, {moons_sorted[0].percent}'
     )
 
     # Toggle for first run
