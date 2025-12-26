@@ -84,14 +84,13 @@ def calibrate_moon_screen(screen_owner):
 
 
 def tide_display(screen_owner, trend, next, afternext, progress, clock):
-    global buffer
     if screen_owner.owner == "tides":
         heading_font = ImageFont.truetype(
             "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 28)
         clock_font = ImageFont.truetype(
             "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 58)
 
-        buffer = Image.open('images/tide_bg.png')
+        background = Image.open('images/tide_bg.png')
         tide = Image.open('images/water.png')
 
         # When the tide is receding we need the image to lower
@@ -100,10 +99,10 @@ def tide_display(screen_owner, trend, next, afternext, progress, clock):
         # Tide rising: 1=low tide, 0=high tide
         # Progress always goes down to 0
         if trend == "Tide Receding":
-            buffer.paste(tide, (0, int(245 - (111 * progress))))
+            background.paste(tide, (0, int(245 - (111 * progress))))
         else:
-            buffer.paste(tide, (0, int(134 + (111 * progress))))
-
+            background.paste(tide, (0, int(134 + (111 * progress))))
+        buffer.paste(background, (0,0))
         draw = ImageDraw.Draw(buffer)
 
         if (trend == "Tide Receding" and progress < 0.05) or (
