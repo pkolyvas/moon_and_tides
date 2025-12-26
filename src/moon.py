@@ -92,20 +92,21 @@ class Moon:
 # the objects in a list.
 def create_sorted_moon_list(data):
     moon_list = []
-    for moon in data["moon_phases"]:
-        moon_phase = Moon(
-            moon,
-            data["moon_phases"][moon]["next"]["timestamp"]
-        )
-        moon_phase.set_percentage()
-        moon_list.append(moon_phase)
+    for moon in data["moon"]["upcoming_phases"]:
+        if len(moon["next"]) != 0:
+            moon_phase = Moon(
+                moon,
+                data["moon"]["upcoming_phases"][moon]["next"]["timestamp"]
+            )
+            moon_phase.set_percentage()
+            moon_list.append(moon_phase)
     sorted(moon_list)
 
 
 def getFullMoonFromRawData(raw_moon_data):
     Moon(
-        raw_moon_data["moon_phases"]["full_moon"]["next"]["name"],
-        raw_moon_data["moon_phases"]["full_moon"]["next"]["datestamp"],
+        raw_moon_data["moon"]["upcoming_phases"]["full_moon"]["next"]["name"],
+        raw_moon_data["moon"]["upcoming_phases"]["full_moon"]["next"]["datestamp"],
         0.5
     )
 
