@@ -158,3 +158,4 @@ def tide_worker(screen_owner):
                 tides_sorted = sorted(list(set(tides_sorted + new_tides)))
                 logging.info('Tide worker: combining lists and checking order.')
                 tide_order_check(tides_sorted)
+        time.sleep(1)

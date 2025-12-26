@@ -84,6 +84,7 @@ def calibrate_moon_screen(screen_owner):
 
 
 def tide_display(screen_owner, trend, next, afternext, progress, clock):
+    global buffer
     if screen_owner.owner == "tides":
         heading_font = ImageFont.truetype(
             "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 28)
