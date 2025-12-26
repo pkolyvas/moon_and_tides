@@ -30,7 +30,7 @@ def main():
     )
     button_thread = threading.Thread(
         target=display.button_worker,
-        args=(screen_owner,)
+        args=(screen_owner, current_moon,)
     )
     display_thread = threading.Thread(
         target=display.display_worker,
