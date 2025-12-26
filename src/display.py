@@ -209,13 +209,14 @@ def button_worker(screen_owner, current_moon):
         ):
             screen_owner.update_owner("menu")
         elif screen_owner.owner == "calibration":
-            if display.read_button(display.BUTTON_A):
-                motor_control.simple_clockwise()
-            if display.read_button(display.BUTTON_X):
-                motor_control.simple_anti_clockwise()
-            if display.read_button(display.BUTTON_B):
-                screen_owner.update_owner("tides")
-                moon.move_moon_mask(current_moon.percent)
+            while screen_owner.owner == "calibration":
+                if display.read_button(display.BUTTON_A):
+                    motor_control.simple_clockwise()
+                if display.read_button(display.BUTTON_X):
+                    motor_control.simple_anti_clockwise()
+                if display.read_button(display.BUTTON_B):
+                    screen_owner.update_owner("tides")
+            moon.move_moon_mask(current_moon.percent)
         elif screen_owner.owner == "menu":
             if display.read_button(display.BUTTON_A):
                 screen_owner.update_owner("tides")
