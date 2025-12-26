@@ -81,7 +81,6 @@ def calibrate_moon_screen(screen_owner):
         draw.text((75, 10), "Calibrating Moon",
                   font=default_font, fill=(150, 150, 255))
         display.display()
-        logging.info("Active display: Moon calibration")
 
 
 def tide_display(screen_owner, trend, next, afternext, progress, clock):
@@ -120,7 +119,6 @@ def tide_display(screen_owner, trend, next, afternext, progress, clock):
         draw.text((195, 210), afternext, font=default_font, fill=(255, 255, 255))
 
         display.display()
-        logging.info("Active display: Tide")
 
 
 def moon_display(screen_owner, moons_sorted, full_moon):
@@ -161,7 +159,6 @@ def moon_display(screen_owner, moons_sorted, full_moon):
             draw.text((190, 140), phase_name, font=heading_font, fill=(255,255, 255))
             draw.text((220, 100), next_full_moon, font=detail_font, fill=(255, 255, 255))
         display.display()
-        logging.info("Active display: Moon")
 
 
 def menu_display(screen_owner):
@@ -200,6 +197,10 @@ def menu_display(screen_owner):
 
 def button_worker(screen_owner, current_moon):
     while True:
+        old_screen_owner = "calibration"
+        if screen_owner.owner != old_screen_owner:
+            logging.info(f"Screen owner change: {screen_owner.owner}")
+            old_screen_owner = screen_owner.owner
         if (screen_owner.owner == "tides") and (
                 display.read_button(display.BUTTON_A) or
                 display.read_button(display.BUTTON_A) or
