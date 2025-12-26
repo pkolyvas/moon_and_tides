@@ -100,6 +100,7 @@ def create_sorted_moon_list(data):
             )
             moon_phase.set_percentage()
             moon_list.append(moon_phase)
+    logging.info(f"The moon list: {moon_list}")
     sorted(moon_list)
 
 
