@@ -16,14 +16,14 @@ pixels = neopixel.NeoPixel(board.D18, num_pixels)
 
 
 def moonlight(screen_owner):
-    if screen_owner == "calibration" or screen_owner == "tides":
+    if screen_owner.owner == "calibration" or screen_owner.owner == "tides":
         pixels.fill(moon_white)
         pixels.show()
 
 
 def tide(screen_owner, level, brightness):
     # Low Tide
-    if screen_owner == "tides":
+    if screen_owner.owner == "tides":
         color = tuple(x * brightness for x in tide_blue)
         if level <= 0.05:
             for i in range(0, 32):
