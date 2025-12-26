@@ -165,7 +165,6 @@ def moon_worker(screen_owner, current_moon):
     # Start moonlight and calibrate moon on start
     light_control.moonlight(screen_owner)
     display.calibrate_moon_screen(screen_owner)
-    motor_control.motor_calibration(screen_owner)
 
     # Moon position is 0 after calibration
     # We set motor position to compare
