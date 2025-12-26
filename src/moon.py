@@ -93,7 +93,7 @@ class Moon:
 def create_sorted_moon_list(data):
     moon_list = []
     for moon in data["moon"]["detailed"]["upcoming_phases"]:
-        if "next" in moon:
+        if "next" in data["moon"]["detailed"]["upcoming_phases"][moon]:
             moon_phase = Moon(
                 moon,
                 data["moon"]["detailed"]["upcoming_phases"][moon]["next"]["timestamp"]
@@ -101,11 +101,11 @@ def create_sorted_moon_list(data):
             moon_phase.set_percentage()
             moon_list.append(moon_phase)
     logging.info(f"The moon list: {moon_list}")
-    sorted(moon_list)
+    return sorted(moon_list)
 
 
 def getFullMoonFromRawData(raw_moon_data):
-    Moon(
+    return Moon(
         raw_moon_data["moon"]["detailed"]["upcoming_phases"]["full_moon"]["next"]["name"],
         raw_moon_data["moon"]["detailed"]["upcoming_phases"]["full_moon"]["next"]["datestamp"],
         0.5
@@ -158,9 +158,9 @@ def estimate_current_position(moon_data):
     seconds_left_in_quarter = next_moon_time - time.time()
     percent_remaining_in_quarter = seconds_left_in_quarter / seconds_in_quarter
     if moon_data[1].percent == 0:
-        1 - percent_remaining_in_quarter
+        return 1 - percent_remaining_in_quarter
     else:
-        moon_data[1].percent - percent_remaining_in_quarter
+        return moon_data[1].percent - percent_remaining_in_quarter
 
 
 def moon_worker(screen_owner, current_moon):
