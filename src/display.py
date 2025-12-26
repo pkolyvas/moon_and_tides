@@ -66,9 +66,9 @@ def calibrate_moon_screen(screen_owner):
         draw = ImageDraw.Draw(buffer)
 
         button_a = "Backward"
-        button_b = "Moon Mode"
+        button_b = "Moon Light Mode"
         button_x = "Forward"
-        button_y = "Tide Mode"
+        button_y = "Tide Light Mode"
 
         draw.text((left_column_left_justification, top_row_height),
                   button_a, font=default_font, fill=(255, 255, 255))
@@ -216,6 +216,7 @@ def button_worker(screen_owner, current_moon):
                 motor_control.simple_anti_clockwise()
             if display.read_button(display.BUTTON_B):
                 screen_owner.update_owner("tides")
+                moon.move_moon_mask(current_moon.percent)
         elif screen_owner.owner == "menu":
             if display.read_button(display.BUTTON_A):
                 screen_owner.update_owner("tides")

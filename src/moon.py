@@ -238,10 +238,6 @@ def moon_worker(screen_owner, current_moon):
         # the calibrated full moon. Then we set first load to false.
         if first_load is True:
             current_moon.update_current_percent(moons_sorted[0].percent, time.time)
-            logging.info(
-                "Moon worker: First Load. Moving mask to %s", current_moon.percent
-            )
-            move_moon_mask(current_moon.percent)
             first_load = False
         # Otherwise we poll the API for updated data, or pull
         # the data from our stored records if the api is unavailable
@@ -259,7 +255,7 @@ def moon_worker(screen_owner, current_moon):
                 )
                 moon_position = float(updated_current_moon['moon']['phase'])
                 current_moon.update_current_percent(moon_position, time.time)
-                logging.debug(f"Moon updated via API. Current percent: {current_moon.percent * 100}%")
+                logging.info(f"Moon updated via API. Current percent: {current_moon.percent * 100}%")
             else:
                 current_moon.update_current_percent(estimate_current_position(moons_sorted), time.time)
                 logging.debug(f"Moon position is ESTIMATED. Current percent: {current_moon.percent * 100}%")
