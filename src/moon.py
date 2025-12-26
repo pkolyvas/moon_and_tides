@@ -127,6 +127,7 @@ def set_moon_mask_position(phase_percentage):
 # two percentages.
 def move_moon_mask(delta):
     steps = round(delta * motor_resolution)
+    logging.info(f"Moving the moon mask via delta {delta} in {steps}")
     if steps > 0:
         for step in range(steps):
             motor_control.simple_clockwise()
