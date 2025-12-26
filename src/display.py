@@ -62,7 +62,7 @@ class Screen:
 # The Calibrating Moon screen's button control is in the motor calibration
 # function.
 def calibrate_moon_screen(screen_owner):
-    if screen_owner == "calibration":
+    if screen_owner.owner == "calibration":
         draw = ImageDraw.Draw(buffer)
 
         button_a = "Backward"
