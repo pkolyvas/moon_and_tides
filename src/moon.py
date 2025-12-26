@@ -93,7 +93,7 @@ class Moon:
 def create_sorted_moon_list(data):
     moon_list = []
     for moon in data["moon"]["detailed"]["upcoming_phases"]:
-        if len(moon["next"]) != 0:
+        if "next" in moon:
             moon_phase = Moon(
                 moon,
                 data["moon"]["detailed"]["upcoming_phases"][moon]["next"]["timestamp"]
