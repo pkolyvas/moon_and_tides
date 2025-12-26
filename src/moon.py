@@ -53,7 +53,7 @@ class Moon:
     def __init__(self, moon, timestamp, percent=None):
         self.moon = moon
         self.timestamp = timestamp
-        self.percent = 0
+        self.percent = percent if percent is not None else 0
         self.name = None
         self.date = None
 
