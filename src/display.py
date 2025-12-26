@@ -9,7 +9,7 @@ import time
 import motor_control
 from typing import Optional
 
-#display_hat = DisplayHATMini(None)
+#display = DisplayHATMini(None)
 
 # Buttons
 BUTTON_A = 5
@@ -201,34 +201,34 @@ def menu_display(screen_owner):
 def button_worker(screen_owner, current_moon):
     while True:
         if (screen_owner.owner == "tides") and (
-                display_hat.read_button(display_hat.BUTTON_A) or
-                display_hat.read_button(display_hat.BUTTON_A) or
-                display_hat.read_button(display_hat.BUTTON_X) or
-                display_hat.read_button(display_hat.BUTTON_Y)
+                display.read_button(display.BUTTON_A) or
+                display.read_button(display.BUTTON_A) or
+                display.read_button(display.BUTTON_X) or
+                display.read_button(display.BUTTON_Y)
         ):
             screen_owner.update_owner("menu")
         elif screen_owner.owner == "calibration":
-            if display_hat.read_button(display_hat.BUTTON_A):
+            if display.read_button(display.BUTTON_A):
                 motor_control.simple_clockwise()
-            if display_hat.read_button(display_hat.BUTTON_X):
+            if display.read_button(display.BUTTON_X):
                 motor_control.simple_anti_clockwise()
-            if display_hat.read_button(display_hat.BUTTON_B):
+            if display.read_button(display.BUTTON_B):
                 screen_owner.update_owner("tides")
                 moon.move_moon_mask(current_moon.percent - 0.5)
         elif screen_owner.owner == "menu":
-            if display_hat.read_button(display_hat.BUTTON_A):
+            if display.read_button(display.BUTTON_A):
                 screen_owner.update_owner("tides")
-            if display_hat.read_button(display_hat.BUTTON_B):
+            if display.read_button(display.BUTTON_B):
                 screen_owner.update_owner("moon")
-            if display_hat.read_button(display_hat.BUTTON_X):
+            if display.read_button(display.BUTTON_X):
                 screen_owner.update_owner("calibration")
-            if display_hat.read_button(display_hat.BUTTON_Y):
+            if display.read_button(display.BUTTON_Y):
                 screen_owner.update_owner("system")
         elif screen_owner.owner == "moon" and (
-                display_hat.read_button(display_hat.BUTTON_A) or
-                display_hat.read_button(display_hat.BUTTON_A) or
-                display_hat.read_button(display_hat.BUTTON_X) or
-                display_hat.read_button(display_hat.BUTTON_Y)
+                display.read_button(display.BUTTON_A) or
+                display.read_button(display.BUTTON_A) or
+                display.read_button(display.BUTTON_X) or
+                display.read_button(display.BUTTON_Y)
         ):
             screen_owner.update_owner("menu")
         time.sleep(0.05)
