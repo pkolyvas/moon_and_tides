@@ -1,14 +1,13 @@
 #!/usr/bin/env python3
 import moon
-from numpy.polynomial.tests.test_hermite_e import He0
 from PIL.ImageChops import screen
-from dev import motor_calibration
 import logging
 from ST7789 import ST7789, BG_SPI_CS_FRONT
 from PIL import Image, ImageDraw, ImageFont
 from displayhatmini import DisplayHATMini
 import time
 import motor_control
+from typing import Optional
 
 #display_hat = DisplayHATMini(None)
 
@@ -33,8 +32,16 @@ BACKLIGHT = 13
 WIDTH = 320
 HEIGHT = 240
 
+display: Optional[DisplayHATMini] = None
 buffer = Image.new("RGB", (WIDTH, HEIGHT))
-display = DisplayHATMini(buffer)
+
+
+def init_display():
+    global display, buffer
+    width = DisplayHATMini.WIDTH
+    height = DisplayHATMini.HEIGHT
+    buffer = Image.new("RGB", (width, height))
+    display = DisplayHATMini(buffer)
 
 default_font = ImageFont.truetype(
     "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 20)

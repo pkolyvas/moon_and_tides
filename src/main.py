@@ -11,6 +11,8 @@ current_moon = moon.Moon("current", time.time, 0)
 
 
 def main():
+    display.init_display()
+
     logging.basicConfig(
         filename=apploader.config['logging']['location'],
         encoding=apploader.config['logging']['encoding'],
