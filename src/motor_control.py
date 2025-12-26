@@ -3,10 +3,8 @@ import time
 import logging
 from adafruit_motor import stepper
 from adafruit_motorkit import MotorKit
-from displayhatmini import DisplayHATMini
 
 kit = MotorKit(i2c=board.I2C())
-display_hat = DisplayHATMini(None)
 
 def simple_anti_clockwise():
   kit.stepper1.onestep()
