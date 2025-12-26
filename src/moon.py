@@ -165,7 +165,7 @@ def estimate_current_position(moon_data):
 
 def moon_worker(screen_owner, current_moon):
     # Start moonlight and calibrate moon on start
-    light_control.moonlight(screen_owner)
+    light_control.moonlight(screen_owner, 0.5)
     display.calibrate_moon_screen(screen_owner)
 
     # Moon position is 0 after calibration
