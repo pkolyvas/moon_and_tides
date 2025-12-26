@@ -126,7 +126,7 @@ def set_moon_mask_position(phase_percentage):
 # based on a delta, which is the difference between
 # two percentages.
 def move_moon_mask(delta):
-    steps = round(delta * motor_resolution, 1)
+    steps = round(delta * motor_resolution)
     if steps > 0:
         for step in range(steps):
             motor_control.simple_clockwise()
@@ -208,7 +208,7 @@ def moon_worker(screen_owner, current_moon):
         )
     )
     logging.info(
-        f'Adding the in-progress moon to the tip of the list: {moons_sorted[0].name}, {moons_sorted[0].percent}'
+        f'Adding the in-progress moon to the tip of the list: {moons_sorted[0].moon}, {moons_sorted[0].percent}'
     )
 
     # Toggle for first run
