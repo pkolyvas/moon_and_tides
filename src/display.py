@@ -91,7 +91,7 @@ def tide_display(screen_owner, trend, next, afternext, progress, clock):
         clock_font = ImageFont.truetype(
             "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 58)
 
-        screen = Image.open('images/tide_bg.png')
+        buffer = Image.open('images/tide_bg.png')
         tide = Image.open('images/water.png')
 
         # When the tide is receding we need the image to lower
@@ -100,11 +100,11 @@ def tide_display(screen_owner, trend, next, afternext, progress, clock):
         # Tide rising: 1=low tide, 0=high tide
         # Progress always goes down to 0
         if trend == "Tide Receding":
-            screen.paste(tide, (0, int(245 - (111 * progress))))
+            buffer.paste(tide, (0, int(245 - (111 * progress))))
         else:
-            screen.paste(tide, (0, int(134 + (111 * progress))))
+            buffer.paste(tide, (0, int(134 + (111 * progress))))
 
-        draw = ImageDraw.Draw(screen)
+        draw = ImageDraw.Draw(buffer)
 
         if (trend == "Tide Receding" and progress < 0.05) or (
                 trend == "Rising Tide" and progress > 0.95):
@@ -214,7 +214,6 @@ def button_worker(screen_owner, current_moon):
                 motor_control.simple_anti_clockwise()
             if display.read_button(display.BUTTON_B):
                 screen_owner.update_owner("tides")
-                moon.move_moon_mask(current_moon.percent - 0.5)
         elif screen_owner.owner == "menu":
             if display.read_button(display.BUTTON_A):
                 screen_owner.update_owner("tides")
