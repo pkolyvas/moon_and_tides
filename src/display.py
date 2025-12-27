@@ -76,7 +76,7 @@ def calibrate_moon_screen(screen_owner):
                   button_a, font=default_font, fill=(255, 255, 255))
         draw.text((left_column_left_justification, bottom_row_height),
                   button_b, font=default_font, fill=(0, 255, 0))
-        draw.text((right_column_right_justification, top_row_height),
+        draw.text((210, top_row_height),
                   button_x, font=default_font, fill=(255, 255, 255))
         draw.text((75, 10), "Calibrating Moon",
                   font=default_font, fill=(150, 150, 255))
@@ -256,7 +256,7 @@ def display_worker(screen_owner):
             calibrate_moon_screen(screen_owner)
         elif screen_owner.owner == "menu":
             menu_display(screen_owner)
-        time.sleep(0.1)
+        time.sleep(0.05)
 
 
 
