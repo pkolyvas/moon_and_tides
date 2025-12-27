@@ -15,8 +15,8 @@ pixel_brightness = float(apploader.config["visuals"]["neopixels_brightness"])
 pixels = neopixel.NeoPixel(board.D18, num_pixels)
 
 
-def moonlight(brightness):
-    light = tuple(math.ceil(x * brightness) for x in moon_white)
+def moonlight():
+    light = tuple(math.ceil(x * pixel_brightness) for x in moon_white)
     pixels.fill(light)
     pixels.show()
 

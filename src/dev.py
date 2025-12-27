@@ -38,15 +38,9 @@ def tide_display(display_controller, trend, next, afternext, progress, clock):
         logging.info("Active display: Tide")
 
 
-def moonlight(screen_owner, brightness):
+def moonlight(screen_owner):
     if screen_owner == "tides":
-        logging.info(f"Moon light on at brightness: {brightness}")
-    pass
-
-
-def tide(screen_owner, level, brightness):
-    if screen_owner == "moon":
-        logging.info(f"Tide light on, at {level} with brightness {brightness}")
+        logging.info(f"Moon light on.")
     pass
 
 
