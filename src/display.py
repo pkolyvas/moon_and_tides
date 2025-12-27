@@ -123,41 +123,41 @@ def tide_display(screen_owner, trend, next, afternext, progress, clock):
         display.display()
 
 
-def moon_display(screen_owner, moons_sorted, full_moon):
+def moon_display(screen_owner, current_moon, full_moon):
     heading_font = ImageFont.truetype(
         "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 52)
     detail_font = ImageFont.truetype(
         "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 28)
     if screen_owner.owner == "moon":
-        if moons_sorted[0].percent < 0.02 or moons_sorted[0].percent > 0.98:
+        if current_moon.percent < 0.02 or current_moon.percent > 0.98:
             pass
-        elif moons_sorted.percent <= 0.175:
+        elif current_moon.percent <= 0.175:
             screen = Image.open('images/waxing_crescent.png')
             phase_name = "Waxing Crescent"
-        elif moons_sorted.percent <= 0.30:
+        elif current_moon.percent <= 0.30:
             screen = Image.open('images/first_quarter.png')
             phase_name = "First Quarter"
-        elif moons_sorted.percent <= 0.49:
+        elif current_moon.percent <= 0.49:
             screen = Image.open('images/waxing_gibbous.png')
             phase_name = "Waxing Gibbous"
-        elif moons_sorted.percent < 0.52:
+        elif current_moon.percent < 0.52:
             screen = Image.open('images/full_moon.png')
             phase_name = "Full Moon"
-        elif moons_sorted.percent >= 0.52:
-            screen = Image.open('images/waning_gibbous.png')
-            phase_name = "Waning Gibbous"
-        elif moons_sorted.percent >= 0.67:
+        elif current_moon.percent >= 0.825:
+            screen = Image.open('images/waxing_crescent.png')
+            phase_name = "Waning Crescent"
+        elif current_moon.percent >= 0.67:
             screen = Image.open('images/third_quarter.png')
             phase_name = "Third Quarter"
-        elif moons_sorted.percent >= 0.825:
-            screen = Image.open('images/waxing_crescent.png')
-            phase_name = "Waning Cresent"
+        elif current_moon.percent >= 0.52:
+            screen = Image.open('images/waning_gibbous.png')
+            phase_name = "Waning Gibbous"
 
         buffer.paste(screen, (0,0))
         draw = ImageDraw.Draw(buffer)
 
         next_full_moon = f"{full_moon.name} on {full_moon.date}"
-        if moons_sorted[0].percent > 0.49 or moons_sorted[0].percent < 0.52:
+        if current_moon.percent > 0.49 or current_moon.percent < 0.52:
             draw.text((190, 140), full_moon.name, font=heading_font, fill=(255, 255, 255))
         else: 
             draw.text((190, 140), phase_name, font=heading_font, fill=(255,255, 255))
@@ -201,7 +201,7 @@ def menu_display(screen_owner):
         display.display()
 
 
-def button_worker(screen_owner, current_moon):
+def button_worker(screen_owner, current_moon, full_moon):
     old_screen_owner = "calibration"
     while True:
         if screen_owner.owner != old_screen_owner:
@@ -229,6 +229,7 @@ def button_worker(screen_owner, current_moon):
                 screen_owner.update_owner("tides")
             if display.read_button(display.BUTTON_B):
                 screen_owner.update_owner("moon")
+                moon_display(screen_owner, current_moon, full_moon)
             if display.read_button(display.BUTTON_X):
                 screen_owner.update_owner("calibration")
             if display.read_button(display.BUTTON_Y):

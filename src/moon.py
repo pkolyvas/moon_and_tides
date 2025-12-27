@@ -87,6 +87,13 @@ class Moon:
     def update_date(self, date):
         self.date = date
 
+    def update_all(self, moon, timestamp, percent, name, date):
+        self.moon = moon
+        self.timestamp = timestamp
+        self.percent = percent
+        self.name = name
+        self.date = date
+
 
 # Here we iterate over the next moon phases to create an
 # object for each moon phase with a timestamp and store
@@ -104,11 +111,13 @@ def create_sorted_moon_list(data):
     return sorted(moon_list)
 
 
-def getFullMoonFromRawData(raw_moon_data):
-    return Moon(
+def getFullMoonFromRawData(raw_moon_data, full_moon):
+    full_moon.update_all(
+        "full_moon",
+        raw_moon_data["moon"]["detailed"]["upcoming_phases"]["full_moon"]["next"]["timestamp"],
+        0.5,
         raw_moon_data["moon"]["detailed"]["upcoming_phases"]["full_moon"]["next"]["name"],
         raw_moon_data["moon"]["detailed"]["upcoming_phases"]["full_moon"]["next"]["datestamp"],
-        0.5
     )
 
 
@@ -177,7 +186,7 @@ def moon_mask_correction(moon_position):
     return correction
 
 
-def moon_worker(screen_owner, current_moon):
+def moon_worker(screen_owner, current_moon, full_moon):
     # Start moonlight and calibrate moon on start
     light_control.moonlight()
     display.calibrate_moon_screen(screen_owner)
@@ -198,7 +207,7 @@ def moon_worker(screen_owner, current_moon):
     logging.info(
         'Moon worker: there are %s moons in the queue', len(moons_sorted)
     )
-    full_moon = getFullMoonFromRawData(raw_moon_data)
+    getFullMoonFromRawData(raw_moon_data, full_moon)
 
     # We need to remove the first element from the
     # "future" moon phases if it's in the past
@@ -252,13 +261,13 @@ def moon_worker(screen_owner, current_moon):
         # If it's first load we need to set the position based on
         # the calibrated full moon. Then we set first load to false.
         if first_load is True:
-            current_moon.update_current_percent(moons_sorted[0].percent, time.time)
+            current_moon.update_current_percent(moons_sorted[0].percent, time.time())
             first_load = False
         # Otherwise we poll the API for updated data, or pull
         # the data from our stored records if the api is unavailable
         else:
             updated_current_moon = get_moon_data(latitude, longitude)
-            if len(updated_current_moon.get['moon']) != 0:
+            if updated_current_moon.get('moon') and updated_current_moon['moon'].get('phase') is not None:
                 moons_sorted.pop(0)
                 moons_sorted.insert(
                     0,
@@ -272,7 +281,7 @@ def moon_worker(screen_owner, current_moon):
                 current_moon.update_current_percent(moon_position, time.time)
                 logging.info(f"Moon updated via API. Current percent: {current_moon.percent * 100}%")
             else:
-                current_moon.update_current_percent(estimate_current_position(moons_sorted), time.time)
+                current_moon.update_current_percent(estimate_current_position(moons_sorted), time.time())
                 logging.debug(f"Moon position is ESTIMATED. Current percent: {current_moon.percent * 100}%")
             delta = (current_moon.percent * moon_mask_correction(current_moon.position)) - motor_position
             # Here we only move the motor if the moon is lit up like the moon
@@ -280,5 +289,5 @@ def moon_worker(screen_owner, current_moon):
                 logging.debug(f"Moon is lit, updating mask with delta {delta}")
                 move_moon_mask(delta)
                 motor_position = current_moon.percent
-            display.moon_display(screen_owner, moons_sorted, full_moon)
-        time.sleep(3600)
+            display.moon_display(screen_owner, current_moon, full_moon)
+        time.sleep(60)

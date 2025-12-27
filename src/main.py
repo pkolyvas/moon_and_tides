@@ -7,7 +7,8 @@ import display
 import time
 
 screen_owner = display.Screen()
-current_moon = moon.Moon("current", time.time, 0)
+current_moon = moon.Moon("current", time.time(), 0)
+full_moon = moon.Moon("full_moon", time.time(), 0.5)
 
 
 def main():
@@ -26,11 +27,11 @@ def main():
     )
     moon_thread = threading.Thread(
         target=moon.moon_worker,
-        args=(screen_owner, current_moon,)
+        args=(screen_owner, current_moon, full_moon, )
     )
     button_thread = threading.Thread(
         target=display.button_worker,
-        args=(screen_owner, current_moon,)
+        args=(screen_owner, current_moon, full_moon, )
     )
     display_thread = threading.Thread(
         target=display.display_worker,
