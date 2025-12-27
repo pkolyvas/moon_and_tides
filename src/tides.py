@@ -117,6 +117,20 @@ def tide_worker(screen_owner):
                              .strftime('%H:%M')
                              )
 
+        # Check and remove past tides FIRST before any calculations
+        if time.time() > tides_sorted[0].timestamp:
+            tides_sorted.pop(0)
+            tides_in_queue = len(tides_sorted)
+            if tides_in_queue <= 2:
+                logging.info(
+                    f"Updating tides list. %s tides remaining in queue.", (tides_in_queue)
+                )
+                updated_tide_data = get_tide_data(latitude, longitude)
+                new_tides = tide_creator_iterator(updated_tide_data)
+                tides_sorted = sorted(list(set(tides_sorted + new_tides)))
+                logging.info('Tide worker: combining lists and checking order.')
+                tide_order_check(tides_sorted)
+
         tide_progress_remaining = (tides_sorted[0].timestamp - time.time()) / TIDAL_HALF_PERIOD
 
         if tides_sorted[0].tide == "HIGH TIDE":
@@ -155,16 +169,4 @@ def tide_worker(screen_owner):
                 light_control.tide_rising(screen_owner)
         logging.debug('Tide worker: Active')
 
-        if time.time() > tides_sorted[0].timestamp:
-            tides_sorted.pop(0)
-            tides_in_queue = len(tides_sorted)
-            if tides_in_queue <= 2:
-                logging.info(
-                    f"Updating tides list. %s tides remaining in queue.", (tides_in_queue)
-                )
-                updated_tide_data = get_tide_data(latitude, longitude)
-                new_tides = tide_creator_iterator(updated_tide_data)
-                tides_sorted = sorted(list(set(tides_sorted + new_tides)))
-                logging.info('Tide worker: combining lists and checking order.')
-                tide_order_check(tides_sorted)
         time.sleep(1)
