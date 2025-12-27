@@ -236,7 +236,7 @@ def button_worker(screen_owner, current_moon, full_moon):
             time.sleep(1)
         elif screen_owner.owner == "moon" and (
                 display.read_button(display.BUTTON_A) or
-                display.read_button(display.BUTTON_A) or
+                display.read_button(display.BUTTON_B) or
                 display.read_button(display.BUTTON_X) or
                 display.read_button(display.BUTTON_Y)
         ):
