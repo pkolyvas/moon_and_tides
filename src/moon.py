@@ -1,3 +1,4 @@
+from sys import monitoring
 import apploader
 import json
 import requests
@@ -17,6 +18,7 @@ latitude = float(apploader.config['location']['latitude'])
 longitude = float(apploader.config['location']['longitude'])
 motor_resolution = int(apploader.config['motor']['resolution'])
 tide_correction = int(apploader.config['location']['correction'])
+moon_mask_offset = float(apploader.config['visuals']['correction'])
 
 
 # Retreive moon data from the API
@@ -163,6 +165,17 @@ def estimate_current_position(moon_data):
         return moon_data[1].percent - percent_remaining_in_quarter
 
 
+def moon_mask_correction(moon_position):
+    if moon_position < 0.49:
+        t = moon_position / 0.49
+        return 1.0 - (t * moon_mask_offset)
+    elif moon_position >= 0.49 or moon_position <= 0.51:
+        return moon_position
+    elif moon_position > 0.51:
+        t = (1 - moon_position) / 0.49
+        return 1.0 + (t * moon_mask_offset)
+
+
 def moon_worker(screen_owner, current_moon):
     # Start moonlight and calibrate moon on start
     light_control.moonlight()
@@ -260,8 +273,8 @@ def moon_worker(screen_owner, current_moon):
             else:
                 current_moon.update_current_percent(estimate_current_position(moons_sorted), time.time)
                 logging.debug(f"Moon position is ESTIMATED. Current percent: {current_moon.percent * 100}%")
-            delta = current_moon.percent - motor_position
-            logging.debug(f"Current motor position: {motor_position * 100}. Delta to current moon: {delta * 100}")
+            delta = (current_moon.percent * moon_mask_correction(current_moon.position)) - motor_position
+            logging.debug(f"Current motor position: {motor_position * 100}.\n Corrected delta to current moon: {delta * 100}")
             # Here we only move the motor if the moon is lit up like the moon
             if screen_owner == "tides":
                 logging.debug(f"Moon is lit, updating mask with delta {delta}")
