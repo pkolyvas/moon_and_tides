@@ -1,3 +1,4 @@
+from os import login_tty
 import apploader
 import json
 import requests
@@ -139,11 +140,10 @@ def tide_worker(screen_owner):
             tide_progress_remaining,
             tide_tod_clock
         )
-        light_control.tide(
-            screen_owner,
-            tide_progress_remaining,
-            0.3
-        )
+        if tide_progress_remaining >= 0.98:
+            light_control.high_tide(tide_progress_remaining)
+        elif tide_progress_remaining <= 0.02:
+            light_control.low_tide(tide_progress_remaining)
         logging.debug('Tide worker: Active')
 
         if time.time() > tides_sorted[0].timestamp:
