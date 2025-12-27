@@ -63,6 +63,8 @@ class Screen:
 # function.
 def calibrate_moon_screen(screen_owner):
     if screen_owner.owner == "calibration":
+        bg = Image.new('RGB', (WIDTH, HEIGHT))
+        buffer.paste(bg, (0, 0))
         draw = ImageDraw.Draw(buffer)
 
         button_a = "Backward"
@@ -169,6 +171,8 @@ def menu_display(screen_owner):
         button_b = "Tides in the moon"
         button_x = "Re-calibrate moon"
         button_y = "View system details"
+        background = Image.new("RGB", (WIDTH, HEIGHT))
+        buffer.paste(background, (0,0))
         draw = ImageDraw.Draw(buffer)
         draw.text(
             (left_column_left_justification, top_row_height),
