@@ -161,8 +161,8 @@ def moon_display(screen_owner, current_moon, full_moon):
         if current_moon.percent > 0.49 and current_moon.percent < 0.52:
             draw.text((190, 140), full_moon.name, font=moon_font, fill=(255, 255, 255))
         else: 
-            draw.text((68, 175), phase_name, font=moon_font, fill=(255,255, 255))
-            draw.text((40, 210), next_full_moon, font=detail_font, fill=(255, 255, 255))
+            draw.text((63, 175), phase_name, font=moon_font, fill=(255,255, 255))
+            draw.text((25, 210), next_full_moon, font=detail_font, fill=(255, 255, 255))
         display.display()
 
 
@@ -228,7 +228,6 @@ def button_worker(screen_owner, current_moon, full_moon):
         elif screen_owner.owner == "menu":
             if display.read_button(display.BUTTON_A):
                 screen_owner.update_owner("tides")
-                tide_display()
             if display.read_button(display.BUTTON_B):
                 screen_owner.update_owner("moon")
                 moon_display(screen_owner, current_moon, full_moon)
