@@ -159,8 +159,8 @@ def moon_display(screen_owner, current_moon, full_moon):
         if current_moon.percent > 0.49 and current_moon.percent < 0.52:
             draw.text((190, 140), full_moon.name, font=moon_font, fill=(255, 255, 255))
         else: 
-            draw.text((63, 175), phase_name, font=moon_font, fill=(255,255, 255))
-            draw.text((7, 210), next_full_moon, font=detail_font, fill=(255, 255, 255))
+            draw.text((60, 175), phase_name, font=moon_font, fill=(255,255, 255))
+            draw.text((20, 210), next_full_moon, font=detail_font, fill=(255, 255, 255))
         display.display()
 
 
