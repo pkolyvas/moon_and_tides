@@ -18,7 +18,7 @@ latitude = float(apploader.config['location']['latitude'])
 longitude = float(apploader.config['location']['longitude'])
 motor_resolution = int(apploader.config['motor']['resolution'])
 tide_correction = int(apploader.config['location']['correction'])
-moon_mask_offset = float(apploader.config['visuals']['correction'])
+moon_mask_offset = float(apploader.config['visuals']['moon_mask_offset'])
 
 
 # Retreive moon data from the API
