@@ -150,7 +150,9 @@ def moon_display(screen_owner, moons_sorted, full_moon):
         elif moons_sorted.percent >= 0.825:
             screen = Image.open('images/waxing_crescent.png')
             phase_name = "Waning Cresent"
-        draw = ImageDraw.Draw(screen)
+
+        buffer.paste(screen, (0,0))
+        draw = ImageDraw.Draw(buffer)
 
         next_full_moon = f"{full_moon.name} on {full_moon.date}"
         if moons_sorted[0].percent > 0.49 or moons_sorted[0].percent < 0.52:
