@@ -127,7 +127,7 @@ def moon_display(screen_owner, current_moon, full_moon):
     moon_font = ImageFont.truetype(
         "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 28)
     detail_font = ImageFont.truetype(
-        "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 18)
+        "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 14)
     if screen_owner.owner == "moon":
         if current_moon.percent < 0.02 or current_moon.percent > 0.98:
             screen = Image.new("RGB", (WIDTH, HEIGHT))
@@ -162,7 +162,7 @@ def moon_display(screen_owner, current_moon, full_moon):
             draw.text((190, 140), full_moon.name, font=moon_font, fill=(255, 255, 255))
         else: 
             draw.text((63, 175), phase_name, font=moon_font, fill=(255,255, 255))
-            draw.text((15, 210), next_full_moon, font=detail_font, fill=(255, 255, 255))
+            draw.text((7, 210), next_full_moon, font=detail_font, fill=(255, 255, 255))
         display.display()
 
 
