@@ -168,9 +168,9 @@ def moon_display(screen_owner, moons_sorted, full_moon):
 def menu_display(screen_owner):
     if screen_owner.owner == "menu":
         button_a = "Tides on screen"
-        button_b = "Tides in the moon"
-        button_x = "Re-calibrate moon"
-        button_y = "View system details"
+        button_b = "Moon on screen"
+        button_x = "Calibrate"
+        button_y = "System"
         background = Image.new("RGB", (WIDTH, HEIGHT))
         buffer.paste(background, (0,0))
         draw = ImageDraw.Draw(buffer)
