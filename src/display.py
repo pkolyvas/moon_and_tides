@@ -67,10 +67,9 @@ def calibrate_moon_screen(screen_owner):
         buffer.paste(bg, (0, 0))
         draw = ImageDraw.Draw(buffer)
 
-        button_a = "Backward"
+        button_a = "Move Left"
         button_b = "Moon Light Mode"
-        button_x = "Forward"
-        button_y = "Tide Light Mode"
+        button_x = "Move Right"
 
         draw.text((left_column_left_justification, top_row_height),
                   button_a, font=default_font, fill=(255, 255, 255))
@@ -78,8 +77,6 @@ def calibrate_moon_screen(screen_owner):
                   button_b, font=default_font, fill=(0, 255, 0))
         draw.text((right_column_right_justification, top_row_height),
                   button_x, font=default_font, fill=(255, 255, 255))
-        draw.text((right_column_right_justification, bottom_row_height),
-                  button_y, font=default_font, fill=(255, 255, 255))
         draw.text((75, 10), "Calibrating Moon",
                   font=default_font, fill=(150, 150, 255))
         display.display()

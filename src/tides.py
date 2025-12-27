@@ -140,10 +140,13 @@ def tide_worker(screen_owner):
             tide_progress_remaining,
             tide_tod_clock
         )
-        if tide_progress_remaining > 0.95:
-            light_control.high_tide(tide_progress_remaining)
-        elif tide_progress_remaining < 0.05:
+        
+        if (tide_display_trend == "Tide Receding" and tide_progress_remaining < 0.05) or (
+                tide_display_trend == "Rising Tide" and tide_progress_remaining > 0.95):
             light_control.low_tide(tide_progress_remaining)
+        elif (tide_display_trend == "Tide Receding" and tide_progress_remaining > 0.95) or (
+                tide_display_trend == "Rising Tide" and tide_progress_remaining < 0.05):
+            light_control.high_tide(tide_progress_remaining)
         logging.debug('Tide worker: Active')
 
         if time.time() > tides_sorted[0].timestamp:
