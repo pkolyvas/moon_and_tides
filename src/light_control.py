@@ -55,3 +55,91 @@ def low_tide(level):
             pixels.show
         time.sleep(0.05)
     moonlight()
+
+
+def tide_rising(screen_owner):
+    # Rising tide: bottom to top (27→19→11→3)
+    color = tuple(math.ceil(x * pixel_brightness) for x in tide_blue)
+    pixels[3] = off
+    pixels[4] = off
+    pixels[11] = off
+    pixels[12] = off
+    pixels[19] = off
+    pixels[20] = off
+    pixels[27] = off
+    pixels[28] = off
+
+    while screen_owner.owner == "moon":
+        for i in range(0, 101):
+            if i < 25:
+                fade_in = tuple(math.ceil(x * (i/25)) for x in color)
+                pixels[27] = fade_in
+                pixels[28] = fade_in
+            elif i < 50:
+                fade_out = tuple(math.ceil(x * ((25-(i-25))/25)) for x in color)
+                pixels[27] = fade_out
+                pixels[28] = fade_out
+                fade_in = tuple(math.ceil(x * ((i-25)/25)) for x in color)
+                pixels[19] = fade_in
+                pixels[20] = fade_in
+            elif i < 75:
+                fade_out = tuple(math.ceil(x * ((25-(i-50))/25)) for x in color)
+                pixels[19] = fade_out
+                pixels[20] = fade_out
+                fade_in = tuple(math.ceil(x * ((i-50)/25)) for x in color)
+                pixels[11] = fade_in
+                pixels[12] = fade_in
+            else:  # i >= 75
+                fade_out = tuple(math.ceil(x * ((25-(i-75))/25)) for x in color)
+                pixels[11] = fade_out
+                pixels[12] = fade_out
+                fade_in = tuple(math.ceil(x * ((i-75)/25)) for x in color)
+                pixels[3] = fade_in
+                pixels[4] = fade_in
+            pixels.show()
+            time.sleep(0.05)
+    moonlight()
+
+
+def tide_receding(screen_owner):
+    # Receding tide: top to bottom (3→11→19→27)
+    color = tuple(math.ceil(x * pixel_brightness) for x in tide_blue)
+    pixels[3] = off
+    pixels[4] = off
+    pixels[11] = off
+    pixels[12] = off
+    pixels[19] = off
+    pixels[20] = off
+    pixels[27] = off
+    pixels[28] = off
+
+    while screen_owner.owner == "moon":
+        for i in range(0, 101):
+            if i < 25:
+                fade_in = tuple(math.ceil(x * (i/25)) for x in color)
+                pixels[3] = fade_in
+                pixels[4] = fade_in
+            elif i < 50:
+                fade_out = tuple(math.ceil(x * ((25-(i-25))/25)) for x in color)
+                pixels[3] = fade_out
+                pixels[4] = fade_out
+                fade_in = tuple(math.ceil(x * ((i-25)/25)) for x in color)
+                pixels[11] = fade_in
+                pixels[12] = fade_in
+            elif i < 75:
+                fade_out = tuple(math.ceil(x * ((25-(i-50))/25)) for x in color)
+                pixels[11] = fade_out
+                pixels[12] = fade_out
+                fade_in = tuple(math.ceil(x * ((i-50)/25)) for x in color)
+                pixels[19] = fade_in
+                pixels[20] = fade_in
+            else:  # i >= 75
+                fade_out = tuple(math.ceil(x * ((25-(i-75))/25)) for x in color)
+                pixels[19] = fade_out
+                pixels[20] = fade_out
+                fade_in = tuple(math.ceil(x * ((i-75)/25)) for x in color)
+                pixels[27] = fade_in
+                pixels[28] = fade_in
+            pixels.show()
+            time.sleep(0.05)
+    moonlight()
