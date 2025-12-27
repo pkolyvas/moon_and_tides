@@ -130,7 +130,8 @@ def moon_display(screen_owner, current_moon, full_moon):
         "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 28)
     if screen_owner.owner == "moon":
         if current_moon.percent < 0.02 or current_moon.percent > 0.98:
-            pass
+            screen = Image.new("RGB", (WIDTH, HEIGHT))
+            phase_name = "New Moon"
         elif current_moon.percent <= 0.175:
             screen = Image.open('images/waxing_crescent.png')
             phase_name = "Waxing Crescent"
@@ -157,7 +158,7 @@ def moon_display(screen_owner, current_moon, full_moon):
         draw = ImageDraw.Draw(buffer)
 
         next_full_moon = f"{full_moon.name} on {full_moon.date}"
-        if current_moon.percent > 0.49 or current_moon.percent < 0.52:
+        if current_moon.percent > 0.49 and current_moon.percent < 0.52:
             draw.text((190, 140), full_moon.name, font=heading_font, fill=(255, 255, 255))
         else: 
             draw.text((190, 140), phase_name, font=heading_font, fill=(255,255, 255))
