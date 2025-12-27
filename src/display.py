@@ -221,7 +221,7 @@ def button_worker(screen_owner, current_moon):
                 motor_control.simple_anti_clockwise()
             if display.read_button(display.BUTTON_B):
                 screen_owner.update_owner("tides")
-                moon.move_moon_mask(current_moon.percent)
+                moon.move_moon_mask(current_moon.percent * moon.moon_mask_correction(current_moon.percent))
         elif screen_owner.owner == "menu":
             if display.read_button(display.BUTTON_A):
                 screen_owner.update_owner("tides")
