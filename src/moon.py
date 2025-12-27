@@ -19,6 +19,8 @@ motor_resolution = int(apploader.config['motor']['resolution'])
 tide_correction = int(apploader.config['location']['correction'])
 moon_mask_offset = float(apploader.config['visuals']['moon_mask_offset'])
 
+last_update = time.time()
+
 
 # Retreive moon data from the API
 # API key configured in your app.conf
@@ -187,6 +189,7 @@ def moon_mask_correction(moon_position):
 
 
 def moon_worker(screen_owner, current_moon, full_moon):
+    global last_update
     # Start moonlight and calibrate moon on start
     light_control.moonlight()
     display.calibrate_moon_screen(screen_owner)
@@ -266,20 +269,22 @@ def moon_worker(screen_owner, current_moon, full_moon):
         # Otherwise we poll the API for updated data, or pull
         # the data from our stored records if the api is unavailable
         else:
-            updated_current_moon = get_moon_data(latitude, longitude)
-            if updated_current_moon.get('moon') and updated_current_moon['moon'].get('phase') is not None:
-                moons_sorted.pop(0)
-                moons_sorted.insert(
-                    0,
-                    Moon(
-                        updated_current_moon["moon"]["phase_name"],
-                        time.time(),
-                        float(updated_current_moon["moon"]["phase"])
+            if last_update + 3600 < time.time():
+                updated_current_moon = get_moon_data(latitude, longitude)
+                if updated_current_moon.get('moon') and updated_current_moon['moon'].get('phase') is not None:
+                    moons_sorted.pop(0)
+                    moons_sorted.insert(
+                        0,
+                        Moon(
+                            updated_current_moon["moon"]["phase_name"],
+                            time.time(),
+                            float(updated_current_moon["moon"]["phase"])
+                        )
                     )
-                )
-                moon_position = float(updated_current_moon['moon']['phase'])
-                current_moon.update_current_percent(moon_position, time.time)
-                logging.info(f"Moon updated via API. Current percent: {current_moon.percent * 100}%")
+                    moon_position = float(updated_current_moon['moon']['phase'])
+                    current_moon.update_current_percent(moon_position, time.time())
+                    last_update = time.time()
+                    logging.info(f"Moon updated via API. Current percent: {current_moon.percent * 100}%")
             else:
                 current_moon.update_current_percent(estimate_current_position(moons_sorted), time.time())
                 logging.debug(f"Moon position is ESTIMATED. Current percent: {current_moon.percent * 100}%")
