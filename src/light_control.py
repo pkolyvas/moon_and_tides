@@ -24,7 +24,7 @@ def moonlight():
 def high_tide(level):
     # Low Tide
     color = tuple(math.ceil(x * pixel_brightness) for x in tide_blue)
-    while level >= 0.98:
+    while level > 0.95:
         for i in range(0, 101):
             fade_color = tuple(math.ceil(x * (i/100)) for x in color)
             for i in range(0, 8):
@@ -36,13 +36,13 @@ def high_tide(level):
                 pixels[i] = fade_color
             pixels.show
         time.sleep(0.05)
-    moonlight(pixel_brightness)
+    moonlight()
 
 
 def low_tide(level):
     # Low Tide
     color = tuple(math.ceil(x * pixel_brightness) for x in tide_blue)
-    while level >= 0.98:
+    while level < 0.05:
         for i in range(0, 101):
             fade_color = tuple(math.ceil(x * (i/100)) for x in color)
             for i in range(24, 32):
@@ -54,4 +54,4 @@ def low_tide(level):
                 pixels[i] = fade_color
             pixels.show
         time.sleep(0.05)
-    moonlight(pixel_brightness)
+    moonlight()
