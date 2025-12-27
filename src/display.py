@@ -125,9 +125,9 @@ def tide_display(screen_owner, trend, next, afternext, progress, clock):
 
 def moon_display(screen_owner, current_moon, full_moon):
     heading_font = ImageFont.truetype(
-        "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 52)
+        "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 44)
     detail_font = ImageFont.truetype(
-        "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 28)
+        "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 26)
     if screen_owner.owner == "moon":
         if current_moon.percent < 0.02 or current_moon.percent > 0.98:
             screen = Image.new("RGB", (WIDTH, HEIGHT))
