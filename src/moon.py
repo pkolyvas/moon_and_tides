@@ -273,7 +273,7 @@ def moon_worker(screen_owner, current_moon):
                 current_moon.update_current_percent(estimate_current_position(moons_sorted), time.time)
                 logging.debug(f"Moon position is ESTIMATED. Current percent: {current_moon.percent * 100}%")
             delta = (current_moon.percent * moon_mask_correction(current_moon.position)) - motor_position
-            logging.debug(f"Current motor position: {motor_position * 100}.\n Corrected delta to current moon: {delta * 100}")
+            logging.info(f"Current motor position: {motor_position * 100}.\nCurrent moon_position: {current_moon.percent * 100} \nCurrent correction: {moon_mask_correction(current_moon.percent)} \nCorrected delta to current moon: {delta * 100}")
             # Here we only move the motor if the moon is lit up like the moon
             if screen_owner == "tides":
                 logging.debug(f"Moon is lit, updating mask with delta {delta}")

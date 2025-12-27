@@ -8,10 +8,10 @@ kit = MotorKit(i2c=board.I2C())
 
 def simple_anti_clockwise():
   kit.stepper1.onestep()
-  time.sleep(0.3)
+  time.sleep(0.1)
 
 def simple_clockwise():
   kit.stepper1.onestep(direction=stepper.BACKWARD)
-  time.sleep(0.3)
+  time.sleep(0.1)
 
 # TODO: Make the movement correct for any hemisphere (Longitude)
