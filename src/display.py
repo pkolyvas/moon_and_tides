@@ -209,11 +209,12 @@ def button_worker(screen_owner, current_moon):
             old_screen_owner = screen_owner.owner
         if (screen_owner.owner == "tides") and (
                 display.read_button(display.BUTTON_A) or
-                display.read_button(display.BUTTON_A) or
+                display.read_button(display.BUTTON_B) or
                 display.read_button(display.BUTTON_X) or
                 display.read_button(display.BUTTON_Y)
         ):
             screen_owner.update_owner("menu")
+            time.sleep(1)
         elif screen_owner.owner == "calibration":
             if display.read_button(display.BUTTON_A):
                 motor_control.simple_clockwise()
@@ -222,6 +223,7 @@ def button_worker(screen_owner, current_moon):
             if display.read_button(display.BUTTON_B):
                 screen_owner.update_owner("tides")
                 moon.move_moon_mask(current_moon.percent * moon.moon_mask_correction(current_moon.percent))
+                time.sleep(1)
         elif screen_owner.owner == "menu":
             if display.read_button(display.BUTTON_A):
                 screen_owner.update_owner("tides")
@@ -231,6 +233,7 @@ def button_worker(screen_owner, current_moon):
                 screen_owner.update_owner("calibration")
             if display.read_button(display.BUTTON_Y):
                 screen_owner.update_owner("system")
+            time.sleep(1)
         elif screen_owner.owner == "moon" and (
                 display.read_button(display.BUTTON_A) or
                 display.read_button(display.BUTTON_A) or
@@ -238,6 +241,7 @@ def button_worker(screen_owner, current_moon):
                 display.read_button(display.BUTTON_Y)
         ):
             screen_owner.update_owner("menu")
+            time.sleep(1)
         time.sleep(0.05)
 
 
