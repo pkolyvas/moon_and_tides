@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import datetime
 import moon
 from PIL.ImageChops import screen
 import logging
@@ -154,7 +155,7 @@ def moon_display(screen_owner, current_moon, full_moon):
         buffer.paste(screen, (0,0))
         draw = ImageDraw.Draw(buffer)
 
-        next_full_moon = f"{full_moon.name} on {full_moon.date}"
+        next_full_moon = f"{full_moon.name} on {datetime.datetime.fromtimestamp(full_moon.timestamp).strftime('%a, %d %b %Y')}"
         if current_moon.percent > 0.49 and current_moon.percent < 0.52:
             draw.text((190, 140), full_moon.name, font=moon_font, fill=(255, 255, 255))
         else: 
