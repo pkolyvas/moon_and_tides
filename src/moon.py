@@ -179,7 +179,7 @@ def moon_mask_correction(moon_position):
     if moon_position < 0.49:
         t = moon_position / 0.49
         correction = 1.0 - (t * moon_mask_offset)
-    elif moon_position >= 0.49 or moon_position <= 0.51:
+    elif moon_position >= 0.49 and moon_position <= 0.51:
         correction = 1.0
     elif moon_position > 0.51:
         t = (1 - moon_position) / 0.49
