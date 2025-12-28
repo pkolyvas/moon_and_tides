@@ -178,18 +178,18 @@ def tide_worker(screen_owner):
             tide_progress_remaining,
             tide_tod_clock
         )
-        if screen_owner.owner == "tides":
-            if (tide_display_trend == "Tide Receding" and tide_progress_remaining < 0.05) or (
-                    tide_display_trend == "Rising Tide" and tide_progress_remaining > 0.95):
-                light_control.low_tide(tide_state)
-            elif (tide_display_trend == "Tide Receding" and tide_progress_remaining > 0.95) or (
-                    tide_display_trend == "Rising Tide" and tide_progress_remaining < 0.05):
-                light_control.high_tide(tide_state)
-        elif screen_owner.owner == "moon":
-            if tide_display_trend == "Tide Receding":
-                light_control.tide_receding(screen_owner)
-            elif tide_display_trend == "Rising Tide":
-                light_control.tide_rising(screen_owner)
+        # if screen_owner.owner == "tides":
+        #     if (tide_display_trend == "Tide Receding" and tide_progress_remaining < 0.05) or (
+        #             tide_display_trend == "Rising Tide" and tide_progress_remaining > 0.95):
+        #         light_control.low_tide(tide_state)
+        #     elif (tide_display_trend == "Tide Receding" and tide_progress_remaining > 0.95) or (
+        #             tide_display_trend == "Rising Tide" and tide_progress_remaining < 0.05):
+        #         light_control.high_tide(tide_state)
+        # elif screen_owner.owner == "moon":
+        #     if tide_display_trend == "Tide Receding":
+        #         light_control.tide_receding(screen_owner)
+        #     elif tide_display_trend == "Rising Tide":
+        #         light_control.tide_rising(screen_owner)
         logging.debug('Tide worker: Active')
 
         time.sleep(1)

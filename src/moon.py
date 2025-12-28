@@ -184,7 +184,6 @@ def moon_mask_correction(moon_position):
     elif moon_position > 0.51:
         t = (1 - moon_position) / 0.49
         correction =  1.0 + (t * moon_mask_offset)
-    logging.info(f"Current moon mask correction: {correction * 100}$")
     return correction
 
 
