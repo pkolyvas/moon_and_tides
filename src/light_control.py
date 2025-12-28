@@ -21,38 +21,40 @@ def moonlight():
     pixels.show()
 
 
-def high_tide(level):
-    # Low Tide
+def high_tide(tide_state):
+    # High Tide - flashes top LEDs while tide progress indicates high tide
     color = tuple(math.ceil(x * pixel_brightness) for x in tide_blue)
-    while level > 0.95:
+    while ((tide_state['trend'] == "Tide Receding" and tide_state['progress'] > 0.95) or
+           (tide_state['trend'] == "Rising Tide" and tide_state['progress'] < 0.05)):
         for i in range(0, 101):
             fade_color = tuple(math.ceil(x * (i/100)) for x in color)
-            for i in range(0, 8):
-                pixels[i] = fade_color
-            pixels.show
+            for pixel_idx in range(0, 8):
+                pixels[pixel_idx] = fade_color
+            pixels.show()
         for i in range(101, 0, -1):
             fade_color = tuple(math.ceil(x * (i/100)) for x in color)
-            for i in range(0, 8):
-                pixels[i] = fade_color
-            pixels.show
+            for pixel_idx in range(0, 8):
+                pixels[pixel_idx] = fade_color
+            pixels.show()
         time.sleep(0.05)
     moonlight()
 
 
-def low_tide(level):
-    # Low Tide
+def low_tide(tide_state):
+    # Low Tide - flashes bottom LEDs while tide progress indicates low tide
     color = tuple(math.ceil(x * pixel_brightness) for x in tide_blue)
-    while level < 0.05:
+    while ((tide_state['trend'] == "Tide Receding" and tide_state['progress'] < 0.05) or
+           (tide_state['trend'] == "Rising Tide" and tide_state['progress'] > 0.95)):
         for i in range(0, 101):
             fade_color = tuple(math.ceil(x * (i/100)) for x in color)
-            for i in range(24, 32):
-                pixels[i] = fade_color
-            pixels.show
+            for pixel_idx in range(24, 32):
+                pixels[pixel_idx] = fade_color
+            pixels.show()
         for i in range(101, 0, -1):
             fade_color = tuple(math.ceil(x * (i/100)) for x in color)
-            for i in range(24, 32):
-                pixels[i] = fade_color
-            pixels.show
+            for pixel_idx in range(24, 32):
+                pixels[pixel_idx] = fade_color
+            pixels.show()
         time.sleep(0.05)
     moonlight()
 

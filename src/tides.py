@@ -88,6 +88,9 @@ def tide_worker(screen_owner):
     # check stored data before making a request.
     # That way we can resume while offline.
 
+    # Mutable state object for tide progress - shared with light functions
+    tide_state = {'progress': 0.0, 'trend': ''}
+
     # Here we iterate over the next tides to create an
     # object for each high or low tide with a timestamp
     def tide_creator_iterator(data):
@@ -148,6 +151,9 @@ def tide_worker(screen_owner):
         # Calculate progress using the consistent current_time from this iteration
         tide_progress_remaining = (tides_sorted[0].timestamp - current_time) / TIDAL_HALF_PERIOD
 
+        # Update mutable state object
+        tide_state['progress'] = tide_progress_remaining
+
         if tides_sorted[0].tide == "HIGH TIDE":
             tide_display_trend = "Rising Tide"
             tide_display_next = "High: " + str(dt.fromtimestamp(
@@ -161,6 +167,8 @@ def tide_worker(screen_owner):
             tide_display_afternext = "High: " + str(dt.fromtimestamp(
                 tides_sorted[1].timestamp).strftime('%H:%M'))
 
+        tide_state['trend'] = tide_display_trend
+
         # TODO: We need a better way to switch between active displays.
         display.tide_display(
             screen_owner,
@@ -173,10 +181,10 @@ def tide_worker(screen_owner):
         if screen_owner.owner == "tides":
             if (tide_display_trend == "Tide Receding" and tide_progress_remaining < 0.05) or (
                     tide_display_trend == "Rising Tide" and tide_progress_remaining > 0.95):
-                light_control.low_tide(tide_progress_remaining)
+                light_control.low_tide(tide_state)
             elif (tide_display_trend == "Tide Receding" and tide_progress_remaining > 0.95) or (
                     tide_display_trend == "Rising Tide" and tide_progress_remaining < 0.05):
-                light_control.high_tide(tide_progress_remaining)
+                light_control.high_tide(tide_state)
         elif screen_owner.owner == "moon":
             if tide_display_trend == "Tide Receding":
                 light_control.tide_receding(screen_owner)
