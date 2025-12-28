@@ -269,7 +269,7 @@ def moon_worker(screen_owner, current_moon, full_moon):
         # Otherwise we poll the API for updated data, or pull
         # the data from our stored records if the api is unavailable
         else:
-            if last_update + 3600 < time.time():
+            if last_update + 21600  < time.time():
                 updated_current_moon = get_moon_data(latitude, longitude)
                 if updated_current_moon.get('moon') and updated_current_moon['moon'].get('phase') is not None:
                     moons_sorted.pop(0)

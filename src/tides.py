@@ -112,26 +112,41 @@ def tide_worker(screen_owner):
 
     # Worker loop
     while True:
+        # Use a single timestamp for this entire loop iteration to prevent race conditions
+        current_time = time.time()
         tide_tod_clock = str(dt
-                             .fromtimestamp(time.time())
+                             .fromtimestamp(current_time)
                              .strftime('%H:%M')
                              )
 
-        # Check and remove past tides FIRST before any calculations
-        if time.time() > tides_sorted[0].timestamp:
+        # Remove all past tides (handles cases where multiple tides have passed)
+        while len(tides_sorted) > 0 and current_time > tides_sorted[0].timestamp:
+            logging.info('Tide worker: removing past tide %s at %s',
+                        tides_sorted[0].tide,
+                        dt.fromtimestamp(tides_sorted[0].timestamp).strftime('%H:%M'))
             tides_sorted.pop(0)
-            tides_in_queue = len(tides_sorted)
-            if tides_in_queue <= 2:
-                logging.info(
-                    f"Updating tides list. %s tides remaining in queue.", (tides_in_queue)
-                )
-                updated_tide_data = get_tide_data(latitude, longitude)
-                new_tides = tide_creator_iterator(updated_tide_data)
-                tides_sorted = sorted(list(set(tides_sorted + new_tides)))
-                logging.info('Tide worker: combining lists and checking order.')
-                tide_order_check(tides_sorted)
 
-        tide_progress_remaining = (tides_sorted[0].timestamp - time.time()) / TIDAL_HALF_PERIOD
+        # Refetch tide data if queue is running low
+        tides_in_queue = len(tides_sorted)
+        if tides_in_queue <= 2:
+            logging.info(
+                f"Updating tides list. %s tides remaining in queue.", (tides_in_queue)
+            )
+            updated_tide_data = get_tide_data(latitude, longitude)
+            new_tides = tide_creator_iterator(updated_tide_data)
+            tides_sorted = sorted(list(set(tides_sorted + new_tides)))
+            logging.info('Tide worker: combining lists and checking order.')
+            tide_order_check(tides_sorted)
+
+        # Safety check: ensure we have at least 2 tides for display
+        if len(tides_sorted) < 2:
+            logging.error('Tide worker: critical error - less than 2 tides after refetch. Retrying...')
+            time.sleep(10)
+            # Force immediate refetch on next iteration
+            continue
+
+        # Calculate progress using the consistent current_time from this iteration
+        tide_progress_remaining = (tides_sorted[0].timestamp - current_time) / TIDAL_HALF_PERIOD
 
         if tides_sorted[0].tide == "HIGH TIDE":
             tide_display_trend = "Rising Tide"
